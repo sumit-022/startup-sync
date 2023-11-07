@@ -15,7 +15,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
   setSidebarOpen,
   sidebarOpen,
 }) => {
-  const user = "Józef";
+  const user = "Subash";
 
   return (
     <header className="drop-shadow-1 sticky top-0 z-[1000] flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
