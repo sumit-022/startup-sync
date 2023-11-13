@@ -20,6 +20,8 @@ import rental from "../assets/svg/dashboard/rental.svg";
 import suppliers from "../assets/svg/dashboard/suppliers.svg";
 import tasks from "../assets/svg/dashboard/tasks.svg";
 import tresoryCashflow from "../assets/svg/dashboard/tresory-cashflow.svg";
+import { MdEdit } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
 
 export const sidebar: SidebarMenu[] = [
   {
@@ -154,3 +156,190 @@ export const sidebar: SidebarMenu[] = [
     notifications: false,
   },
 ];
+
+export const tableData = {
+  headers: [
+    {
+      type: "checkbox",
+      title: "",
+    },
+    {
+      type: "filter",
+      title: "Job Code",
+    },
+    {
+      type: "filter",
+      title: "Job Description",
+    },
+    {
+      type: "sort",
+      title: "Recieved Date",
+    },
+    {
+      type: "sort",
+      title: "Quoted Date",
+    },
+    {
+      type: "text",
+      title: "Ship Name",
+    },
+    {
+      type: "text",
+      title: "Company",
+    },
+    {
+      type: "text",
+      title: "Engineer",
+    },
+    {
+      type: "action",
+      title: "Action",
+    },
+  ],
+  rows: [
+    [
+      {
+        type: "checkbox",
+        title: "",
+      },
+      {
+        type: "text",
+        title: "2023-SE-01",
+      },
+      {
+        type: "text",
+        title: "Service Jobs",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "text",
+        title: "Ship Name",
+      },
+      {
+        type: "text",
+        title: "Company",
+      },
+      {
+        type: "text",
+        title: "Engineer",
+      },
+      {
+        type: "action",
+        icon: (
+          <div className="flex gap-2">
+            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
+              <MdEdit />
+            </button>
+            <button className="text-white text-sm p-2 rounded-full bg-red-600">
+              <AiFillDelete />
+            </button>
+          </div>
+        ),
+        title: "",
+      },
+    ],
+    [
+      {
+        type: "checkbox",
+        title: "",
+      },
+      {
+        type: "text",
+        title: "2023-SE-02",
+      },
+      {
+        type: "text",
+        title: "Spare Supply",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "text",
+        title: "Ship Name",
+      },
+      {
+        type: "text",
+        title: "Company",
+      },
+      {
+        type: "text",
+        title: "Engineer",
+      },
+      {
+        type: "action",
+        icon: (
+          <div className="flex gap-2">
+            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
+              <MdEdit />
+            </button>
+            <button className="text-white text-sm p-2 rounded-full bg-red-600">
+              <AiFillDelete />
+            </button>
+          </div>
+        ),
+        title: "",
+      },
+    ],
+    [
+      {
+        type: "checkbox",
+        title: "",
+      },
+      {
+        type: "text",
+        title: "2023-SE-03",
+      },
+      {
+        type: "text",
+        title: "Service Jobs",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "date",
+        title: "12/11/2002",
+      },
+      {
+        type: "text",
+        title: "Ship Name",
+      },
+      {
+        type: "text",
+        title: "Company",
+      },
+      {
+        type: "text",
+        title: "Engineer",
+      },
+      {
+        type: "action",
+        icon: (
+          <div className="flex gap-2">
+            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
+              <MdEdit />
+            </button>
+            <button className="text-white text-sm p-2 rounded-full bg-red-600">
+              <AiFillDelete />
+            </button>
+          </div>
+        ),
+        title: "",
+      },
+    ],
+  ],
+};

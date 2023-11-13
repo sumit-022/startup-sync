@@ -5,6 +5,8 @@ import { RiAlarmWarningFill } from "react-icons/ri";
 import { BiHistory } from "react-icons/bi";
 import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
+import { tableData } from "@/data/dashboard";
+import Table from "@/components/atoms/table";
 export default function Home() {
   return (
     <DashboardLayout>
@@ -21,6 +23,13 @@ export default function Home() {
           History
         </Button>
       </div>
+      <Table
+        headers={tableData.headers}
+        rows={tableData.rows}
+        headerDecoration="bg-primary-bright-blue text-white"
+        rowDecoration=""
+        className="border mt-4"
+      />
     </DashboardLayout>
   );
 }
