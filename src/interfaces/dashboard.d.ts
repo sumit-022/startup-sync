@@ -8,3 +8,38 @@ declare interface SidebarMenu {
   api: string;
   notifications: boolean;
 }
+
+//Tabke Data
+// id: 0,
+// jobCode: "J001",
+// date: "2021-08-01",
+// quotationDate: "2021-08-01",
+// shipName: "Ship 1",
+// companyName: "Company 1",
+// engineer: "Engineer 1",
+// poNumber: "PO 1",
+// targetPort: "Port 1",
+// vesselEta: "2021-08-01",
+// jobDescription: "Job 1",
+// spares: "Spares 1",
+// agent: "Agent 1",
+// reminderSent: true,
+// status: "Completed",
+
+declare interface TableData {
+  id: number;
+  jobCode: string;
+  date: string;
+  quotationDate: Date | string;
+  shipName: string;
+  companyName: string;
+  engineer: string;
+  poNumber: string;
+  targetPort: string;
+  vesselEta: string;
+  jobDescription: string;
+  spares: string;
+  agent: string;
+  reminderSent: boolean;
+  status: string;
+}

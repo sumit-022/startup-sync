@@ -79,7 +79,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
   return (
     <aside
       ref={sidebar as React.LegacyRef<HTMLElement> | undefined}
-      className={`dark:bg-boxdark shadow-lg absolute left-0 top-0 z-[10000] flex h-screen w-60 flex-col overflow-y-hidden bg-primary-white duration-300 ease-linear lg:static lg:max-w-[300px] lg:translate-x-0 ${
+      className={`dark:bg-boxdark shadow-lg absolute left-0 top-0 z-20 flex h-screen w-60 flex-col overflow-y-hidden bg-primary-white duration-300 ease-linear lg:static lg:max-w-[300px] lg:translate-x-0 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >

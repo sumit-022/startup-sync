@@ -18,7 +18,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
   const user = "Subash";
 
   return (
-    <header className="drop-shadow-1 sticky top-0 z-[1000] flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
+    <header className="drop-shadow-1 sticky top-0 z-20 flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
       <div className="shadow-2 flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-5">
         <div className="flex gap-4">
           <div className="flex items-center gap-2 sm:gap-4 lg:hidden">

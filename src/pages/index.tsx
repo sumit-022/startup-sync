@@ -7,11 +7,23 @@ import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
 import { tableData } from "@/data/dashboard";
 import Table from "@/components/atoms/table";
+import Modal from "@/components/atoms/modal";
+import { modalAtom } from "@/atoms/modal.atom";
+import { useAtom } from "jotai";
+import JobOrderForm from "./dashboard/molecules/joborder-form";
 export default function Home() {
+  const [showModal, setShowModal] = useAtom(modalAtom);
   return (
     <DashboardLayout>
       <div className="flex gap-4">
-        <Button icon={<MdAdd />}>Add</Button>
+        <Button
+          icon={<MdAdd />}
+          onClick={() => {
+            setShowModal(true);
+          }}
+        >
+          Add
+        </Button>
         <Button icon={<CgMediaLive />}>Live Jobs</Button>
         <Button icon={<RiAlarmWarningFill />} className="bg-yellow-500">
           Live Jobs
@@ -23,13 +35,10 @@ export default function Home() {
           History
         </Button>
       </div>
-      <Table
-        headers={tableData.headers}
-        rows={tableData.rows}
-        headerDecoration="bg-primary-bright-blue text-white"
-        rowDecoration=""
-        className="border mt-4"
-      />
+      <Table data={tableData} />
+      <Modal active={showModal} setActive={setShowModal}>
+        <JobOrderForm mode="create" options={["create"]} />
+      </Modal>
     </DashboardLayout>
   );
 }

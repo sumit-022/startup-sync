@@ -22,6 +22,8 @@ import tasks from "../assets/svg/dashboard/tasks.svg";
 import tresoryCashflow from "../assets/svg/dashboard/tresory-cashflow.svg";
 import { MdEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
+import EditJobButton from "@/components/atoms/button/edit";
+import DeleteJobButton from "@/components/atoms/button/delete";
 
 export const sidebar: SidebarMenu[] = [
   {
@@ -157,189 +159,73 @@ export const sidebar: SidebarMenu[] = [
   },
 ];
 
-export const tableData = {
-  headers: [
-    {
-      type: "checkbox",
-      title: "",
-    },
-    {
-      type: "filter",
-      title: "Job Code",
-    },
-    {
-      type: "filter",
-      title: "Job Description",
-    },
-    {
-      type: "sort",
-      title: "Recieved Date",
-    },
-    {
-      type: "sort",
-      title: "Quoted Date",
-    },
-    {
-      type: "text",
-      title: "Ship Name",
-    },
-    {
-      type: "text",
-      title: "Company",
-    },
-    {
-      type: "text",
-      title: "Engineer",
-    },
-    {
-      type: "action",
-      title: "Action",
-    },
-  ],
-  rows: [
-    [
-      {
-        type: "checkbox",
-        title: "",
-      },
-      {
-        type: "text",
-        title: "2023-SE-01",
-      },
-      {
-        type: "text",
-        title: "Service Jobs",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "text",
-        title: "Ship Name",
-      },
-      {
-        type: "text",
-        title: "Company",
-      },
-      {
-        type: "text",
-        title: "Engineer",
-      },
-      {
-        type: "action",
-        icon: (
-          <div className="flex gap-2">
-            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
-              <MdEdit />
-            </button>
-            <button className="text-white text-sm p-2 rounded-full bg-red-600">
-              <AiFillDelete />
-            </button>
-          </div>
-        ),
-        title: "",
-      },
-    ],
-    [
-      {
-        type: "checkbox",
-        title: "",
-      },
-      {
-        type: "text",
-        title: "2023-SE-02",
-      },
-      {
-        type: "text",
-        title: "Spare Supply",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "text",
-        title: "Ship Name",
-      },
-      {
-        type: "text",
-        title: "Company",
-      },
-      {
-        type: "text",
-        title: "Engineer",
-      },
-      {
-        type: "action",
-        icon: (
-          <div className="flex gap-2">
-            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
-              <MdEdit />
-            </button>
-            <button className="text-white text-sm p-2 rounded-full bg-red-600">
-              <AiFillDelete />
-            </button>
-          </div>
-        ),
-        title: "",
-      },
-    ],
-    [
-      {
-        type: "checkbox",
-        title: "",
-      },
-      {
-        type: "text",
-        title: "2023-SE-03",
-      },
-      {
-        type: "text",
-        title: "Service Jobs",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "date",
-        title: "12/11/2002",
-      },
-      {
-        type: "text",
-        title: "Ship Name",
-      },
-      {
-        type: "text",
-        title: "Company",
-      },
-      {
-        type: "text",
-        title: "Engineer",
-      },
-      {
-        type: "action",
-        icon: (
-          <div className="flex gap-2">
-            <button className="text-white text-sm p-2 rounded-full bg-primary-bright-blue">
-              <MdEdit />
-            </button>
-            <button className="text-white text-sm p-2 rounded-full bg-red-600">
-              <AiFillDelete />
-            </button>
-          </div>
-        ),
-        title: "",
-      },
-    ],
-  ],
-};
+export const tableData = [
+  {
+    id: 0,
+    jobCode: "J001",
+    date: "2021-08-01",
+    quotationDate: "2021-08-01",
+    shipName: "Ship 1",
+    companyName: "Company 1",
+    engineer: "Engineer 1",
+    poNumber: "PO 1",
+    targetPort: "Port 1",
+    vesselEta: "2021-08-01",
+    jobDescription: "Job 1",
+    spares: "Spares 1",
+    agent: "Agent 1",
+    reminderSent: true,
+    status: "completed",
+  },
+  {
+    id: 1,
+    jobCode: "J002",
+    date: "2021-08-01",
+    quotationDate: "2021-08-01",
+    shipName: "Ship 2",
+    companyName: "Company 2",
+    engineer: "Engineer 2",
+    poNumber: "PO 2",
+    targetPort: "Port 2",
+    vesselEta: "2021-08-01",
+    jobDescription: "Job 2",
+    spares: "Spares 2",
+    agent: "Agent 2",
+    reminderSent: true,
+    status: "Completed",
+  },
+  {
+    id: 2,
+    jobCode: "J003",
+    date: "2021-08-01",
+    quotationDate: "2021-08-01",
+    shipName: "Ship 3",
+    companyName: "Company 3",
+    engineer: "Engineer 3",
+    poNumber: "PO 3",
+    targetPort: "Port 3",
+    vesselEta: "2021-08-01",
+    jobDescription: "Job 3",
+    spares: "Spares 3",
+    agent: "Agent 3",
+    reminderSent: true,
+    status: "Completed",
+  },
+  {
+    id: 3,
+    jobCode: "J004",
+    date: "2021-08-01",
+    quotationDate: "2021-08-01",
+    shipName: "Ship 4",
+    companyName: "Company 4",
+    engineer: "Engineer 4",
+    poNumber: "PO 4",
+    targetPort: "Port 4",
+    vesselEta: "2021-08-01",
+    jobDescription: "Job 4",
+    spares: "Spares 4",
+    agent: "Agent 4",
+    reminderSent: true,
+    status: "Completed",
+  },
+];
