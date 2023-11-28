@@ -120,7 +120,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                       return (
                         <React.Fragment>
                           <Link
-                            href={`/dashboard${menu.slug}`}
+                            href={`${menu.slug}`}
                             className={`group relative flex items-center gap-2.5 rounded-lg px-4 py-2 text-base font-light tracking-wide text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-bright-blue/80 hover:text-primary-white ${
                               pathname.includes(menu.slug) &&
                               " bg-primary-bright-blue text-primary-white"
@@ -168,10 +168,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                                 return (
                                   <li key={submenu.id}>
                                     <Link
-                                      href={`/dashboard${menu.slug}${submenu.slug}`}
+                                      href={`${menu.slug}${submenu.slug}`}
                                       className={({ isActive }) =>
-                                        "group relative flex items-center gap-1.5 whitespace-nowrap rounded-lg rounded-md px-4 py-2 text-base text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-light-bright-blue hover:text-black hover:text-primary-white " +
-                                        (isActive && "!text-red-200")
+                                        "group relative flex items-center gap-1.5 whitespace-nowrap rounded-md px-4 py-2 text-base text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-light-bright-blue hover:text-black hover:text-primary-white " +
+                                        (isActive && "bg-primary-bright-blue text-white")
                                       }
                                     >
                                       <Image src={submenu.icon} alt={""} />
