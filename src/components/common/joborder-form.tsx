@@ -11,14 +11,20 @@ interface JobOrderFormProperties {
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
+  const jobCode = "2023-SE-001  ";
   return (
     <form action="" className="flex flex-col gap-4 text-black">
       <h1 className="text-left font-bold text-lg uppercase">
         {mode === "edit" ? "Edit a Job" : "Create a Job"}
       </h1>
       <div className="grid grid-cols-3 gap-6 items-end">
-        <Input placeholder="Job Code" label="Job Code" />
-        <Input type="date" label="Date" />
+        <Input
+          placeholder="Job Code"
+          label="Job Code"
+          value={jobCode}
+          disabled
+        />
+        <Input type="date" label="Query recieved on" />
         <Input type="date" label="Quotation Date" />
       </div>
       <div className="grid grid-cols-3 gap-6 items-end">
@@ -29,7 +35,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           options={["Company 1", "Company 2", "Company 3"]}
         />
         <SelectInput
-          label="Engineer"
+          label="Service Coordinator"
           placeholder="Engineer"
           options={["Engineer 1", "Engineer 2", "Engineer 3"]}
         />

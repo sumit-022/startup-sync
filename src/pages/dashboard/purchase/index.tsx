@@ -15,30 +15,7 @@ export default function Home() {
   const [showModal, setShowModal] = useAtom(modalAtom);
   return (
     <DashboardLayout>
-      <div className="flex gap-4">
-        <Button
-          icon={<MdAdd />}
-          onClick={() => {
-            setShowModal(true);
-          }}
-        >
-          Add
-        </Button>
-        <Button icon={<CgMediaLive />}>Live Jobs</Button>
-        <Button icon={<RiAlarmWarningFill />} className="bg-yellow-500">
-          Live Jobs
-        </Button>
-        <Button icon={<TiCancel />} className="bg-red-600">
-          Cancelled Jobs
-        </Button>
-        <Button icon={<BiHistory />} className="bg-green-600">
-          History
-        </Button>
-      </div>
-      <Table data={tableData} />
-      <Modal active={showModal} setActive={setShowModal}>
-        <JobOrderForm mode="create" options={["create"]} />
-      </Modal>
+      <h1>Purchase Dashboard</h1>
     </DashboardLayout>
   );
 }

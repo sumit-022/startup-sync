@@ -8,9 +8,17 @@ interface InputProperties {
   required?: boolean;
   placeholder?: string;
   type?: string;
+  value?: string;
+  disabled?: boolean;
 }
 
-const Input: React.FC<InputProperties> = ({ label, placeholder, type }) => {
+const Input: React.FC<InputProperties> = ({
+  label,
+  placeholder,
+  type,
+  value,
+  disabled,
+}) => {
   return (
     <div className="flex flex-col gap-1">
       {label && (
@@ -25,6 +33,8 @@ const Input: React.FC<InputProperties> = ({ label, placeholder, type }) => {
           type={type}
           placeholder={placeholder}
           className="border border-black/20 rounded-lg p-2"
+          value={value}
+          disabled={disabled}
         />
       )}
     </div>
