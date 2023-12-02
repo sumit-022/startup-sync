@@ -57,6 +57,16 @@ export const sidebar: SidebarMenu[] = [
     api: "",
     notifications: false,
   },
+  {
+    id: 1,
+    type: "menu",
+    title: "Vendor Management",
+    icon: members,
+    slug: "/vendor",
+    children: [],
+    api: "",
+    notifications: false,
+  },
 ];
 
 export const tableData = [
