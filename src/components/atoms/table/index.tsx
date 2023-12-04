@@ -44,7 +44,7 @@ const Table: React.FC<TableProperties> = ({ data, className = "" }) => {
     "Action",
   ];
   return (
-    <table className={`w-full my-4 ${className}`}>
+    <table className={`w-full ${className}`}>
       <thead>
         <tr className="border-b">
           {header.map((item, index) => (

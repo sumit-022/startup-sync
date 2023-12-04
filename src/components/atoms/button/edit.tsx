@@ -1,7 +1,7 @@
 import { MdEdit } from "react-icons/md";
 import React from "react";
 import Modal from "../modal";
-import JobOrderForm from "../../common/joborder-form";
+import JobOrderForm from "../../common/joborder/joborder-form";
 
 interface EditJobButtonProperties {
   className?: string;

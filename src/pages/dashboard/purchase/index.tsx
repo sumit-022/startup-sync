@@ -10,7 +10,7 @@ import Table from "@/components/atoms/table";
 import Modal from "@/components/atoms/modal";
 import { modalAtom } from "@/atoms/modal.atom";
 import { useAtom } from "jotai";
-import JobOrderForm from "../../../components/common/joborder-form";
+import JobOrderForm from "../../../components/common/joborder/joborder-form";
 export default function Home() {
   const [showModal, setShowModal] = useAtom(modalAtom);
   return (

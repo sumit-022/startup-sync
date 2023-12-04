@@ -11,7 +11,7 @@ interface JobOrderFormProperties {
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
-  const jobCode = "2023-SE-001  ";
+  const jobCode = "2023-SE-001";
   return (
     <form action="" className="flex flex-col gap-4 text-black">
       <h1 className="text-left font-bold text-lg uppercase">
@@ -58,12 +58,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           options={["Agent 1", "Agent 2", "Agent 3"]}
         />
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Checkbox />
-          <span className="">Remider Sent?</span>
-        </div>
-      </div>
+
       <div className="flex gap-4">
         {options?.map((option, index) =>
           option === "cancel" ? (
