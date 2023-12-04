@@ -27,14 +27,14 @@ const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
       {header && (
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       )}
-      <div className="grid relative grid-cols-[auto,1fr,auto]">
+      <div className="grid relative grid-cols-[auto,1fr,auto] overflow-hidden">
         {sidebar && (
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         )}
         <main
           className={`${
             decoration ? decoration : "bg-white p-4"
-          } ${className} col-span-2`}
+          } ${className} col-span-2 overflow-y-auto`}
         >
           {children}
         </main>

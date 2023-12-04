@@ -8,17 +8,17 @@ import { BiHistory } from "react-icons/bi";
 import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
 import { tableData } from "@/data/dashboard";
-import { MdOutlineFilterList } from "react-icons/md";
 const Table = dynamic(() => import("@/components/atoms/table"), {
   ssr: false,
 });
+import Filters from "@/components/common/joborder/joborder-sort";
 import Modal from "@/components/atoms/modal";
 import { TbArrowsSort } from "react-icons/tb";
-import FilterButton from "@/components/atoms/button/filter";
 import { modalAtom } from "@/atoms/modal.atom";
 import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import SearchJobOrder from "../../../components/common/joborder/joborder-search";
+import Tabs from "@/components/common/joborder/joborder-filters";
 
 export default function SalesDashboard() {
   const [data, setData] = useState(tableData);
@@ -43,9 +43,6 @@ export default function SalesDashboard() {
           Add
         </Button>
         <Button icon={<CgMediaLive />}>Live Jobs</Button>
-        <Button icon={<RiAlarmWarningFill />} className="bg-yellow-500">
-          Live Jobs
-        </Button>
         <Button icon={<TiCancel />} className="bg-red-600">
           Cancelled Jobs
         </Button>
@@ -59,26 +56,8 @@ export default function SalesDashboard() {
             handleSearch(e);
           }}
         />
-        <div className="flex">
-          <FilterButton
-            title="Filter"
-            icon={<MdOutlineFilterList />}
-            filterOptions={[
-              { name: "Live Jobs", value: 100, children: [] },
-              { name: "Cancelled Jobs", value: 100, children: [] },
-              { name: "History", value: 100, children: [] },
-            ]}
-          />
-          <FilterButton
-            title="Sort By"
-            icon={<TbArrowsSort />}
-            filterOptions={[
-              { name: "Job Code", children: ["2023", "2022"] },
-              { name: "Recieved Date", children: ["Ascending", "Descending"] },
-              { name: "Qouted Date", children: ["Ascending", "Descending"] },
-            ]}
-          />
-        </div>
+        <Tabs allcount="100" qoutedcount="100" querycount="100" />
+        <Filters />
         <Table data={data} />
       </div>
       <Modal active={showModal} setActive={setShowModal}>

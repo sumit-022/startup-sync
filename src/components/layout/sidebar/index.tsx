@@ -79,7 +79,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
   return (
     <aside
       ref={sidebar as React.LegacyRef<HTMLElement> | undefined}
-      className={`dark:bg-boxdark shadow-lg absolute left-0 top-0 z-20 flex h-screen w-60 flex-col overflow-y-hidden bg-primary-white duration-300 ease-linear lg:static lg:max-w-[300px] lg:translate-x-0 ${
+      className={`dark:bg-boxdark shadow-lg overflow-hidden absolute left-0 top-0 z-20 flex h-full w-60 flex-col overflow-y-hidden bg-primary-white duration-300 ease-linear lg:static lg:max-w-[300px] lg:translate-x-0 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -171,7 +171,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                                       href={`${menu.slug}${submenu.slug}`}
                                       className={({ isActive }) =>
                                         "group relative flex items-center gap-1.5 whitespace-nowrap rounded-md px-4 py-2 text-base text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-light-bright-blue hover:text-black hover:text-primary-white " +
-                                        (isActive && "bg-primary-bright-blue text-white")
+                                        (isActive &&
+                                          "bg-primary-bright-blue text-white")
                                       }
                                     >
                                       <Image src={submenu.icon} alt={""} />
