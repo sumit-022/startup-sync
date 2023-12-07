@@ -29,7 +29,7 @@ declare interface SidebarMenu {
 declare interface TableData {
   id: number;
   jobCode: string;
-  date: string;
+  recieveDate: Date | string;
   quotationDate: Date | string;
   shipName: string;
   companyName: string;
@@ -42,4 +42,9 @@ declare interface TableData {
   agent: string;
   reminderSent: boolean;
   status: string;
+}
+
+declare interface TableHeader {
+  name: string;
+  show: boolean;
 }

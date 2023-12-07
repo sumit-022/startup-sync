@@ -28,3 +28,7 @@
 .rti--container {
   width: 100%;
 }
+
+.MuiCheckbox-root {
+  width: 50px;
+}

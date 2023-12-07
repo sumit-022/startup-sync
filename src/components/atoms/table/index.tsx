@@ -2,13 +2,22 @@ import { Checkbox } from "@mui/material";
 import React, { useState } from "react";
 import EditJobButton from "../button/edit";
 import CancelJobButton from "../button/delete";
+import { FaSortDown } from "react-icons/fa";
 
 interface TableProperties {
   data: TableData[];
   className?: string;
+  headers: {
+    name: string;
+    show: boolean;
+  }[];
 }
 
-const Table: React.FC<TableProperties> = ({ data, className = "" }) => {
+const Table: React.FC<TableProperties> = ({
+  data,
+  className = "",
+  headers,
+}) => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState(data.map(() => false));
 
@@ -25,31 +34,24 @@ const Table: React.FC<TableProperties> = ({ data, className = "" }) => {
       return newSelectedItems;
     });
   };
-
-  const header = [
-    <Checkbox
-      key={1}
-      style={{
-        color: "#ee6123",
-      }}
-      checked={selectAll}
-      onChange={handleSelectAll}
-    />,
-    "Job Code",
-    "Job Description",
-    "Recieve Date",
-    "Quoted Date",
-    "Ship Name",
-    "Status",
-    "Action",
-  ];
   return (
     <table className={`w-full ${className}`}>
       <thead>
         <tr className="border-b">
-          {header.map((item, index) => (
+          <th className="text-left">
+            <Checkbox
+              style={{
+                color: "#ee6123",
+              }}
+              checked={selectAll}
+              onChange={handleSelectAll}
+            />
+          </th>
+          {headers.map((item, index) => (
             <th className="text-center py-2" key={index}>
-              {item}
+              <span className="flex items-center gap-1 justify-center">
+                {item.name}
+              </span>
             </th>
           ))}
         </tr>
@@ -63,34 +65,59 @@ const Table: React.FC<TableProperties> = ({ data, className = "" }) => {
               onChange={() => handleSelectItem(index)}
               className="flex"
             />
-            <td className="p-2 text-center">{item.jobCode}</td>
-            <td className="p-2 text-center">{item.jobDescription}</td>
-            <td className="p-2 text-center">
-              {typeof item.quotationDate === "string"
-                ? item.quotationDate
-                : item.quotationDate?.toLocaleDateString()}
-            </td>
-            <td className="p-2 text-center">
-              {typeof item.quotationDate === "string"
-                ? item.quotationDate
-                : item.quotationDate?.toLocaleDateString()}
-            </td>
-            <td className="p-2 text-center">{item.shipName}</td>
-            <td className="p-2 text-center">
-              {item.status === "completed" ? (
-                <span className="text-white rounded-md bg-green-600 py-1 px-3">
-                  Completed
-                </span>
-              ) : (
-                <span className="bg-yellow-600 py-1 px-3 text-white rounded-md">
-                  Pending
-                </span>
-              )}
-            </td>
-            <div className="flex gap-2 justify-center">
-              <EditJobButton />
-              <CancelJobButton />
-            </div>
+            {headers.map((header, index) => {
+              switch (header.name) {
+                case "Job Code":
+                  return <td className="p-2 text-center">{item.jobCode}</td>;
+                case "Job Description":
+                  return (
+                    <td className="p-2 text-center">{item.jobDescription}</td>
+                  );
+                case "Quoted Date":
+                  return (
+                    <td className="p-2 text-center">
+                      {typeof item.quotationDate === "string"
+                        ? item.quotationDate
+                        : item.quotationDate?.toLocaleDateString()}
+                    </td>
+                  );
+                case "Recieve Date":
+                  return (
+                    <td className="p-2 text-center">
+                      {typeof item.recieveDate === "string"
+                        ? item.recieveDate
+                        : item.recieveDate?.toLocaleDateString()}
+                    </td>
+                  );
+                case "Ship Name":
+                  return <td className="p-2 text-center">{item.shipName}</td>;
+                case "Status":
+                  return (
+                    <td className="p-2 text-center">
+                      {item.status === "completed" ? (
+                        <span className="text-white rounded-md bg-green-600 py-1 px-3">
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="bg-yellow-600 py-1 px-3 text-white rounded-md">
+                          Pending
+                        </span>
+                      )}
+                    </td>
+                  );
+                case "Action":
+                  return (
+                    <td>
+                      <div className="flex gap-2 justify-center">
+                        <EditJobButton />
+                        <CancelJobButton />
+                      </div>
+                    </td>
+                  );
+                default:
+                  return <td></td>;
+              }
+            })}
           </tr>
         ))}
       </tbody>

@@ -1,6 +1,4 @@
-import clsx from "clsx";
-import { useAtom } from "jotai";
-import { modalAtom } from "@/atoms/modal.atom";
+import clsx from "clsx";  
 import React, { useEffect } from "react";
 
 interface ModalProperties {
