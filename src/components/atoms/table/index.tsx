@@ -18,6 +18,7 @@ const Table: React.FC<TableProperties> = ({
   className = "",
   headers,
 }) => {
+  console.log(headers);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState(data.map(() => false));
 

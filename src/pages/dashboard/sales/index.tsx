@@ -21,6 +21,7 @@ import Tabs from "@/components/common/joborder/joborder-filters";
 export default function SalesDashboard() {
   const [data, setData] = useState(tableData);
   const [showModal, setShowModal] = useAtom(modalAtom);
+  const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -55,10 +56,14 @@ export default function SalesDashboard() {
           }}
         />
         <Tabs allcount="100" qoutedcount="100" querycount="100" />
-        <Filters availableHeaders={tableHeaders} />
+        <Filters
+          availableHeaders={selectedHeaders}
+          setSelectedHeaders={setSelectedHeaders}
+        />
+
         <Table
           data={data}
-          headers={tableHeaders.filter((header) => header.show)}
+          headers={selectedHeaders.filter((item) => item.show)}
         />
       </div>
       <Modal active={showModal} setActive={setShowModal}>

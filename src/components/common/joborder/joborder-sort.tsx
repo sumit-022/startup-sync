@@ -9,9 +9,17 @@ interface Props {
     name: string;
     show: boolean;
   }[];
+  setSelectedHeaders: React.Dispatch<
+    React.SetStateAction<
+      {
+        name: string;
+        show: boolean;
+      }[]
+    >
+  >;
 }
 
-const Filters: React.FC<Props> = ({ availableHeaders }) => {
+const Filters: React.FC<Props> = ({ availableHeaders, setSelectedHeaders }) => {
   const [filters, showFilters] = useState(false);
   const [configure, showConfigure] = useState(false);
   return (
@@ -32,7 +40,12 @@ const Filters: React.FC<Props> = ({ availableHeaders }) => {
           Configure Table
         </button>
       </div>
-      {configure && <ConfigureForm availableHeaders={availableHeaders} />}
+      {configure && (
+        <ConfigureForm
+          availableHeaders={availableHeaders}
+          setSelectedHeaders={setSelectedHeaders}
+        />
+      )}
       {filters && <FilterForm />}
     </div>
   );

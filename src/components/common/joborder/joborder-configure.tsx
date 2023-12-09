@@ -6,17 +6,32 @@ interface Props {
     name: string;
     show: boolean;
   }[];
+  setSelectedHeaders: React.Dispatch<
+    React.SetStateAction<
+      {
+        name: string;
+        show: boolean;
+      }[]
+    >
+  >;
 }
 
-const ConfigureForm: React.FC<Props> = ({ availableHeaders }) => {
+const ConfigureForm: React.FC<Props> = ({
+  availableHeaders,
+  setSelectedHeaders,
+}) => {
   return (
     <div className="flex flex-wrap gap-4">
       {availableHeaders.map((header, index) => (
         <div key={index} className="flex items-center">
           <Checkbox
             onChange={() => {
-              availableHeaders[index].show = !header.show;
-              console.log(availableHeaders);
+              setSelectedHeaders((prev) => {
+                const newHeaders = [...prev];
+                newHeaders[index].show = !newHeaders[index].show;
+
+                return newHeaders;
+              });
             }}
             checked={header.show}
           />

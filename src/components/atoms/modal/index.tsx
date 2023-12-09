@@ -1,10 +1,10 @@
-import clsx from "clsx";  
+import clsx from "clsx";
 import React, { useEffect } from "react";
 
 interface ModalProperties {
   children: React.ReactNode;
   active: boolean;
-  setActive: React.Dispatch<React.SetStateAction<boolean>>;
+  setActive: React.Dispatch<React.SetStateAction<boolean>> | any;
   className?: string;
 }
 

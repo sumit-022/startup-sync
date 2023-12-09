@@ -2,7 +2,7 @@ import Button from "@/components/atoms/button";
 import Input from "@/components/atoms/input";
 import SelectInput from "@/components/atoms/select";
 import TagInput from "@/components/atoms/tag";
-import { Checkbox } from "@mui/material";
+import Modal from "@/components/atoms/modal";
 import React from "react";
 
 interface JobOrderFormProperties {
@@ -11,9 +11,15 @@ interface JobOrderFormProperties {
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
+  const [yesModal, setYesModal] = React.useState(false);
+  const [srModal, setSRModal] = React.useState(false);
   const jobCode = "2023-SE-001";
   return (
-    <form action="" className="flex flex-col gap-4 text-black">
+    <form
+      action=""
+      onSubmit={() => {}}
+      className="flex flex-col gap-4 text-black"
+    >
       <h1 className="text-left font-bold text-lg uppercase">
         {mode === "edit" ? "Edit a Job" : "Create a Job"}
       </h1>
@@ -72,9 +78,27 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           ) : option === "cancel" ? (
             <Button className="bg-red-600">Cancel Job</Button>
           ) : (
-            <Button className="bg-green-600">Mark Job as Completed</Button>
+            <button
+              type="button"
+              className="bg-green-600 rounded-md px-3 font-semibold text-white"
+              onClick={() => setYesModal(true)}
+            >
+              Mark Job as Completed
+            </button>
           )
         )}
+        <Modal active={yesModal} setActive={setYesModal}>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-lg font-bold">Mark Job as Completed</h1>
+            <p className="text-sm">
+              Are you sure you want to mark this job as completed?
+            </p>
+            <div className="flex gap-4">
+              <Button className="bg-green-500">Yes</Button>
+              <Button className="bg-red-600">No</Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </form>
   );
