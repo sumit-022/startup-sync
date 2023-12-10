@@ -6,6 +6,7 @@ interface ModalProperties {
   active: boolean;
   setActive: React.Dispatch<React.SetStateAction<boolean>> | any;
   className?: string;
+  clickOutside?: boolean;
 }
 
 const Modal: React.FC<ModalProperties> = ({
@@ -13,6 +14,7 @@ const Modal: React.FC<ModalProperties> = ({
   className,
   active,
   setActive,
+  clickOutside = true,
 }) => {
   const handleEscape = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -23,7 +25,7 @@ const Modal: React.FC<ModalProperties> = ({
   useEffect(() => {
     document.addEventListener("keydown", handleEscape);
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      clickOutside && document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -36,7 +38,7 @@ const Modal: React.FC<ModalProperties> = ({
               className="fixed inset-0 bg-black opacity-30"
               onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                 e.stopPropagation();
-                setActive(false);
+                clickOutside && setActive(false);
               }}
             ></div>
             <div

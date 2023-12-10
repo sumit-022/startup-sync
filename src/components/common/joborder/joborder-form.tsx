@@ -11,8 +11,8 @@ interface JobOrderFormProperties {
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
-  const [yesModal, setYesModal] = React.useState(false);
-  const [srModal, setSRModal] = React.useState(false);
+  const [modal, setModal] = React.useState(false);
+  const [option, setOption] = React.useState<string | null>(null);
   const jobCode = "2023-SE-001";
   return (
     <form
@@ -65,41 +65,73 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
         />
       </div>
 
-      <div className="flex gap-4">
-        {options?.map((option, index) =>
-          option === "cancel" ? (
-            <Button className="bg-red-600" key={index}>
-              Cancel Job
-            </Button>
-          ) : option === "save" ? (
-            <Button className="bg-green-700">Save Job</Button>
-          ) : option === "create" ? (
-            <Button className="bg-green-500">Create Job</Button>
-          ) : option === "cancel" ? (
-            <Button className="bg-red-600">Cancel Job</Button>
-          ) : (
-            <button
+      {option === "completed" && (
+        <Input
+          type="file"
+          label="Proof of Delivery"
+          placeholder="Proof of Delivery"
+        />
+      )}
+
+      {option == null && (
+        <div className="flex gap-4">
+          {options?.map((option, index) =>
+            option === "cancel" ? (
+              <Button className="bg-red-600" key={index}>
+                Cancel Job
+              </Button>
+            ) : option === "save" ? (
+              <Button className="bg-green-700">Save Job</Button>
+            ) : option === "create" ? (
+              <Button className="bg-green-500">Create Job</Button>
+            ) : option === "cancel" ? (
+              <Button className="bg-red-600">Cancel Job</Button>
+            ) : (
+              <Button
+                className="rounded-md px-3 font-semibold text-white"
+                onClick={() => setModal(true)}
+              >
+                Mark Job as Completed
+              </Button>
+            )
+          )}
+        </div>
+      )}
+      {option === "not-completed" && (
+        <Button className="bg-green-500" onClick={() => setOption("completed")}>
+          Upload Proof of Delivery
+        </Button>
+      )}
+      <Modal active={modal} setActive={setModal} clickOutside={false}>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-lg font-bold">Mark Job as Completed</h1>
+          <p className="text-sm">
+            Are you sure you want to mark this job as completed?
+          </p>
+          <div className="flex gap-4 justify-center items-center">
+            <Button
+              className="bg-green-500"
               type="button"
-              className="bg-green-600 rounded-md px-3 font-semibold text-white"
-              onClick={() => setYesModal(true)}
+              onClick={() => {
+                setOption("completed");
+                setModal(false);
+              }}
             >
-              Mark Job as Completed
-            </button>
-          )
-        )}
-        <Modal active={yesModal} setActive={setYesModal}>
-          <div className="flex flex-col gap-4">
-            <h1 className="text-lg font-bold">Mark Job as Completed</h1>
-            <p className="text-sm">
-              Are you sure you want to mark this job as completed?
-            </p>
-            <div className="flex gap-4">
-              <Button className="bg-green-500">Yes</Button>
-              <Button className="bg-red-600">No</Button>
-            </div>
+              Yes
+            </Button>
+            <Button
+              className="bg-red-600"
+              type="button"
+              onClick={() => {
+                setOption("not-completed");
+                setModal(false);
+              }}
+            >
+              No
+            </Button>
           </div>
-        </Modal>
-      </div>
+        </div>
+      </Modal>
     </form>
   );
 };
