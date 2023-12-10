@@ -2,7 +2,7 @@ import { Checkbox } from "@mui/material";
 import React, { useState } from "react";
 import EditJobButton from "../button/edit";
 import CancelJobButton from "../button/delete";
-import { FaSortDown } from "react-icons/fa";
+import ViewJobButton from "../button/view";
 
 interface TableProperties {
   data: TableData[];
@@ -110,6 +110,7 @@ const Table: React.FC<TableProperties> = ({
                   return (
                     <td>
                       <div className="flex gap-2 justify-center">
+                        <ViewJobButton />
                         <EditJobButton />
                         <CancelJobButton />
                       </div>

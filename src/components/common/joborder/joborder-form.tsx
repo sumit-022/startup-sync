@@ -6,7 +6,7 @@ import Modal from "@/components/atoms/modal";
 import React from "react";
 
 interface JobOrderFormProperties {
-  mode: "edit" | "create";
+  mode: "edit" | "create" | "view";
   options?: string[];
 }
 
@@ -21,7 +21,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
       className="flex flex-col gap-4 text-black"
     >
       <h1 className="text-left font-bold text-lg uppercase">
-        {mode === "edit" ? "Edit a Job" : "Create a Job"}
+        {mode === "edit"
+          ? "Edit a Job"
+          : mode === "create"
+          ? "Create a Job"
+          : "Job Details"}
       </h1>
       <div className="grid grid-cols-3 gap-6 items-end">
         <Input
@@ -52,6 +56,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
         <Input type="date" label="Vessel ETA" />
       </div>
       <TagInput label="Job Description" />
+      <Input placeholder="Description" label="Description" />
       <div className="grid grid-cols-2 gap-6 items-end">
         <SelectInput
           label="Spares"
@@ -64,14 +69,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           options={["Agent 1", "Agent 2", "Agent 3"]}
         />
       </div>
-
-      {option === "completed" && (
-        <Input
-          type="file"
-          label="Proof of Delivery"
-          placeholder="Proof of Delivery"
-        />
-      )}
 
       {option == null && (
         <div className="flex gap-4">
@@ -104,9 +101,9 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
       )}
       <Modal active={modal} setActive={setModal} clickOutside={false}>
         <div className="flex flex-col gap-4">
-          <h1 className="text-lg font-bold">Mark Job as Completed</h1>
+          <h1 className="text-lg font-bold">Service Report Present?</h1>
           <p className="text-sm">
-            Are you sure you want to mark this job as completed?
+            Do you have the service report or Delivery Note for this job?
           </p>
           <div className="flex gap-4 justify-center items-center">
             <Button
@@ -129,6 +126,22 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
             >
               No
             </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        active={option === "completed"}
+        setActive={() => setOption(null)}
+        clickOutside={false}
+      >
+        <div className="flex flex-col gap-4">
+          <h1 className="text-lg font-bold">Job Completed</h1>
+          <p className="text-sm">
+            Job has been marked as completed. You can now upload the proof of
+            delivery.
+          </p>
+          <div className="flex gap-4 justify-center items-center">
+            <Input type="file" label="Proof of Delivery" />
           </div>
         </div>
       </Modal>
