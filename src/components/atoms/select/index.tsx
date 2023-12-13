@@ -1,29 +1,32 @@
 import React from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { MenuItem } from "@mui/material";
+import { FormControl, MenuItem } from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
+import clsx from "clsx";
 
 interface SelectInputProperties {
-  label: string;
+  label?: string;
   placeholder?: string;
   options: string[];
+  className?: string;
 }
 
 const SelectInput: React.FC<SelectInputProperties> = ({
   label,
   placeholder,
   options,
+  className,
 }) => {
   return (
-    <div className="w-full h-full text-black flex gap-1 flex-col">
-      {label && (
-        <label className="font-semibold text-left text-black">{label}</label>
-      )}
+    <FormControl className="myclass">
+      <InputLabel id="demo-simple-select-label">{label}</InputLabel>
       <Select
         id="demo-simple-select"
         onChange={(event: SelectChangeEvent) => {
           console.log(event.target.value);
         }}
-        className="w-full text-black"
+        label={label}
+        className={clsx("text-black", className)}
       >
         {options.map((option, index) => (
           <MenuItem value={option} key={index}>
@@ -31,7 +34,7 @@ const SelectInput: React.FC<SelectInputProperties> = ({
           </MenuItem>
         ))}
       </Select>
-    </div>
+    </FormControl>
   );
 };
 

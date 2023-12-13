@@ -4,6 +4,8 @@ import { TiTick } from "react-icons/ti";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import SelectInput from "@/components/atoms/select";
+import { FormControl, InputLabel } from "@mui/material";
 
 const FilterForm = () => {
   const [filters, setFilters] = useState<{
@@ -29,6 +31,12 @@ const FilterForm = () => {
           <DatePicker label="Quoted From" className="uppercase" />
           <DatePicker label="Quoted Upto" className="uppercase" />
         </div>
+        <SelectInput
+          options={["Pending", "Completed"]}
+          className="w-[200px]"
+          label="Service Cordinator"
+        />
+
         <div className="flex flex-col gap-2">
           <button className="h-max flex items-center text-green-700 font-semibold rounded-md">
             <TiTick className="text-lg" />
