@@ -15,7 +15,11 @@ const EditJobButton: React.FC<EditJobButtonProperties> = ({ className }) => {
       onClick={() => setShowModal(true)}
     >
       <MdEdit className={className} />
-      <Modal active={showModal} setActive={setShowModal} className="w-1/2">
+      <Modal
+        active={showModal}
+        setActive={setShowModal}
+        className="w-2/3 h-5/6 overflow-scroll"
+      >
         <JobOrderForm mode="edit" options={["save", "complete", "cancel"]} />
       </Modal>
     </button>

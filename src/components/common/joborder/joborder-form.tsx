@@ -13,6 +13,24 @@ interface JobOrderFormProperties {
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
   const [modal, setModal] = React.useState(false);
   const [option, setOption] = React.useState<string | null>(null);
+
+  const [job, setJob] = React.useState<JobType>({
+    jobCode: "",
+    recievedAt: new Date(),
+    quotedAt: null,
+    shipName: "",
+    company: "",
+    description: "",
+    targetPort: "",
+    cancelReason: "",
+    invoiceDate: "",
+    services: [],
+    spares: [],
+    vesselETA: "",
+    serviceCordinator: "",
+    agent: "",
+  });
+
   const jobCode = "2023-SE-001";
   return (
     <form
@@ -34,20 +52,47 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           value={jobCode}
           disabled
         />
-        <Input type="date" label="Query recieved on" />
-        <Input type="date" label="Quotation Date" />
+        <Input
+          type="date"
+          label="Query recieved on"
+          value={job.recievedAt}
+          onChange={(
+            e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+          ) => setJob({ ...job, recievedAt: e.target.value })}
+        />
+        <Input
+          type="date"
+          label="Quotation Date"
+          value={job.quotedAt}
+          onChange={(e: any) => {
+            console.log(e.$d.toLocaleDateString());
+          }}
+        />
       </div>
       <div className="grid grid-cols-3 gap-6 items-end">
-        <Input placeholder="Ship Name" label="Ship Name" />
+        <Input
+          placeholder="Ship Name"
+          label="Ship Name"
+          value={job.shipName}
+          onChange={(
+            e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+          ) => setJob({ ...job, shipName: e.target.value })}
+        />
         <SelectInput
           label="Company Name"
           placeholder="Company Name"
           options={["Company 1", "Company 2", "Company 3"]}
+          value={job.company}
+          onChange={(e) => setJob({ ...job, company: e.target.value })}
         />
         <SelectInput
           label="Service Coordinator"
           placeholder="Engineer"
           options={["Engineer 1", "Engineer 2", "Engineer 3"]}
+          value={job.serviceCordinator}
+          onChange={(e) =>
+            setJob({ ...job, serviceCordinator: e.target.value })
+          }
         />
       </div>
       <div className="grid grid-cols-3 gap-6 items-end">
@@ -58,15 +103,21 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
       <TagInput label="Job Description" />
       <Input placeholder="Description" label="Description" />
       <div className="grid grid-cols-2 gap-6 items-end">
-        <SelectInput
-          label="Spares"
-          placeholder="Spares"
-          options={["Spares 1", "Spares 2", "Spares 3"]}
-        />
+        <div className="flex gap-1 items-center">
+          <TagInput label="Spares" />
+          <label
+            htmlFor="spares"
+            className="text-sm mt-5 text-primary-bright-blue cursor-pointer text-left font-semibold"
+          >
+            Upload CSV File
+          </label>
+          <Input type="file" id="spares" className="sr-only" />
+        </div>
         <SelectInput
           label="Agent"
           placeholder="Agent"
           options={["Agent 1", "Agent 2", "Agent 3"]}
+          value={job.company}
         />
       </div>
 

@@ -18,7 +18,11 @@ const TagInput: React.FC<TagInputProps> = ({ label }) => {
         value={selected}
         onChange={setSelected}
         name="job-description"
-        placeHolder="Job Description"
+        placeHolder={label ? label : "Add a tag"}
+        classNames={{
+          input: "p-3",
+          tag: "!bg-primary-bright-blue text-white !rounded-none !px-3 !py-[6px] !rounded",
+        }}
       />
     </div>
   );

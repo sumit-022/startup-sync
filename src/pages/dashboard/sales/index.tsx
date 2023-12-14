@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { CgMediaLive } from "react-icons/cg";
 import dynamic from "next/dynamic";
@@ -17,6 +17,7 @@ import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import SearchJobOrder from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
+import axios from "axios";
 
 export default function SalesDashboard() {
   const [data, setData] = useState(tableData);
@@ -66,7 +67,11 @@ export default function SalesDashboard() {
           headers={selectedHeaders.filter((item) => item.show)}
         />
       </div>
-      <Modal active={showModal} setActive={setShowModal}>
+      <Modal
+        active={showModal}
+        setActive={setShowModal}
+        className="h-5/6 w-3/4 overflow-scroll"
+      >
         <JobOrderForm mode="create" options={["create"]} />
       </Modal>
     </DashboardLayout>
