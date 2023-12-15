@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useForm } from "react-hook-form";
 import { TiTick } from "react-icons/ti";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -30,11 +31,18 @@ const FilterForm = () => {
           <DatePicker label="Quoted From" className="uppercase" />
           <DatePicker label="Quoted Upto" className="uppercase" />
         </div>
-        <SelectInput
-          options={["Pending", "Completed"]}
-          className="w-[200px]"
-          label="Service Cordinator"
-        />
+        <div className="flex flex-col gap-2">
+          <SelectInput
+            options={["Spare Supply", "Services"]}
+            className="w-[200px]"
+            label="Nature of Job"
+          />
+          <SelectInput
+            options={["Engineer 1", "Engineer 2", "Engineer 3", "Sumit Raj"]}
+            className="w-[200px]"
+            label="Service Cordinator"
+          />
+        </div>
 
         <div className="flex flex-col gap-2">
           <button className="h-max flex items-center text-green-700 font-semibold rounded-md">

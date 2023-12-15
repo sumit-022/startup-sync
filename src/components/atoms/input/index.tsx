@@ -41,7 +41,7 @@ const Input: React.FC<InputProperties> = ({
       {type === "date" ? (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            value={dayjs(value as Date | null)}
+            {...(value && { value: dayjs(value as Date) })}
             onChange={onChange}
             format="DD/MM/YYYY"
             disabled={disabled}

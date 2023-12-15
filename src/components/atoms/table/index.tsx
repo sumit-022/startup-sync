@@ -1,5 +1,6 @@
 import { Checkbox } from "@mui/material";
 import React, { useState } from "react";
+import FlagJobButton from "../button/flag";
 import EditJobButton from "../button/edit";
 import CancelJobButton from "../button/delete";
 import ViewJobButton from "../button/view";
@@ -36,7 +37,7 @@ const Table: React.FC<TableProperties> = ({
     });
   };
   return (
-    <table className={`w-full ${className}`}>
+    <table className={`w-full overflow-x-scroll ${className}`}>
       <thead>
         <tr className="border-b">
           <th className="text-left">
@@ -49,7 +50,7 @@ const Table: React.FC<TableProperties> = ({
             />
           </th>
           {headers.map((item, index) => (
-            <th className="text-center py-2" key={index}>
+            <th className="text-center py-2 w-[200px]" key={index}>
               <span className="flex items-center gap-1 justify-center">
                 {item.name}
               </span>
@@ -69,14 +70,20 @@ const Table: React.FC<TableProperties> = ({
             {headers.map((header, index) => {
               switch (header.name) {
                 case "Job Code":
-                  return <td className="p-2 text-center">{item.jobCode}</td>;
+                  return (
+                    <td className="p-2 w-[200px] text-center">
+                      {item.jobCode}
+                    </td>
+                  );
                 case "Job Description":
                   return (
-                    <td className="p-2 text-center">{item.jobDescription}</td>
+                    <td className="p-2 w-[200px] text-center">
+                      {item.jobDescription}
+                    </td>
                   );
                 case "Quoted Date":
                   return (
-                    <td className="p-2 text-center">
+                    <td className="p-2 w-[200px] text-center">
                       {typeof item.quotationDate === "string"
                         ? item.quotationDate
                         : item.quotationDate?.toLocaleDateString()}
@@ -84,17 +91,33 @@ const Table: React.FC<TableProperties> = ({
                   );
                 case "Recieve Date":
                   return (
-                    <td className="p-2 text-center">
+                    <td className="p-2 w-[200px] text-center">
                       {typeof item.recieveDate === "string"
                         ? item.recieveDate
                         : item.recieveDate?.toLocaleDateString()}
                     </td>
                   );
                 case "Ship Name":
-                  return <td className="p-2 text-center">{item.shipName}</td>;
+                  return (
+                    <td className="p-2 w-[200px] text-center">
+                      {item.shipName}
+                    </td>
+                  );
+                case "Company Name":
+                  return (
+                    <td className="p-2 w-[200px] text-center">
+                      {item.companyName}
+                    </td>
+                  );
+                case "Engineer":
+                  return (
+                    <td className="p-2 w-[200px] text-center">
+                      {item.engineer}
+                    </td>
+                  );
                 case "Status":
                   return (
-                    <td className="p-2 text-center">
+                    <td className="p-2 w-[200px] text-center">
                       {item.status === "completed" ? (
                         <span className="text-white rounded-md bg-green-600 py-1 px-3">
                           Completed
@@ -110,6 +133,7 @@ const Table: React.FC<TableProperties> = ({
                   return (
                     <td>
                       <div className="flex gap-2 justify-center">
+                        <FlagJobButton />
                         <ViewJobButton />
                         <EditJobButton />
                         <CancelJobButton />

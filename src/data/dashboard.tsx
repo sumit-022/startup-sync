@@ -62,6 +62,7 @@ export const tableData = [
     jobDescription: "Job 1",
     spares: "Spares 1",
     agent: "Agent 1",
+    nature: "Spares",
     reminderSent: true,
     status: "completed",
   },
@@ -79,6 +80,7 @@ export const tableData = [
     jobDescription: "Job 2",
     spares: "Spares 2",
     agent: "Agent 2",
+    nature: "Spares",
     reminderSent: true,
     status: "Completed",
   },
@@ -96,6 +98,7 @@ export const tableData = [
     jobDescription: "Job 3",
     spares: "Spares 3",
     agent: "Agent 3",
+    nature: "Spares",
     reminderSent: true,
     status: "Completed",
   },
@@ -113,6 +116,7 @@ export const tableData = [
     jobDescription: "Job 4",
     spares: "Spares 4",
     agent: "Agent 4",
+    nature: "Spares",
     reminderSent: true,
     status: "Completed",
   },
@@ -138,6 +142,14 @@ export const tableHeaders: { name: string; show: boolean }[] = [
   {
     name: "Ship Name",
     show: true,
+  },
+  {
+    name: "Company Name",
+    show: false,
+  },
+  {
+    name: "Service Coordinator",
+    show: false,
   },
   {
     name: "Status",

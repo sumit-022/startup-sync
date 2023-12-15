@@ -6,7 +6,7 @@ export type AuthData = {
   id: string;
   role: "admin" | "SC";
   email: string;
-  name: string;
+  fullname: string;
 };
 
 const AuthContext = React.createContext<{
@@ -27,18 +27,24 @@ export function useAuth() {
   React.useEffect(() => {
     const initializeAuth = async () => {
       instance
-        .get("/users/me", {
+        .get("/users/me?populate=role", {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token") || "",
           },
         })
         .then((res) => {
           if (res.data) {
-            setAuthData(res.data);
-          } else {
-            router.push("/auth/login");
+            setAuthData({
+              fullname: res.data.fullname,
+              email: res.data.email,
+              id: res.data.id,
+              role: res.data.role.name,
+            });
           }
           setIsLoading(false);
+        })
+        .catch((err) => {
+          router.push("/auth/login");
         });
     };
     initializeAuth();
@@ -46,3 +52,12 @@ export function useAuth() {
 
   return { authData, isLoading, setAuthData };
 }
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const { authData, isLoading, setAuthData } = useAuth();
+  return (
+    <AuthContext.Provider value={{ user: authData, isLoading, setAuthData }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

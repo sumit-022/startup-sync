@@ -10,7 +10,8 @@ interface JobType {
   services?: string[];
   spares?: string[];
   company?: string;
-  invoiceDate?: Date | string;
+  invoiceDate?: Date | string | null;
+  completedAt?: Date | string | null;
   serviceCordinator?: string;
   agent?: string;
 }

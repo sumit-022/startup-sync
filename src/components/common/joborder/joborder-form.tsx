@@ -1,9 +1,11 @@
 import Button from "@/components/atoms/button";
 import Input from "@/components/atoms/input";
+import { TextField } from "@mui/material";
 import SelectInput from "@/components/atoms/select";
 import TagInput from "@/components/atoms/tag";
 import Modal from "@/components/atoms/modal";
-import React from "react";
+import React, { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create" | "view";
@@ -11,8 +13,10 @@ interface JobOrderFormProperties {
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
+  const { authData } = useAuth();
   const [modal, setModal] = React.useState(false);
   const [option, setOption] = React.useState<string | null>(null);
+  const [upload, setUpload] = React.useState(false);
 
   const [job, setJob] = React.useState<JobType>({
     jobCode: "",
@@ -23,13 +27,19 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
     description: "",
     targetPort: "",
     cancelReason: "",
-    invoiceDate: "",
+    invoiceDate: null,
     services: [],
     spares: [],
     vesselETA: "",
     serviceCordinator: "",
     agent: "",
   });
+
+  useEffect(() => {
+    if (mode === "create") {
+      setJob({ ...job, serviceCordinator: authData?.fullname });
+    }
+  }, [authData?.fullname]);
 
   const jobCode = "2023-SE-001";
   return (
@@ -88,7 +98,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
         <SelectInput
           label="Service Coordinator"
           placeholder="Engineer"
-          options={["Engineer 1", "Engineer 2", "Engineer 3"]}
+          options={["Engineer 1", "Engineer 2", "Engineer 3", "Sumit Raj"]}
           value={job.serviceCordinator}
           onChange={(e) =>
             setJob({ ...job, serviceCordinator: e.target.value })
@@ -101,13 +111,20 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
         <Input type="date" label="Vessel ETA" />
       </div>
       <TagInput label="Job Description" />
-      <Input placeholder="Description" label="Description" />
+      <div className="grid grid-cols-2 gap-4 items-end">
+        <Input placeholder="Description" label="Description" />
+        <SelectInput
+          label="Nature of Job"
+          placeholder="Nature of Job"
+          options={["Spare Supply", "Services"]}
+        />
+      </div>
       <div className="grid grid-cols-2 gap-6 items-end">
         <div className="flex gap-1 items-center">
-          <TagInput label="Spares" />
+          <TagInput label="Spares" className="flex-1" />
           <label
             htmlFor="spares"
-            className="text-sm mt-5 text-primary-bright-blue cursor-pointer text-left font-semibold"
+            className="text-sm text-primary-bright-blue cursor-pointer text-left font-semibold"
           >
             Upload CSV File
           </label>
@@ -120,8 +137,21 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           value={job.company}
         />
       </div>
+      {upload && (
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            type="date"
+            label="Completion Date"
+            value={job.invoiceDate}
+            onChange={(e: any) =>
+              setJob({ ...job, invoiceDate: e.target.value })
+            }
+          />
+          <Input type="date" label="Invoice Date" />
+        </div>
+      )}
 
-      {option == null && (
+      {upload == false && (
         <div className="flex gap-4">
           {options?.map((option, index) =>
             option === "cancel" ? (
@@ -193,6 +223,27 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, options }) => {
           </p>
           <div className="flex gap-4 justify-center items-center">
             <Input type="file" label="Proof of Delivery" />
+          </div>
+          <div className="flex gap-4 justify-center items-center">
+            <Button
+              className="bg-green-500"
+              type="button"
+              onClick={() => {
+                setUpload(true);
+                setOption(null);
+              }}
+            >
+              Upload
+            </Button>
+            <Button
+              className="bg-red-600"
+              type="button"
+              onClick={() => {
+                setOption(null);
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </Modal>

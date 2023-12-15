@@ -1,19 +1,16 @@
+import clsx from "clsx";
 import React, { useState } from "react";
 import { TagsInput } from "react-tag-input-component";
 
 interface TagInputProps {
   label?: string;
+  className?: string;
 }
-const TagInput: React.FC<TagInputProps> = ({ label }) => {
+const TagInput: React.FC<TagInputProps> = ({ label, className }) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   return (
-    <div className="gap-2 flex flex-col">
-      {label && (
-        <label htmlFor="emails" className="text-sm text-left font-semibold">
-          {label}
-        </label>
-      )}
+    <div className={clsx("gap-2 flex flex-col", className)}>
       <TagsInput
         value={selected}
         onChange={setSelected}

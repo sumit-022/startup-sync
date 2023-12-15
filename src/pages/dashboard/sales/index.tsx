@@ -93,6 +93,9 @@ export default function SalesDashboard() {
         <Filters
           availableHeaders={selectedHeaders}
           setSelectedHeaders={setSelectedHeaders}
+          onDownload={() => {
+            downloadTable();
+          }}
         />
 
         <Table
