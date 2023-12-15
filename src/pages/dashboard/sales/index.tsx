@@ -31,6 +31,39 @@ export default function SalesDashboard() {
     });
     setData(filtered);
   };
+
+  const convertToCSV = (objArray: any) => {
+    const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
+    let str = "";
+
+    for (let i = 0; i < array.length; i++) {
+      let line = "";
+      for (let index in array[i]) {
+        if (line != "") line += ",";
+
+        line += array[i][index];
+      }
+
+      str += line + "\r\n";
+    }
+
+    return str;
+  };
+
+  const downloadTable = async () => {
+    // Convert the table data to csv and download it
+    const data = convertToCSV(tableData);
+    const blob = new Blob([data], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "joborder.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <DashboardLayout>
       <div className="flex gap-4">
