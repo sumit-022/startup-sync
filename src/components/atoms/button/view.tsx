@@ -16,7 +16,7 @@ const ViewJobButton: React.FC<ViewJobButtonProperties> = ({ className }) => {
     >
       <FaEye className={className} />
       <Modal active={showModal} setActive={setShowModal} className="w-1/2">
-        <JobOrderForm mode="view" options={[]} />
+        <JobOrderForm mode="create" authData={null} />
       </Modal>
     </button>
   );
