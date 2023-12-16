@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function Home() {
   const { authData } = useAuth();
   return (
-    <DashboardLayout user={authData}>
+    <DashboardLayout user={authData} header sidebar>
       <h1>Purchase Dashboard</h1>
     </DashboardLayout>
   );
