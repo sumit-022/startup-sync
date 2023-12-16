@@ -7,12 +7,14 @@ const FormInputSelect = ({
   name,
   control,
   label,
+  className,
   fetchFunction,
 }: {
   id: string;
   name: string;
   control: any;
   label: string;
+  className?: string;
   fetchFunction: () => Promise<
     {
       id: number;
@@ -22,7 +24,7 @@ const FormInputSelect = ({
 }) => {
   const [options, setOptions] = useState<
     {
-      id: string;
+      id: number;
       name: string;
     }[]
   >([]);
@@ -38,7 +40,7 @@ const FormInputSelect = ({
     return options.map(
       (
         option: {
-          id: string;
+          id: number;
           name: string;
         },
         index
@@ -58,7 +60,13 @@ const FormInputSelect = ({
         name={name}
         control={control}
         render={({ field: { onChange, value } }) => (
-          <Select label={label} value={value} onChange={onChange} id={id}>
+          <Select
+            label={label}
+            value={value}
+            onChange={onChange}
+            id={id}
+            className={className}
+          >
             {generateSingleOptions()}
           </Select>
         )}

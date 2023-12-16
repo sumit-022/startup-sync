@@ -21,6 +21,7 @@ const FormInputDate = ({
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             label={label}
+            value={value}
             format="DD/MM/YYYY"
             {...(value && { value: dayjs(value as Date) })}
             onChange={(value: any) => {

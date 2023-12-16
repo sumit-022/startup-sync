@@ -10,7 +10,7 @@ interface DashboardLayoutProperties {
   header?: boolean;
   className?: string;
   decoration?: string;
-  user: AuthData;
+  user: AuthData | null;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProperties> = ({

@@ -109,7 +109,7 @@ export default function SalesDashboard() {
         setActive={setShowModal}
         className="h-5/6 w-3/4 overflow-scroll"
       >
-        <JobOrderForm mode="create" options={["create"]} authData={authData} />
+        <JobOrderForm mode="create" authData={authData} />
       </Modal>
     </DashboardLayout>
   );

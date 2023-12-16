@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FilterForm from "./joborder-filterform";
+import FilterForm from "./form/filter";
 import ConfigureForm from "./joborder-configure";
 import { GrConfigure } from "react-icons/gr";
 import { IoFilter } from "react-icons/io5";
