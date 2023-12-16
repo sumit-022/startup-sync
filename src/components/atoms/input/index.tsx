@@ -45,6 +45,7 @@ const Input: React.FC<InputProperties> = ({
             onChange={onChange}
             format="DD/MM/YYYY"
             disabled={disabled}
+            label={placeholder}
           />
         </LocalizationProvider>
       ) : (

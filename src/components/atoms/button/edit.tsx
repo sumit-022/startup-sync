@@ -20,7 +20,7 @@ const EditJobButton: React.FC<EditJobButtonProperties> = ({ className }) => {
         setActive={setShowModal}
         className="w-2/3 h-5/6 overflow-scroll"
       >
-        <JobOrderForm mode="edit" options={["save", "complete", "cancel"]} />
+        <JobOrderForm mode="edit" options={["save", "complete", "cancel"]} authData={null} />
       </Modal>
     </button>
   );

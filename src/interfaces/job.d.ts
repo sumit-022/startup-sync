@@ -1,17 +1,14 @@
 interface JobType {
   jobCode: string;
-  description?: string;
-  recievedAt: Date | string;
-  quotedAt?: Date | string | null;
-  shipName?: string;
-  cancelReason?: string;
-  targetPort?: string;
-  vesselETA?: Date | string;
-  services?: string[];
-  spares?: string[];
-  company?: string;
-  invoiceDate?: Date | string | null;
-  completedAt?: Date | string | null;
-  serviceCordinator?: string;
-  agent?: string;
+  recievedAt: Date | null;
+  quotedAt: Date | null;
+  shipName: string;
+  companyId: number | null;
+  serviceCordinatorId: number | null;
+  targetPort: string;
+  poNumber: string;
+  vesselEta: Date | null;
+  services: Number[];
+  type: number | null;
+  description: string;
 }

@@ -17,10 +17,11 @@ import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import SearchJobOrder from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
-import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SalesDashboard() {
   const [data, setData] = useState(tableData);
+  const { authData, isLoading } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
@@ -65,7 +66,7 @@ export default function SalesDashboard() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout user={authData}>
       <div className="flex gap-4">
         <Button
           icon={<MdAdd />}
@@ -108,7 +109,7 @@ export default function SalesDashboard() {
         setActive={setShowModal}
         className="h-5/6 w-3/4 overflow-scroll"
       >
-        <JobOrderForm mode="create" options={["create"]} />
+        <JobOrderForm mode="create" options={["create"]} authData={authData} />
       </Modal>
     </DashboardLayout>
   );

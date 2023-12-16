@@ -2,13 +2,6 @@ import * as React from "react";
 import instance from "@/config/axios.config";
 import { useRouter } from "next/router";
 
-export type AuthData = {
-  id: string;
-  role: "admin" | "SC";
-  email: string;
-  fullname: string;
-};
-
 const AuthContext = React.createContext<{
   user: AuthData | null;
   isLoading: boolean;

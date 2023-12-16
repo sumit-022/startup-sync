@@ -9,14 +9,14 @@ import Link from "next/link";
 interface DashboardHeaderProperties {
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  user: AuthData | null;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
   setSidebarOpen,
   sidebarOpen,
+  user,
 }) => {
-  const user = "Subash";
-
   return (
     <header className="drop-shadow-1 sticky top-0 z-20 flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
       <div className="shadow-2 flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-5">
@@ -40,22 +40,18 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
           <div className="hidden sm:block">
             <h1 className="text-lg font-semibold">Dashboard</h1>
             <p className="text-sm text-primary-cool-grey">
-              Welcome back {user} 👋, Let’s get back to managing your
-              properties.
+              Welcome back {user?.fullname.split(" ")[0]}👋, Let’s get back to
+              managing your properties.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 text-primary-cool-grey sm:gap-4 md:gap-6 lg:gap-8">
           <Image className="cursor-pointer" src={NotificationIcon} alt="" />
-          {/* <Image className="cursor-pointer" src={SettingIcon} alt="" /> */}
           <div className="flex cursor-pointer flex-row gap-2 hover:text-black">
             <Image src={HelpIcon} alt="" />
             <h3>Help</h3>
           </div>
-          {/* <div className="rounded shadow-sm">
-            <Image src={ProfileIcon} alt="" />
-          </div> */}
         </div>
       </div>
     </header>

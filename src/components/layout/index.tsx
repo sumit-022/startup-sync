@@ -10,6 +10,7 @@ interface DashboardLayoutProperties {
   header?: boolean;
   className?: string;
   decoration?: string;
+  user: AuthData;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
@@ -19,13 +20,18 @@ const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
   decoration,
   sidebar = true,
   header = true,
+  user,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="grid grid-rows-[auto,1fr] overflow-hidden h-screen">
       {header && (
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <Header
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          user={user}
+        />
       )}
       <div className="grid relative grid-cols-[auto,1fr,auto] overflow-hidden">
         {sidebar && (
