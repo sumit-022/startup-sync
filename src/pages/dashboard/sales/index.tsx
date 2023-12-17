@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { BiHistory } from "react-icons/bi";
 import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
-import { tableData, tableHeaders } from "@/data/dashboard";
+import { tableHeaders } from "@/data/dashboard";
 const Table = dynamic(() => import("@/components/atoms/table"), {
   ssr: false,
 });
@@ -26,13 +26,13 @@ export default function SalesDashboard() {
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
-  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value;
-  //   const filtered = tableData.filter((item) => {
-  //     return item.jobCode.toLowerCase().includes(value.toLowerCase());
-  //   });
-  //   setData(filtered);
-  // };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const filtered = data.filter((item) => {
+      return item.jobCode.toLowerCase().includes(value.toLowerCase());
+    });
+    setData(filtered);
+  };
 
   useEffect(() => {
     instance.get("/jobs?populate=*").then((res) => {
@@ -63,8 +63,6 @@ export default function SalesDashboard() {
     });
   }, []);
 
-  console.log("data", data);
-
   const convertToCSV = (objArray: any) => {
     const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
     let str = "";
@@ -85,8 +83,8 @@ export default function SalesDashboard() {
 
   const downloadTable = async () => {
     // Convert the table data to csv and download it
-    const data = convertToCSV(tableData);
-    const blob = new Blob([data], { type: "text/csv" });
+    const csvdata = convertToCSV(data);
+    const blob = new Blob([csvdata], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
@@ -119,7 +117,7 @@ export default function SalesDashboard() {
       <div className="my-4 flex flex-col gap-3">
         <SearchJobOrder
           onChange={(e) => {
-            // handleSearch(e);
+            handleSearch(e);
           }}
         />
         <Tabs allcount="100" qoutedcount="100" querycount="100" />
