@@ -1,14 +1,14 @@
-interface JobType {
+interface JobFormType {
   jobCode: string;
-  recievedAt: Date | null;
-  quotedAt: Date | null;
+  receivedAt: Date | string | null;
+  quotedAt: Date | string | null;
   shipName: string;
-  companyId: number | null;
-  serviceCordinatorId: number | null;
+  company: number | null;
+  assignedTo: number | null;
   targetPort: string;
   poNumber: string;
-  vesselEta: Date | null;
-  services: Number[];
-  type: number | null;
+  vesselEta: Date | string | null;
+  services: { id: number; name: string }[];
+  type: string;
   description: string;
 }

@@ -17,14 +17,14 @@ const FormInputSelect = ({
   className?: string;
   fetchFunction: () => Promise<
     {
-      id: number;
+      id: any;
       name: string;
     }[]
   >;
 }) => {
   const [options, setOptions] = useState<
     {
-      id: number;
+      id: any;
       name: string;
     }[]
   >([]);
@@ -40,7 +40,7 @@ const FormInputSelect = ({
     return options.map(
       (
         option: {
-          id: number;
+          id: any;
           name: string;
         },
         index

@@ -19,7 +19,6 @@ const Table: React.FC<TableProperties> = ({
   className = "",
   headers,
 }) => {
-  console.log(headers);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState(data.map(() => false));
 
@@ -84,17 +83,13 @@ const Table: React.FC<TableProperties> = ({
                 case "Quoted Date":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {typeof item.quotationDate === "string"
-                        ? item.quotationDate
-                        : item.quotationDate?.toLocaleDateString()}
+                      {item.quotedAt}
                     </td>
                   );
                 case "Recieve Date":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {typeof item.recieveDate === "string"
-                        ? item.recieveDate
-                        : item.recieveDate?.toLocaleDateString()}
+                      {item.receivedAt}
                     </td>
                   );
                 case "Ship Name":
@@ -106,13 +101,13 @@ const Table: React.FC<TableProperties> = ({
                 case "Company Name":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.companyName}
+                      {item.companyDetails.name}
                     </td>
                   );
-                case "Engineer":
+                case "Service Coordinator":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.engineer}
+                      {item.serviceCordinator.fullname}
                     </td>
                   );
                 case "Status":
@@ -135,7 +130,7 @@ const Table: React.FC<TableProperties> = ({
                       <div className="flex gap-2 justify-center">
                         <FlagJobButton />
                         <ViewJobButton />
-                        <EditJobButton />
+                        <EditJobButton data={item} />
                         <CancelJobButton />
                       </div>
                     </td>

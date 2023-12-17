@@ -12,7 +12,7 @@ const FormInputAutoComplete = ({
   label: string;
   control: any;
   options: {
-    id: number;
+    id: any;
     name: string;
   }[];
 }) => {
@@ -24,7 +24,8 @@ const FormInputAutoComplete = ({
         <Autocomplete
           multiple
           options={options}
-          getOptionLabel={(option: { id: number; name: string }) => option.name}
+          value={value}
+          getOptionLabel={(option: { id: any; name: string }) => option.name}
           renderInput={(params) => (
             <TextField
               {...params}

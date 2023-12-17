@@ -3,17 +3,14 @@ import { Box, FormControl, Typography, Button } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-const CompanyForm = () => {
+const Agent = () => {
   const { handleSubmit, control } = useForm({
     defaultValues: {
-      companyName: "",
-      address: "",
-      city: "",
-      state: "",
-      country: "",
+      agentName: "",
+      email: "",
+      contact: "",
     },
   });
-
   const onSubmit = (data: any) => {
     console.log(data);
   };
@@ -32,7 +29,7 @@ const CompanyForm = () => {
     >
       <FormControl
         fullWidth
-        title="Company Form"
+        title="Agent Form"
         className="flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -44,18 +41,10 @@ const CompanyForm = () => {
         >
           Add Company
         </Typography>
-        <FormInputText
-          name="companyName"
-          label="Company Name"
-          control={control}
-        />
-        <FormInputText name="address" label="Address" control={control} />
-        <FormInputText name="city" label="City" control={control} />
-        <FormInputText name="state" label="State" control={control} />
-        <FormInputText name="country" label="Country" control={control} />
+        <FormInputText name="agentName" label="Agent Name" control={control} />
+        <FormInputText name="email" label="Email" control={control} />
+        <FormInputText name="contact" label="Contact" control={control} />
         <Button
-          onClick={handleSubmit(onSubmit)}
-          type="submit"
           variant="contained"
           fullWidth
           className="bg-primary-bright-blue"
@@ -67,4 +56,4 @@ const CompanyForm = () => {
   );
 };
 
-export default CompanyForm;
+export default Agent;

@@ -2,24 +2,31 @@ import AddCompany from "./joborder-addcompany";
 import AddAgent from "./joborder-addagent";
 import instance from "@/config/axios.config";
 import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
-import SelectInput from "@/components/atoms/select";
 import Modal from "@/components/atoms/modal";
+import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import getServices from "@/utils/getServices";
-import clsx from "clsx";
 import FormInputText from "@/components/atoms/input/text";
 import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
+import { toast } from "react-toastify";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
   authData: AuthData | null;
+  setShowModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  data?: TableData;
 }
 
-const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
+const JobOrderForm: React.FC<JobOrderFormProperties> = ({
+  mode,
+  authData,
+  setShowModal,
+  data,
+}) => {
   const [services, setServices] = React.useState<
     {
       id: number;
@@ -31,19 +38,28 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
   const [upload, setUpload] = React.useState(false);
   const jobCode = "2023-SE-001";
 
-  const { handleSubmit, control } = useForm<JobType>({
+  console.log("vessel", data);
+
+  const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: {
-      jobCode: jobCode,
-      recievedAt: null,
-      quotedAt: null,
-      shipName: "",
-      companyId: null,
-      serviceCordinatorId: authData?.id,
-      targetPort: "",
+      jobCode: data?.jobCode || "",
+      receivedAt: data?.receivedAt || null,
+      quotedAt: data?.quotedAt || null,
+      shipName: data?.shipName || "",
+      company: data?.companyDetails.id || null,
+      assignedTo:
+        mode === "edit" ? data?.serviceCordinator?.id : authData?.id || null,
+      targetPort: data?.targetPort || "",
       poNumber: "",
-      vesselEta: null,
-      type: null,
-      services: [],
+      vesselEta: data?.vesselEta || null,
+      type: "",
+      services:
+        data?.servicesDetails?.map((service) => {
+          return {
+            id: service.id,
+            name: service.name,
+          };
+        }) || [],
       description: "",
     },
   });
@@ -51,26 +67,50 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
   useEffect(() => {
     getServices().then((data) => {
       setServices(
-        data.map((service: any) => ({
-          id: service.id,
-          name: service.attributes.title,
-        }))
+        data.map((service: any) => {
+          return {
+            id: service.id,
+            name: service.attributes.title,
+          };
+        })
       );
     });
   }, []);
 
+  const onSubmit = (data: any) => {
+    if (mode === "create") {
+      instance
+        .post("/jobs", {
+          services: data.services.map((service: any) => service.id),
+          ...data,
+        })
+        .then((res) => {
+          console.log(res);
+          toast.success("Job Created Successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            pauseOnHover: true,
+          });
+          setShowModal && setShowModal(false);
+        });
+    }
+  };
+
   return (
     <form
-      onSubmit={handleSubmit((data) => console.log(data))}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-4 text-black"
     >
       <h1 className="text-left font-bold text-lg uppercase">
         {mode === "edit" ? "Edit a Job" : "Create a Job"}
       </h1>
-      <InputGroup>
-        <FormInputText name="jobCode" label="JOB CODE" control={control} />
+      <InputGroup inputs={mode === "edit" ? 3 : 2}>
+        {mode === "edit" && (
+          <FormInputText name="jobCode" label="JOB CODE" control={control} />
+        )}
         <FormInputDate
-          name="recievedAt"
+          name="receivedAt"
           label="QUERY RECIEVED ON"
           control={control}
         />
@@ -85,7 +125,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
         <div className="flex gap-1">
           <FormInputSelect
             id="company"
-            name="companyId"
+            name="company"
             label="COMPANY NAME"
             control={control}
             fetchFunction={async () => {
@@ -102,7 +142,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
         </div>
         <FormInputSelect
           id="serviceCoordinator"
-          name="serviceCordinatorId"
+          name="assignedTo"
           label="SERVICE COORDINATOR"
           control={control}
           fetchFunction={async () => {
@@ -131,8 +171,8 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
       <FormInputAutoComplete
         name="services"
         label="SERVICES"
-        control={control}
         options={services}
+        control={control}
       />
       <InputGroup inputs={mode === "edit" ? 2 : 1}>
         {mode === "edit" && (
@@ -148,8 +188,8 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
           label="NATURE OF JOB"
           control={control}
           fetchFunction={async () => [
-            { id: 1, name: "Spare Supply" },
-            { id: 2, name: "Services" },
+            { id: "SPARES SUPPLY", name: "Spare Supply" },
+            { id: "SERVICES", name: "Services" },
           ]}
         />
       </InputGroup>
@@ -163,11 +203,19 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({ mode, authData }) => {
             )}
           />
           <div className="flex gap-1">
-            <SelectInput
+            <FormInputSelect
+              id="agent"
+              name="agentId"
               label="AGENT"
+              control={control}
               fetchFunction={async () => {
-                const { data } = await instance.get(`/companies`);
-                return data.data.map((company: any) => company.attributes.name);
+                const { data } = await instance.get(`/agents`);
+                return (
+                  data.data.map((company: any) => ({
+                    id: company.id,
+                    name: company.attributes.name,
+                  })) || []
+                );
               }}
             />
             <AddAgent />

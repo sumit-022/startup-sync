@@ -29,11 +29,11 @@ declare interface SidebarMenu {
 declare interface TableData {
   id: number;
   jobCode: string;
-  recieveDate: Date | string;
-  quotationDate: Date | string;
+  receivedAt: string;
+  quotedAt: string;
   shipName: string;
-  companyName: string;
-  engineer: string;
+  companyDetails: CompanyType;
+  serviceCordinator: ServiceCordinatorType;
   poNumber: string;
   targetPort: string;
   vesselEta: string;
@@ -42,6 +42,7 @@ declare interface TableData {
   agent: string;
   reminderSent: boolean;
   status: string;
+  servicesDetails: ServiceType[];
 }
 
 declare interface TableHeader {

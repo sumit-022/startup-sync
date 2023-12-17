@@ -18,20 +18,52 @@ import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import SearchJobOrder from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
 import { useAuth } from "@/context/AuthContext";
+import instance from "@/config/axios.config";
 
 export default function SalesDashboard() {
-  const [data, setData] = useState(tableData);
+  const [data, setData] = useState<TableData[]>([]);
   const { authData, isLoading } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const filtered = tableData.filter((item) => {
-      return item.jobCode.toLowerCase().includes(value.toLowerCase());
+  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = e.target.value;
+  //   const filtered = tableData.filter((item) => {
+  //     return item.jobCode.toLowerCase().includes(value.toLowerCase());
+  //   });
+  //   setData(filtered);
+  // };
+
+  useEffect(() => {
+    instance.get("/jobs?populate=*").then((res) => {
+      setData(
+        res.data.data.map((item: any) => {
+          return {
+            id: item.id,
+            serviceCordinator: {
+              id: item.attributes.assignedTo?.data?.id,
+              ...item.attributes.assignedTo?.data?.attributes,
+            },
+            companyDetails: {
+              id: item.attributes.company?.data?.id,
+              ...item.attributes.company?.data?.attributes,
+            },
+            servicesDetails: item.attributes.services?.data?.map(
+              (service: any) => {
+                return {
+                  id: service.id,
+                  name: service.attributes.title,
+                };
+              }
+            ),
+            ...item.attributes,
+          };
+        })
+      );
     });
-    setData(filtered);
-  };
+  }, []);
+
+  console.log("data", data);
 
   const convertToCSV = (objArray: any) => {
     const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
@@ -87,7 +119,7 @@ export default function SalesDashboard() {
       <div className="my-4 flex flex-col gap-3">
         <SearchJobOrder
           onChange={(e) => {
-            handleSearch(e);
+            // handleSearch(e);
           }}
         />
         <Tabs allcount="100" qoutedcount="100" querycount="100" />
@@ -109,7 +141,11 @@ export default function SalesDashboard() {
         setActive={setShowModal}
         className="h-5/6 w-3/4 overflow-scroll"
       >
-        <JobOrderForm mode="create" authData={authData} />
+        <JobOrderForm
+          mode="create"
+          authData={authData}
+          setShowModal={setShowModal}
+        />
       </Modal>
     </DashboardLayout>
   );

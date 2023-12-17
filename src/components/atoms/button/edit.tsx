@@ -5,9 +5,13 @@ import JobOrderForm from "../../common/joborder/joborder-form";
 
 interface EditJobButtonProperties {
   className?: string;
+  data?: TableData;
 }
 
-const EditJobButton: React.FC<EditJobButtonProperties> = ({ className }) => {
+const EditJobButton: React.FC<EditJobButtonProperties> = ({
+  className,
+  data,
+}) => {
   const [showModal, setShowModal] = React.useState(false);
   return (
     <button
@@ -20,7 +24,7 @@ const EditJobButton: React.FC<EditJobButtonProperties> = ({ className }) => {
         setActive={setShowModal}
         className="w-2/3 h-5/6 overflow-scroll"
       >
-        <JobOrderForm mode="edit" authData={null} />
+        <JobOrderForm mode="edit" authData={null} data={data} />
       </Modal>
     </button>
   );
