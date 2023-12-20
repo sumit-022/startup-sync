@@ -1,4 +1,6 @@
-import { createContext, useEffect, useState } from "react";
+import instance from "@/config/axios.config";
+import { parseAttributes } from "@/utils/utils";
+import { createContext, useEffect, useRef, useState } from "react";
 
 export type NotificationData = {
   title: string;
@@ -6,18 +8,29 @@ export type NotificationData = {
   timestamp: number;
 };
 
+export type JobNotificationData = {
+  title?: string;
+  body?: string;
+  timestamp: number;
+  viewed: boolean;
+};
+
 export type NotificationId = ReturnType<typeof setTimeout>;
 
 export const NotificationContext = createContext<{
-  notifications: NotificationData[];
-  scheduleNotification: (notification: NotificationData) => NotificationId;
+  activeNotifications: NotificationData[];
+  scheduleNotification: (
+    notification: NotificationData,
+    onClear: () => void
+  ) => NotificationId;
   replaceNotification: (
     id: NotificationId,
     notification: NotificationData
   ) => void;
   deleteNotification: (id: NotificationId) => void;
+  getAllNotifications: () => JobNotificationData[];
 }>({
-  notifications: [],
+  activeNotifications: [],
   scheduleNotification: (notification) => {
     const n = new Notification(notification.title, {
       body: notification.body,
@@ -27,6 +40,7 @@ export const NotificationContext = createContext<{
   },
   replaceNotification: () => {},
   deleteNotification: () => {},
+  getAllNotifications: () => [],
 });
 
 export const NotificationProvider = ({
@@ -38,21 +52,73 @@ export const NotificationProvider = ({
     { id: NotificationId; data: NotificationData }[]
   >([]);
 
-  const triggerNotification = (notification: NotificationData) => {
+  const allNotifications = useRef<JobNotificationData[]>([]);
+
+  const triggerNotification = (
+    notification: NotificationData,
+    onClear: () => void = () => {}
+  ) => {
     const n = new Notification(notification.title, {
       body: notification.body,
       timestamp: notification.timestamp,
     });
+
+    n.onclick = () => {
+      onClear();
+    };
+
+    n.onclose = () => {
+      onClear();
+    };
   };
 
   // Ask for permission to use notifications
   useEffect(() => {
     Notification.requestPermission();
+
+    // Fetch the data too
+    instance.get("/jobs?populate=*").then((res) => {
+      const data = parseAttributes(res.data.data);
+
+      allNotifications.current = data
+        .map((job: any) => job?.notification)
+        .filter((notif: any) => notif);
+
+      // Schedule notifications for each job
+      data.forEach((job: any) => {
+        if (job?.notification && job?.notification?.viewed === false) {
+          scheduleNotification(
+            {
+              title: job.notification.title,
+              body: job.notification.body,
+              timestamp: new Date(job.notification).getTime(),
+            },
+            () => {
+              console.log("CLOSED");
+              // Update the notification to viewed
+              instance
+                .put(`/jobs/${job.id}`, {
+                  data: {
+                    notification: {
+                      ...job.notification,
+                      viewed: true,
+                    },
+                  },
+                })
+                .then((res) => console.log({ res }));
+            }
+          );
+        }
+      });
+    });
   }, []);
 
-  const scheduleNotification = (notification: NotificationData) => {
+  const scheduleNotification = (
+    notification: NotificationData,
+    onClear: () => void = () => {}
+  ) => {
     const id = setTimeout(() => {
-      triggerNotification(notification);
+      triggerNotification(notification, onClear);
       setTimers(timers.filter((timer) => timer.id !== id));
     }, notification.timestamp - Date.now());
 
@@ -86,13 +152,18 @@ export const NotificationProvider = ({
     setTimers(timers.filter((timer) => timer.id !== id));
   };
 
+  const getAllNotifications = () => {
+    return allNotifications.current;
+  };
+
   return (
     <NotificationContext.Provider
       value={{
-        notifications: timers.map((timer) => timer.data),
+        activeNotifications: timers.map((timer) => timer.data),
         scheduleNotification,
         replaceNotification,
         deleteNotification,
+        getAllNotifications,
       }}
     >
       {children}

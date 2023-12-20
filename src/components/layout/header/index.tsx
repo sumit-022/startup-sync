@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Image from "next/image";
 import { RiMenu2Line } from "react-icons/ri";
 
@@ -6,6 +6,7 @@ import HelpIcon from "../../../assets/svg/icon/help.svg";
 import NotificationIcon from "../../../assets/svg/icon/notification.svg";
 import logo from "@/assets/image/logo.jpg";
 import Link from "next/link";
+import { NotificationContext } from "@/context/NotificationContext";
 interface DashboardHeaderProperties {
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +18,8 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
   sidebarOpen,
   user,
 }) => {
+  const n = useContext(NotificationContext);
+
   return (
     <header className="drop-shadow-1 sticky top-0 z-20 flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
       <div className="shadow-2 flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-5">
@@ -47,7 +50,14 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
         </div>
 
         <div className="flex items-center gap-3 text-primary-cool-grey sm:gap-4 md:gap-6 lg:gap-8">
-          <Image className="cursor-pointer" src={NotificationIcon} alt="" />
+          <Image
+            className="cursor-pointer"
+            src={NotificationIcon}
+            alt=""
+            onClick={() => {
+              console.log({ notifs: n.getAllNotifications() });
+            }}
+          />
           <div className="flex cursor-pointer flex-row gap-2 hover:text-black">
             <Image src={HelpIcon} alt="" />
             <h3>Help</h3>

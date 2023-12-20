@@ -8,13 +8,13 @@ import { NotificationProvider } from "@/context/NotificationContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <NotificationProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <NotificationProvider>
         <StyledEngineProvider injectFirst>
           <ToastContainer />
           <Component {...pageProps} />
         </StyledEngineProvider>
-      </AuthProvider>
-    </NotificationProvider>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
