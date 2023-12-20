@@ -13,12 +13,8 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
-<<<<<<< HEAD
 import { parseAttributes } from "@/utils/parse-data";
-=======
-import { parseAttributes } from "@/utils/utils";
 import { NotificationContext } from "@/context/NotificationContext";
->>>>>>> b9dba76715d49394fa0ad0396e1dc8be2986716f
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -41,8 +37,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       title: string;
     }[]
   >([]);
-<<<<<<< HEAD
-=======
   const [modal, setModal] = React.useState(false);
   const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState(false);
@@ -51,7 +45,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const n = useContext(NotificationContext);
 
   console.log("vessel", data);
->>>>>>> b9dba76715d49394fa0ad0396e1dc8be2986716f
 
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
