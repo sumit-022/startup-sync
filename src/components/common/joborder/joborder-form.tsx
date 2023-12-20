@@ -13,7 +13,7 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
-import { parseAttributes } from "@/utils/utils";
+import { parseAttributes } from "@/utils/parse-data";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -36,18 +36,14 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       title: string;
     }[]
   >([]);
-  const [modal, setModal] = React.useState(false);
-  const [option, setOption] = React.useState<string | null>(null);
-  const [upload, setUpload] = React.useState(false);
-  const jobCode = "2023-SE-001";
-
-  console.log("vessel", data);
 
   const { handleSubmit, control } = useForm<JobFormType>({
-    defaultValues: data && {
+    defaultValues: (data && {
       ...data,
       assignedTo: data.assignedTo.id,
       company: data.company.id,
+    }) || {
+      assignedTo: authData?.id,
     },
   });
 
@@ -73,9 +69,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             pauseOnHover: true,
           });
           setShowModal && setShowModal(false);
+        })
+        .finally(() => {
+          callback && callback();
         });
     }
-    callback && callback();
   };
 
   return (
@@ -86,7 +84,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       <h1 className="text-left font-bold text-lg uppercase">
         {mode === "edit" ? "Edit a Job" : "Create a Job"}
       </h1>
-      <InputGroup inputs={mode === "edit" ? 3 : 2}>
+      <InputGroup inputs={mode === "edit" ? 3 : 1}>
         {mode === "edit" && (
           <FormInputText
             disabled
@@ -100,11 +98,13 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           label="QUERY RECIEVED ON"
           control={control}
         />
-        <FormInputDate
-          name="quotedAt"
-          label="QUOTATION DATE"
-          control={control}
-        />
+        {mode === "edit" && (
+          <FormInputDate
+            name="quotedAt"
+            label="QUOTATION DATE"
+            control={control}
+          />
+        )}
       </InputGroup>
       <InputGroup>
         <FormInputText name="shipName" label="SHIP NAME" control={control} />
