@@ -72,10 +72,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             theme: "colored",
             pauseOnHover: true,
           });
+          callback && callback();
           setShowModal && setShowModal(false);
         });
     }
-    callback && callback();
   };
 
   return (
