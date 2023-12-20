@@ -5,7 +5,7 @@ import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
 import Modal from "@/components/atoms/modal";
 import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import getServices from "@/utils/getServices";
 import FormInputText from "@/components/atoms/input/text";
@@ -13,7 +13,12 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
+<<<<<<< HEAD
 import { parseAttributes } from "@/utils/parse-data";
+=======
+import { parseAttributes } from "@/utils/utils";
+import { NotificationContext } from "@/context/NotificationContext";
+>>>>>>> b9dba76715d49394fa0ad0396e1dc8be2986716f
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -36,6 +41,17 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       title: string;
     }[]
   >([]);
+<<<<<<< HEAD
+=======
+  const [modal, setModal] = React.useState(false);
+  const [option, setOption] = React.useState<string | null>(null);
+  const [upload, setUpload] = React.useState(false);
+  const jobCode = "2023-SE-001";
+
+  const n = useContext(NotificationContext);
+
+  console.log("vessel", data);
+>>>>>>> b9dba76715d49394fa0ad0396e1dc8be2986716f
 
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
@@ -68,6 +84,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             theme: "colored",
             pauseOnHover: true,
           });
+          callback && callback();
           setShowModal && setShowModal(false);
         })
         .finally(() => {
