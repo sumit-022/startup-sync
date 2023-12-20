@@ -1,5 +1,5 @@
 import instance from "@/config/axios.config";
-import { parseAttributes } from "@/utils/utils";
+import parseAttributes from "@/utils/parse-data";
 import { createContext, useEffect, useRef, useState } from "react";
 
 export type NotificationData = {
