@@ -8,7 +8,7 @@ interface JobFormType {
   targetPort: string;
   poNumber: string;
   vesselEta: Date | string | null;
-  services: { id: number; name: string }[];
+  services: { id: number; title: string }[];
   type: string;
   description: string;
 }

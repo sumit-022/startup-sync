@@ -3,29 +3,29 @@ import { Controller } from "react-hook-form";
 import { TextField, Autocomplete } from "@mui/material";
 
 const FormInputAutoComplete = ({
-  name,
+  title,
   label,
   control,
   options,
 }: {
-  name: string;
+  title: string;
   label: string;
   control: any;
   options: {
     id: any;
-    name: string;
+    title: string;
   }[];
 }) => {
   return (
     <Controller
-      name={name}
+      name={title}
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Autocomplete
           multiple
           options={options}
           value={value}
-          getOptionLabel={(option: { id: any; name: string }) => option.name}
+          getOptionLabel={(option: { id: any; title: string }) => option.title}
           renderInput={(params) => (
             <TextField
               {...params}

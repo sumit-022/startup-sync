@@ -19,9 +19,10 @@ import SearchJobOrder from "../../../components/common/joborder/joborder-search"
 import Tabs from "@/components/common/joborder/joborder-filters";
 import { useAuth } from "@/context/AuthContext";
 import instance from "@/config/axios.config";
+import { parseAttributes } from "@/utils/utils";
 
 export default function SalesDashboard() {
-  const [data, setData] = useState<TableData[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const { authData, isLoading } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
@@ -34,33 +35,15 @@ export default function SalesDashboard() {
     setData(filtered);
   };
 
-  useEffect(() => {
+  const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {
-      setData(
-        res.data.data.map((item: any) => {
-          return {
-            id: item.id,
-            serviceCordinator: {
-              id: item.attributes.assignedTo?.data?.id,
-              ...item.attributes.assignedTo?.data?.attributes,
-            },
-            companyDetails: {
-              id: item.attributes.company?.data?.id,
-              ...item.attributes.company?.data?.attributes,
-            },
-            servicesDetails: item.attributes.services?.data?.map(
-              (service: any) => {
-                return {
-                  id: service.id,
-                  name: service.attributes.title,
-                };
-              }
-            ),
-            ...item.attributes,
-          };
-        })
-      );
+      console.log({ res: parseAttributes(res.data.data) });
+      setData(parseAttributes(res.data));
     });
+  };
+
+  useEffect(() => {
+    fetchTableData();
   }, []);
 
   const convertToCSV = (objArray: any) => {
@@ -143,6 +126,7 @@ export default function SalesDashboard() {
           mode="create"
           authData={authData}
           setShowModal={setShowModal}
+          callback={fetchTableData}
         />
       </Modal>
     </DashboardLayout>

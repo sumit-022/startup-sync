@@ -13,12 +13,14 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
+import { parseAttributes } from "@/utils/utils";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
   authData: AuthData | null;
   setShowModal?: React.Dispatch<React.SetStateAction<boolean>>;
-  data?: TableData;
+  data?: any;
+  callback?: any;
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({
@@ -26,11 +28,12 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   authData,
   setShowModal,
   data,
+  callback,
 }) => {
   const [services, setServices] = React.useState<
     {
       id: number;
-      name: string;
+      title: string;
     }[]
   >([]);
   const [modal, setModal] = React.useState(false);
@@ -41,39 +44,17 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   console.log("vessel", data);
 
   const { handleSubmit, control } = useForm<JobFormType>({
-    defaultValues: {
-      jobCode: data?.jobCode || "",
-      receivedAt: data?.receivedAt || null,
-      quotedAt: data?.quotedAt || null,
-      shipName: data?.shipName || "",
-      company: data?.companyDetails.id || null,
-      assignedTo:
-        mode === "edit" ? data?.serviceCordinator?.id : authData?.id || null,
-      targetPort: data?.targetPort || "",
-      poNumber: "",
-      vesselEta: data?.vesselEta || null,
-      type: data?.type || "",
-      services:
-        data?.servicesDetails?.map((service) => {
-          return {
-            id: service.id,
-            name: service.name,
-          };
-        }) || [],
-      description: "",
+    defaultValues: data && {
+      ...data,
+      assignedTo: data.assignedTo.id,
+      company: data.company.id,
     },
   });
 
   useEffect(() => {
     getServices().then((data) => {
-      setServices(
-        data.map((service: any) => {
-          return {
-            id: service.id,
-            name: service.attributes.title,
-          };
-        })
-      );
+      const parsedData = parseAttributes(data);
+      setServices(parsedData);
     });
   }, []);
 
@@ -94,6 +75,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           setShowModal && setShowModal(false);
         });
     }
+    callback && callback();
   };
 
   return (
@@ -173,7 +155,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         <FormInputDate name="vesselEta" label="VESSEL ETA" control={control} />
       </InputGroup>
       <FormInputAutoComplete
-        name="services"
+        title="services"
         label="SERVICES"
         options={services}
         control={control}
