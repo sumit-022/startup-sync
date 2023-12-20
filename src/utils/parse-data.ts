@@ -1,9 +1,4 @@
 export function parseAttributes(data: any): any {
-  // Values will be of 4 types
-  // 1. Normal Objects/Primitives
-  // 2. Arrays with props
-  // 3. Objects with { id, attributes }
-  // 4. Objects with { data }
   if (Array.isArray(data)) {
     return data.map((item) => parseAttributes(item));
   }
