@@ -52,7 +52,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       targetPort: data?.targetPort || "",
       poNumber: "",
       vesselEta: data?.vesselEta || null,
-      type: "",
+      type: data?.type || "",
       services:
         data?.servicesDetails?.map((service) => {
           return {
@@ -85,7 +85,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           ...data,
         })
         .then((res) => {
-          console.log(res);
           toast.success("Job Created Successfully", {
             position: "top-right",
             autoClose: 3000,
@@ -107,7 +106,12 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       </h1>
       <InputGroup inputs={mode === "edit" ? 3 : 2}>
         {mode === "edit" && (
-          <FormInputText name="jobCode" label="JOB CODE" control={control} />
+          <FormInputText
+            disabled
+            name="jobCode"
+            label="JOB CODE"
+            control={control}
+          />
         )}
         <FormInputDate
           name="receivedAt"

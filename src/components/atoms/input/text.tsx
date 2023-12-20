@@ -7,11 +7,17 @@ const FormInputText = ({
   label,
   control,
   className,
+  disabled,
+  multiline,
+  rows,
 }: {
   name: string;
   label: string;
   control: any;
+  disabled?: boolean;
+  multiline?: boolean;
   className?: string;
+  rows?: number;
 }) => {
   return (
     <Controller
@@ -21,7 +27,10 @@ const FormInputText = ({
         <TextField
           label={label}
           variant="outlined"
+          multiline={multiline}
+          rows={rows}
           onChange={onChange}
+          disabled={disabled}
           value={value}
           error={!!error}
           className={className}

@@ -43,6 +43,7 @@ declare interface TableData {
   reminderSent: boolean;
   status: string;
   servicesDetails: ServiceType[];
+  type: string;
 }
 
 declare interface TableHeader {

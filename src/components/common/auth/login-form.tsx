@@ -4,6 +4,7 @@ import { Button, TextField } from "@mui/material";
 import logo from "@/assets/image/logo.jpg";
 import Image from "next/image";
 import instance from "@/config/axios.config";
+import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 
 const LoginForm = () => {
@@ -23,6 +24,10 @@ const LoginForm = () => {
       })
       .catch((err) => {
         console.log(err);
+        
+        if (err.response) {
+          toast.error(err.response.data.message[0].messages[0].message);
+        }
       });
   };
   return (
