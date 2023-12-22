@@ -81,6 +81,42 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         .finally(() => {
           callback && callback();
         });
+    } else {
+      let status = "QUERYRECEIVED";
+      if (data.quotedAt !== null) {
+        status = "QUOTEDTOCLIENT";
+      }
+      if (data.poNumber !== null) {
+        status = "ORDERCONFIRMED";
+      }
+      instance
+        .put(`/jobs/${data.id}`, {
+          services: data.services.map((service: any) => service.id),
+          ...data,
+          status,
+        })
+        .then((res) => {
+          toast.success("Job Updated Successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            pauseOnHover: true,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          
+          toast.error("Job Update Failed", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            pauseOnHover: true,
+          });
+        })
+        .finally(() => {
+          setShowModal && setShowModal(false);
+          callback && callback();
+        });
     }
   };
 
@@ -219,7 +255,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       {mode === "edit" ? (
         <div className="flex gap-4 mt-4">
           <Button
-            type="button"
+            type="submit"
             variant="contained"
             className="bg-green-600 hover:bg-green-700/90"
           >
