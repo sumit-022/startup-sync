@@ -28,9 +28,9 @@ const LoginForm = () => {
       .catch((err) => {
         console.log(err);
 
-        if (err.response) {
-          toast.error(err.response.data.message[0].messages[0].message);
-        }
+        // if (err.response) {
+        //   toast.error(err.response.data.message[0].messages[0].message);
+        // }
       });
   };
   return (

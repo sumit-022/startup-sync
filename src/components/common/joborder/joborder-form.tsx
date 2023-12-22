@@ -90,7 +90,8 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         status = "ORDERCONFIRMED";
       }
       instance
-        .put(`/jobs/${data.id}`, {
+        .put(`/jobs/${data.
+          id}`, {
           services: data.services.map((service: any) => service.id),
           ...data,
           status,
