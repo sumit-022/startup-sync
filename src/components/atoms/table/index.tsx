@@ -4,9 +4,11 @@ import FlagJobButton from "../button/flag";
 import EditJobButton from "../button/edit";
 import CancelJobButton from "../button/delete";
 import ViewJobButton from "../button/view";
+import formatDate from "@/utils/date-formatter";
+import clamp from "@/utils/clamp";
 
 interface TableProperties {
-  data: TableData[];
+  data: Jobtype[];
   className?: string;
   headers: {
     name: string;
@@ -77,7 +79,7 @@ const Table: React.FC<TableProperties> = ({
                 case "Job Description":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.jobDescription}
+                      {clamp(item?.description, 30)}
                     </td>
                   );
                 case "Quoted Date":
@@ -89,39 +91,33 @@ const Table: React.FC<TableProperties> = ({
                 case "Recieve Date":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.receivedAt}
+                      {formatDate(item.receivedAt)}
                     </td>
                   );
                 case "Ship Name":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.shipName}
+                      {item?.shipName}
                     </td>
                   );
                 case "Company Name":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.companyDetails.name}
+                      {item?.company?.name}
                     </td>
                   );
                 case "Service Coordinator":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.serviceCordinator.fullname}
+                      {item?.assignedTo?.fullname}
                     </td>
                   );
                 case "Status":
                   return (
                     <td className="p-2 w-[200px] text-center">
-                      {item.status === "completed" ? (
-                        <span className="text-white rounded-md bg-green-600 py-1 px-3">
-                          Completed
-                        </span>
-                      ) : (
-                        <span className="bg-yellow-600 py-1 px-3 text-white rounded-md">
-                          Pending
-                        </span>
-                      )}
+                      <span className="font-semibold italic text-sm bg-gray-400 p-1 text-white">
+                        {item.status}
+                      </span>
                     </td>
                   );
                 case "Action":
@@ -129,7 +125,7 @@ const Table: React.FC<TableProperties> = ({
                     <td>
                       <div className="flex gap-2 justify-center">
                         <FlagJobButton />
-                        <ViewJobButton />
+                        <ViewJobButton data={item} />
                         <EditJobButton data={item} />
                         <CancelJobButton />
                       </div>

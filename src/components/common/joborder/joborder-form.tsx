@@ -44,8 +44,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
 
   const n = useContext(NotificationContext);
 
-  console.log("vessel", data);
-
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
       ...data,

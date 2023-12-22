@@ -26,24 +26,23 @@ declare interface SidebarMenu {
 // reminderSent: true,
 // status: "Completed",
 
-declare interface TableData {
+declare interface Jobtype {
   id: number;
   jobCode: string;
   receivedAt: string;
-  quotedAt: string;
-  shipName: string;
-  companyDetails: CompanyType;
-  serviceCordinator: ServiceCordinatorType;
-  poNumber: string;
-  targetPort: string;
-  vesselEta: string;
-  jobDescription: string;
-  spares: string;
-  agent: string;
-  reminderSent: boolean;
+  quotedAt: string | null;
+  shipName: string | null;
+  company: CompanyType;
+  assignedTo: ServiceCordinatorType;
+  poNumber: string | null;
   status: string;
-  servicesDetails: ServiceType[];
   type: string;
+  jobCompleted: boolean;
+  services: ServiceType[];
+  invoiceDate: Date | null;
+  targetPort: string | null;
+  vesselEta: string | null;
+  description: string | null;
 }
 
 declare interface TableHeader {

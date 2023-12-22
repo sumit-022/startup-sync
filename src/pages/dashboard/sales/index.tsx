@@ -45,6 +45,8 @@ export default function SalesDashboard() {
     fetchTableData();
   }, []);
 
+  console.log("data", data);
+
   const convertToCSV = (objArray: any) => {
     const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
     let str = "";

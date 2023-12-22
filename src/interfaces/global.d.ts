@@ -12,6 +12,7 @@ interface ServiceCordinatorType {
 interface CompanyType {
   id: number;
   name: string;
+  address: string;
   city: string;
   state: string;
   country: string;
@@ -19,5 +20,5 @@ interface CompanyType {
 
 interface ServiceType {
   id: number;
-  name: string;
+  title: string;
 }
