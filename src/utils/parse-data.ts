@@ -1,4 +1,4 @@
-export function parseAttributes(data: any): any {
+export default function parseAttributes(data: any): any {
   if (Array.isArray(data)) {
     return data.map((item) => parseAttributes(item));
   }

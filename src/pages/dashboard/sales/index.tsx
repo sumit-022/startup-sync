@@ -19,7 +19,7 @@ import SearchJobOrder from "../../../components/common/joborder/joborder-search"
 import Tabs from "@/components/common/joborder/joborder-filters";
 import { useAuth } from "@/context/AuthContext";
 import instance from "@/config/axios.config";
-import { parseAttributes } from "@/utils/parse-data";
+import parseAttributes from "@/utils/parse-data";
 
 export default function SalesDashboard() {
   const [data, setData] = useState<any[]>([]);

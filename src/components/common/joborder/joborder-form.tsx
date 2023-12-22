@@ -13,7 +13,7 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
-import { parseAttributes } from "@/utils/parse-data";
+import parseAttributes from "@/utils/parse-data";
 import { NotificationContext } from "@/context/NotificationContext";
 
 interface JobOrderFormProperties {
