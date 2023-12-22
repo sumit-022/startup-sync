@@ -5,7 +5,7 @@ import JobOrderForm from "../../common/joborder/joborder-form";
 
 interface EditJobButtonProperties {
   className?: string;
-  data?: TableData;
+  data?: any;
 }
 
 const EditJobButton: React.FC<EditJobButtonProperties> = ({
