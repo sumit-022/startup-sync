@@ -14,12 +14,14 @@ interface TableProperties {
     name: string;
     show: boolean;
   }[];
+  callback: any;
 }
 
 const Table: React.FC<TableProperties> = ({
   data,
   className = "",
   headers,
+  callback,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState(data.map(() => false));
@@ -126,7 +128,7 @@ const Table: React.FC<TableProperties> = ({
                       <div className="flex gap-2 justify-center">
                         <FlagJobButton />
                         <ViewJobButton data={item} />
-                        <EditJobButton data={item} />
+                        <EditJobButton data={item} callback={callback} />
                         <CancelJobButton />
                       </div>
                     </td>

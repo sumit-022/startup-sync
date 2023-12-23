@@ -10,6 +10,7 @@ const FormInputText = ({
   disabled,
   multiline,
   rows,
+  type,
 }: {
   name: string;
   label: string;
@@ -18,6 +19,7 @@ const FormInputText = ({
   multiline?: boolean;
   className?: string;
   rows?: number;
+  type?: "text" | "password";
 }) => {
   return (
     <Controller
@@ -31,6 +33,7 @@ const FormInputText = ({
           rows={rows}
           onChange={onChange}
           disabled={disabled}
+          type={type}
           value={value}
           error={!!error}
           className={className}

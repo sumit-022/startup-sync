@@ -1,19 +1,17 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Button, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import logo from "@/assets/image/logo.jpg";
 import Image from "next/image";
 import instance from "@/config/axios.config";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { NotificationContext } from "@/context/NotificationContext";
+import FormInputText from "@/components/atoms/input/text";
 
 const LoginForm = () => {
-  const { register, handleSubmit, formState } = useForm();
-  const { errors } = formState;
+  const { handleSubmit, control } = useForm();
   const router = useRouter();
-
-  const n = useContext(NotificationContext);
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -26,11 +24,7 @@ const LoginForm = () => {
         router.push("/");
       })
       .catch((err) => {
-        console.log(err);
-
-        // if (err.response) {
-        //   toast.error(err.response.data.message[0].messages[0].message);
-        // }
+        toast.error(err.response.data.error.message);
       });
   };
   return (
@@ -41,22 +35,16 @@ const LoginForm = () => {
       <Image src={logo} width={200} height={200} alt="logo" className="" />
       <h1 className="text-left font-bold text-lg uppercase">Login</h1>
       <div className="flex w-full flex-col gap-3">
-        <TextField
+        <FormInputText
           label="Username or Email"
-          variant="outlined"
-          {...register("identifier", {
-            required: "This field is required",
-          })}
-          error={!!errors.identifier}
+          control={control}
+          name="identifier"
         />
-        <TextField
+        <FormInputText
           label="Password"
           type="password"
-          variant="outlined"
-          {...register("password", {
-            required: "This field is required",
-          })}
-          error={!!errors.password}
+          control={control}
+          name="password"
         />
       </div>
       <Button

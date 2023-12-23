@@ -116,6 +116,7 @@ export default function SalesDashboard() {
         <Table
           data={data}
           headers={selectedHeaders.filter((item) => item.show)}
+          callback={fetchTableData}
         />
       </div>
       <Modal

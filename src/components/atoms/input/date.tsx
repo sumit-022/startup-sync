@@ -25,7 +25,9 @@ const FormInputDate = ({
             format="DD/MM/YYYY"
             {...(value && { value: dayjs(value as Date) })}
             onChange={(value: any) => {
-              onChange(value.$d);
+              var os = value.$d.getTimezoneOffset() * 60 * 1000;
+              var date = new Date(value.$d.getTime() - os);
+              onChange(date);
             }}
             slotProps={{
               textField: {

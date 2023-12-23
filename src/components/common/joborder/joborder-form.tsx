@@ -19,9 +19,9 @@ import { NotificationContext } from "@/context/NotificationContext";
 interface JobOrderFormProperties {
   mode: "edit" | "create";
   authData: AuthData | null;
-  setShowModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   data?: any;
-  callback?: any;
+  callback: any;
 }
 
 const JobOrderForm: React.FC<JobOrderFormProperties> = ({
@@ -40,7 +40,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const [modal, setModal] = React.useState(false);
   const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState(false);
-  const jobCode = "2023-SE-001";
 
   const n = useContext(NotificationContext);
 
@@ -75,26 +74,18 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             theme: "colored",
             pauseOnHover: true,
           });
-          callback && callback();
-          setShowModal && setShowModal(false);
         })
         .finally(() => {
-          callback && callback();
+          setShowModal && setShowModal(false);
+          callback();
         });
-    } else {
-      let status = "QUERYRECEIVED";
-      if (data.quotedAt !== null) {
-        status = "QUOTEDTOCLIENT";
-      }
-      if (data.poNumber !== null) {
-        status = "ORDERCONFIRMED";
-      }
+    } else if (mode === "edit") {
       instance
-        .put(`/jobs/${data.
-          id}`, {
-          services: data.services.map((service: any) => service.id),
-          ...data,
-          status,
+        .put(`/jobs/${data.id}`, {
+          data: {
+            services: data.services.map((service: any) => service.id),
+            ...data,
+          },
         })
         .then((res) => {
           toast.success("Job Updated Successfully", {
@@ -103,10 +94,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             theme: "colored",
             pauseOnHover: true,
           });
+          callback && callback();
+          setShowModal && setShowModal(false);
         })
         .catch((err) => {
           console.log(err);
-          
           toast.error("Job Update Failed", {
             position: "top-right",
             autoClose: 3000,
@@ -115,7 +107,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           });
         })
         .finally(() => {
-          setShowModal && setShowModal(false);
           callback && callback();
         });
     }
@@ -185,6 +176,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
               })) || []
             );
           }}
+          disabled
         />
       </InputGroup>
       <InputGroup>
@@ -225,33 +217,24 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         />
       </InputGroup>
       {mode === "edit" && (
-        <InputGroup inputs={2}>
-          <Autocomplete
-            multiple
-            options={services}
-            renderInput={(params) => (
-              <TextField {...params} label="SPARES" placeholder="SPARES" />
-            )}
+        <div className="flex gap-1">
+          <FormInputSelect
+            id="agent"
+            name="agentId"
+            label="AGENT"
+            control={control}
+            fetchFunction={async () => {
+              const { data } = await instance.get(`/agents`);
+              return (
+                data.data.map((company: any) => ({
+                  id: company.id,
+                  name: company.attributes.name,
+                })) || []
+              );
+            }}
           />
-          <div className="flex gap-1">
-            <FormInputSelect
-              id="agent"
-              name="agentId"
-              label="AGENT"
-              control={control}
-              fetchFunction={async () => {
-                const { data } = await instance.get(`/agents`);
-                return (
-                  data.data.map((company: any) => ({
-                    id: company.id,
-                    name: company.attributes.name,
-                  })) || []
-                );
-              }}
-            />
-            <AddAgent />
-          </div>
-        </InputGroup>
+          <AddAgent />
+        </div>
       )}
       {mode === "edit" ? (
         <div className="flex gap-4 mt-4">
