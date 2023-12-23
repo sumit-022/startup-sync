@@ -49,3 +49,12 @@ declare interface TableHeader {
   name: string;
   show: boolean;
 }
+
+declare interface FilterType {
+  queriedFrom: Date | null;
+  queriedUpto: Date | null;
+  QoutedFrom: Date | null;
+  QoutedUpto: Date | null;
+  type: string | null;
+  assignedTo: string | null;
+}

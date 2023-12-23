@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import instance from "@/config/axios.config";
 import { TiTick } from "react-icons/ti";
 import { MdDelete } from "react-icons/md";
@@ -7,14 +7,18 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import { FormControl, IconButton } from "@mui/material";
 
-const FilterForm = () => {
+const FilterForm = ({
+  setFilters,
+}: {
+  setFilters: React.Dispatch<React.SetStateAction<any>>;
+}) => {
   const { handleSubmit, control, reset } = useForm<{
     queriedFrom: Date | null;
     queriedUpto: Date | null;
     quotedFrom: Date | null;
     quotedUpto: Date | null;
-    type: number | null;
-    serviceCordinatorId: number | null;
+    type: ServiceType | null;
+    assignedTo: ServiceCordinatorType | null;
   }>({
     defaultValues: {
       queriedFrom: null,
@@ -22,11 +26,14 @@ const FilterForm = () => {
       quotedFrom: null,
       quotedUpto: null,
       type: null,
-      serviceCordinatorId: null,
+      assignedTo: null,
     },
   });
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    console.log(data);
+    setFilters(data);
+  };
 
   return (
     <FormControl className="grid grid-cols-[1fr,1fr,1fr,auto] gap-4 place-items-center">
@@ -67,15 +74,17 @@ const FilterForm = () => {
           id="status"
         />
         <FormInputSelect
-          name="serviceCordinatorId"
+          name="assignedTo"
           label="Service Cordinator"
           control={control}
           fetchFunction={async () => {
-            const { data } = await instance.get("/users");
-            return data.map((user: any) => ({
-              id: user.id,
-              name: user.fullname,
-            }));
+            const { data } = await instance.get(`/users`);
+            return (
+              data.map((user: any) => ({
+                id: user.id,
+                name: user.fullname,
+              })) || []
+            );
           }}
           id="engineer"
         />

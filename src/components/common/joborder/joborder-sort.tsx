@@ -20,12 +20,14 @@ interface Props {
     >
   >;
   onDownload?: () => void;
+  setFilters: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const Filters: React.FC<Props> = ({
   availableHeaders,
   setSelectedHeaders,
   onDownload,
+  setFilters,
 }) => {
   const [filters, showFilters] = useState(false);
   const [configure, showConfigure] = useState(false);
@@ -66,7 +68,7 @@ const Filters: React.FC<Props> = ({
           setSelectedHeaders={setSelectedHeaders}
         />
       )}
-      {filters && <FilterForm />}
+      {filters && <FilterForm setFilters={setFilters} />}
     </div>
   );
 };

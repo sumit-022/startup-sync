@@ -25,27 +25,26 @@ export default function SalesDashboard() {
   const [data, setData] = useState<any[]>([]);
   const { authData, isLoading } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
-  const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
+  const [filters, setFilters] = useState<FilterType>({
+    queriedFrom: null,
+    queriedUpto: null,
+    QoutedFrom: null,
+    QoutedUpto: null,
+    type: null,
+    assignedTo: null,
+  });
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const filtered = data.filter((item) => {
-      return item.jobCode.toLowerCase().includes(value.toLowerCase());
-    });
-    setData(filtered);
-  };
+  const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
   const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {
-      setData(parseAttributes(res.data));
+      setData(parseAttributes(res.data).sort((a: any, b: any) => a.id - b.id));
     });
   };
 
   useEffect(() => {
     fetchTableData();
   }, []);
-
-  console.log("data", data);
 
   const convertToCSV = (objArray: any) => {
     const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
@@ -99,11 +98,7 @@ export default function SalesDashboard() {
         </Button>
       </div>
       <div className="my-4 flex flex-col gap-3">
-        <SearchJobOrder
-          onChange={(e) => {
-            handleSearch(e);
-          }}
-        />
+        <SearchJobOrder />
         <Tabs allcount="100" qoutedcount="100" querycount="100" />
         <Filters
           availableHeaders={selectedHeaders}
@@ -111,6 +106,7 @@ export default function SalesDashboard() {
           onDownload={() => {
             downloadTable();
           }}
+          setFilters={setFilters}
         />
 
         <Table
