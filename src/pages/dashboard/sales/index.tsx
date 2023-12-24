@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { CgMediaLive } from "react-icons/cg";
 import dynamic from "next/dynamic";
@@ -22,22 +22,37 @@ import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 
 export default function SalesDashboard() {
+  const allData = useRef<any[]>([]);
+
   const [data, setData] = useState<any[]>([]);
   const { authData, isLoading } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [filters, setFilters] = useState<FilterType>({
-    queriedFrom: null,
-    queriedUpto: null,
-    QoutedFrom: null,
-    QoutedUpto: null,
-    type: null,
-    assignedTo: null,
+    queriedFrom: () => true,
+    queriedUpto: () => true,
+    quotedFrom: () => true,
+    quotedUpto: () => true,
+    type: () => true,
+    assignedTo: () => true,
   });
+
+  useEffect(() => {
+    // Update the data to be shown in the table
+    let newData = [...allData.current];
+    Object.values(filters).forEach((filterFunc) => {
+      newData = newData.filter(filterFunc);
+    });
+
+    console.log({ filters, newData });
+
+    setData(newData);
+  }, [filters]);
 
   const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
   const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {
+      allData.current = parseAttributes(res.data);
       setData(parseAttributes(res.data).sort((a: any, b: any) => a.id - b.id));
     });
   };

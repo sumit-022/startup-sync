@@ -6,7 +6,7 @@ import JobOrderView from "@/components/common/joborder/joborder-view";
 
 interface ViewJobButtonProperties {
   className?: string;
-  data?: Jobtype;
+  data?: JobType;
 }
 
 const ViewJobButton: React.FC<ViewJobButtonProperties> = ({

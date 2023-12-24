@@ -26,23 +26,25 @@ declare interface SidebarMenu {
 // reminderSent: true,
 // status: "Completed",
 
-declare interface Jobtype {
+declare type JobNature = "SERVICES" | "SPARES SUPPLY";
+
+declare interface JobType {
   id: number;
   jobCode: string;
-  receivedAt: string;
-  quotedAt: string | null;
-  shipName: string | null;
+  receivedAt: string | undefined;
+  quotedAt: string | undefined;
+  shipName: string | undefined;
   company: CompanyType;
-  assignedTo: ServiceCordinatorType;
-  poNumber: string | null;
+  assignedTo: ServiceCoordinatorType;
+  poNumber: string | undefined;
   status: string;
-  type: string;
+  type: JobNature | undefined;
   jobCompleted: boolean;
   services: ServiceType[];
-  invoiceDate: Date | null;
-  targetPort: string | null;
-  vesselEta: string | null;
-  description: string | null;
+  invoiceDate: Date | undefined;
+  targetPort: string | undefined;
+  vesselEta: string | undefined;
+  description: string | undefined;
 }
 
 declare interface TableHeader {
@@ -51,10 +53,10 @@ declare interface TableHeader {
 }
 
 declare interface FilterType {
-  queriedFrom: Date | null;
-  queriedUpto: Date | null;
-  QoutedFrom: Date | null;
-  QoutedUpto: Date | null;
-  type: string | null;
-  assignedTo: string | null;
+  queriedFrom: (val: JobType) => boolean;
+  queriedUpto: (val: JobType) => boolean;
+  quotedFrom: (val: JobType) => boolean;
+  quotedUpto: (val: JobType) => boolean;
+  type: (val: JobType) => boolean;
+  assignedTo: (val: JobType) => boolean;
 }

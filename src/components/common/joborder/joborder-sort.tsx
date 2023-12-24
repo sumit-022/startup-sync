@@ -20,7 +20,7 @@ interface Props {
     >
   >;
   onDownload?: () => void;
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
+  setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
 }
 
 const Filters: React.FC<Props> = ({

@@ -2,11 +2,16 @@ declare interface Callback<T = { [key: string]: value }> {
   (result?: T, error?: Error): void;
 }
 
-interface ServiceCordinatorType {
-  id: number;
-  username: string;
+interface ServiceCoordinatorType {
+  blocked: boolean;
+  confirmed: boolean;
+  createdAt: string;
   email: string;
   fullname: string;
+  id: number;
+  provider: string;
+  updatedAt: string;
+  username: string;
 }
 
 interface CompanyType {

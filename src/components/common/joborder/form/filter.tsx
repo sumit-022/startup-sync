@@ -1,5 +1,5 @@
 import React from "react";
-import { set, useForm } from "react-hook-form";
+import { SubmitHandler, set, useForm } from "react-hook-form";
 import instance from "@/config/axios.config";
 import { TiTick } from "react-icons/ti";
 import { MdDelete } from "react-icons/md";
@@ -7,19 +7,21 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import { FormControl, IconButton } from "@mui/material";
 
+type FilterForm = {
+  queriedFrom: Date | null;
+  queriedUpto: Date | null;
+  quotedFrom: Date | null;
+  quotedUpto: Date | null;
+  type: string | null;
+  assignedTo: number | null;
+};
+
 const FilterForm = ({
   setFilters,
 }: {
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
+  setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
 }) => {
-  const { handleSubmit, control, reset } = useForm<{
-    queriedFrom: Date | null;
-    queriedUpto: Date | null;
-    quotedFrom: Date | null;
-    quotedUpto: Date | null;
-    type: ServiceType | null;
-    assignedTo: ServiceCordinatorType | null;
-  }>({
+  const { handleSubmit, control, reset } = useForm<FilterForm>({
     defaultValues: {
       queriedFrom: null,
       queriedUpto: null,
@@ -30,9 +32,31 @@ const FilterForm = ({
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit: SubmitHandler<FilterForm> = (data) => {
     console.log(data);
-    setFilters(data);
+    setFilters({
+      queriedFrom: ({ receivedAt }) =>
+        !data.queriedFrom ||
+        (!!receivedAt && new Date(receivedAt) >= data.queriedFrom),
+      queriedUpto: ({ receivedAt }) =>
+        !data.queriedUpto ||
+        (!!receivedAt && new Date(receivedAt) <= data.queriedUpto),
+      quotedFrom: ({ quotedAt }) =>
+        !data.quotedFrom ||
+        (!!quotedAt && new Date(quotedAt) >= data.quotedFrom),
+      quotedUpto: ({ quotedAt }) =>
+        !data.quotedUpto || !quotedAt || new Date(quotedAt) <= data.quotedUpto,
+      type: ({ type }) => {
+        return !data.type || (!!type && type === data.type);
+      },
+      assignedTo: ({ assignedTo }) => {
+        console.log({ assignedTo, formAssigned: data.assignedTo });
+        return (
+          !data.assignedTo ||
+          (!!assignedTo && assignedTo.id === data.assignedTo)
+        );
+      },
+    });
   };
 
   return (
@@ -68,8 +92,8 @@ const FilterForm = ({
           label="Nature of Job"
           control={control}
           fetchFunction={async () => [
-            { id: 1, name: "Services" },
-            { id: 2, name: "Spare Supply" },
+            { id: "SERVICES", name: "Services" },
+            { id: "SPARES SUPPLY", name: "Spare Supply" },
           ]}
           id="status"
         />

@@ -8,7 +8,7 @@ import formatDate from "@/utils/date-formatter";
 import clamp from "@/utils/clamp";
 
 interface TableProperties {
-  data: Jobtype[];
+  data: JobType[];
   className?: string;
   headers: {
     name: string;
