@@ -129,7 +129,7 @@ const Table: React.FC<TableProperties> = ({
                         <FlagJobButton />
                         <ViewJobButton data={item} />
                         <EditJobButton data={item} callback={callback} />
-                        <CancelJobButton />
+                        <CancelJobButton data={item} callback={callback} />
                       </div>
                     </td>
                   );
