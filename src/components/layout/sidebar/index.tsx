@@ -94,7 +94,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                     <Link
                       href={`/${menu.slug}`}
                       className={`relative flex items-center justify-between rounded-lg px-4 py-3 text-base font-light tracking-wide text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-bright-blue/80 hover:text-primary-white ${
-                        pathname == `${menu.slug}` &&
+                        pathname.includes(menu.slug) &&
                         "bg-primary-bright-blue text-primary-white"
                       }`}
                     >

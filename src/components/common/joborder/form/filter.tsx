@@ -33,7 +33,6 @@ const FilterForm = ({
   });
 
   const onSubmit: SubmitHandler<FilterForm> = (data) => {
-    console.log(data);
     setFilters({
       queriedFrom: ({ receivedAt }) =>
         !data.queriedFrom ||
@@ -50,7 +49,6 @@ const FilterForm = ({
         return !data.type || (!!type && type === data.type);
       },
       assignedTo: ({ assignedTo }) => {
-        console.log({ assignedTo, formAssigned: data.assignedTo });
         return (
           !data.assignedTo ||
           (!!assignedTo && assignedTo.id === data.assignedTo)

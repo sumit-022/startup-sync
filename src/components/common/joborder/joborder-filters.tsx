@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import React from "react";
 
 interface Props {
-  allcount: string;
+  allcount: number;
   querycount: string;
   qoutedcount: string;
 }

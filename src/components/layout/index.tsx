@@ -18,8 +18,8 @@ const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
   rightbar,
   className,
   decoration,
-  sidebar = true,
-  header = true,
+  sidebar,
+  header,
   user,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,7 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
         <main
           className={`${
             decoration ? decoration : "bg-white p-4"
-          } ${className} col-span-2 overflow-y-auto`}
+          } ${className} col-span-2 overflow-y-auto overflow-x-hidden`}
         >
           {children}
         </main>

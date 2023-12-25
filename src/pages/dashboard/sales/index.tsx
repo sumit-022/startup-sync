@@ -34,17 +34,14 @@ export default function SalesDashboard() {
     quotedUpto: () => true,
     type: () => true,
     assignedTo: () => true,
+    status: () => true,
   });
 
   useEffect(() => {
-    // Update the data to be shown in the table
     let newData = [...allData.current];
     Object.values(filters).forEach((filterFunc) => {
       newData = newData.filter(filterFunc);
     });
-
-    console.log({ filters, newData });
-
     setData(newData);
   }, [filters]);
 
@@ -94,7 +91,7 @@ export default function SalesDashboard() {
   };
 
   return (
-    <DashboardLayout user={authData}>
+    <DashboardLayout header sidebar user={authData}>
       <div className="flex gap-4">
         <Button
           icon={<MdAdd />}
@@ -104,8 +101,29 @@ export default function SalesDashboard() {
         >
           Add
         </Button>
-        <Button icon={<CgMediaLive />}>Live Jobs</Button>
-        <Button icon={<TiCancel />} className="bg-red-600">
+        <Button
+          icon={<CgMediaLive />}
+          onClick={() => {
+            setFilters({
+              ...filters,
+              status: (item) =>
+                item.status !== "JOBCANCELLED" ??
+                item.status !== "JOBCOMPLETED",
+            });
+          }}
+        >
+          Live Jobs
+        </Button>
+        <Button
+          icon={<TiCancel />}
+          className="bg-red-600"
+          onClick={() => {
+            setFilters({
+              ...filters,
+              status: (item) => item.status === "JOBCANCELLED",
+            });
+          }}
+        >
           Cancelled Jobs
         </Button>
         <Button icon={<BiHistory />} className="bg-green-600">
@@ -114,7 +132,7 @@ export default function SalesDashboard() {
       </div>
       <div className="my-4 flex flex-col gap-3">
         <SearchJobOrder />
-        <Tabs allcount="100" qoutedcount="100" querycount="100" />
+        <Tabs allcount={data.length ?? 0} qoutedcount="100" querycount="100" />
         <Filters
           availableHeaders={selectedHeaders}
           setSelectedHeaders={setSelectedHeaders}
