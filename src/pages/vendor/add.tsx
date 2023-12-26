@@ -11,9 +11,10 @@ import { useForm } from "react-hook-form";
 import VendorDetails from "@/components/common/vendor/forms/details";
 import ContactDetails from "@/components/common/vendor/forms/contact";
 import BankDetails from "@/components/common/vendor/forms/bank";
+import CommercialDetails from "@/components/common/vendor/forms/commercial";
 
 const VendorRegistrationPage = () => {
-  const { authData, isLoading } = useAuth();
+  const { authData } = useAuth();
   const labels = [
     { label: "Vendor Details", icon: FaRegAddressCard },
     { label: "Contact Details", icon: FaPhone },
@@ -21,7 +22,15 @@ const VendorRegistrationPage = () => {
     { label: "Commercial & Company Details", icon: BiSolidDetail },
   ];
   const [activeStep, setActiveStep] = React.useState(0);
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      services: [],
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
 
   const stepcontrols = {
     nextStep: () => {
@@ -56,29 +65,40 @@ const VendorRegistrationPage = () => {
             return <ContactDetails control={control} />;
           case 2:
             return <BankDetails control={control} />;
+          case 3:
+            return <CommercialDetails control={control} />;
           default:
-            return <h1>Hello</h1>;
+            return null;
         }
       })()}
       <div className="flex gap-4 mt-6">
-        <Button
-          variant="contained"
-          size="large"
-          onClick={stepcontrols.prevStep}
-          disabled={activeStep === 0}
-          className="bg-red-600"
-        >
-          Previous
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={stepcontrols.nextStep}
-          disabled={activeStep === labels.length - 1}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          Next
-        </Button>
+        {activeStep !== 0 && (
+          <Button
+            variant="contained"
+            className="bg-gray-500 hover:bg-gray-600"
+            onClick={stepcontrols.prevStep}
+          >
+            Previous
+          </Button>
+        )}
+        {activeStep !== labels.length - 1 && (
+          <Button
+            variant="contained"
+            className="bg-blue-500 hover:bg-blue-600"
+            onClick={stepcontrols.nextStep}
+          >
+            Next
+          </Button>
+        )}
+        {activeStep === labels.length - 1 && (
+          <Button
+            variant="contained"
+            className="bg-blue-500 hover:bg-blue-600"
+            onClick={handleSubmit(onSubmit)}
+          >
+            Submit
+          </Button>
+        )}
       </div>
     </DashboardLayout>
   );

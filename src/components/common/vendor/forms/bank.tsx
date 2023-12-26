@@ -36,9 +36,23 @@ const BankDetails: React.FC<BankDetailsProperties> = ({ control }) => {
         name="accountName"
         control={control}
       />
-      <FormInputText label="IFSC Code" name="ifscCode" control={control} />
-      <FormInputText label="MICR Code" name="micrCode" control={control} />
-      <FormInputText label="GST Number" name="gstNumber" control={control} />
+      <InputGroup inputs={3}>
+        <FormInputText
+          label="Bank Account Number"
+          name="accountNumber"
+          control={control}
+        />
+        <FormInputText
+          label="Swift Code / DFI Number"
+          name="swiftCode"
+          control={control}
+        />
+        <FormInputText
+          label="IBAN Number"
+          name="ibanNumber"
+          control={control}
+        />
+      </InputGroup>
     </FormControl>
   );
 };
