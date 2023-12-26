@@ -1,9 +1,12 @@
-import Loading from "@/components/atoms/loading";
-import DashboardLayout from "@/components/layout";
-import { useAuth } from "@/context/AuthContext";
+import React from 'react'
+import DashboardLayout from '@/components/layout'
 
-export default function Home() {
-  <DashboardLayout header sidebar>
+const HomePage = () => {
+  return (
+    <DashboardLayout header sidebar>
     <h1>Go to Purchase Dashboard</h1>
   </DashboardLayout>;
+  )
 }
+
+export default HomePage
