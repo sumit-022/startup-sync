@@ -59,5 +59,5 @@ declare interface FilterType {
   quotedUpto: (val: JobType) => boolean;
   type: (val: JobType) => boolean;
   assignedTo: (val: JobType) => boolean;
-  status: (val: JobType) => boolean;
+  status?: (val: JobType) => boolean;
 }
