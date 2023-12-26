@@ -11,6 +11,7 @@ const FormInputText = ({
   multiline,
   rows,
   type,
+  required,
 }: {
   name: string;
   label: string;
@@ -20,10 +21,12 @@ const FormInputText = ({
   className?: string;
   rows?: number;
   type?: "text" | "password";
+  required?: boolean;
 }) => {
   return (
     <Controller
       name={name}
+      rules={{ required: required ? "This field is required" : false }}
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextField
