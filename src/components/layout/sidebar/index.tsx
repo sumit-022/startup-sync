@@ -8,6 +8,7 @@ import { sidebar as MenuData } from "../../../data/dashboard";
 import Link from "../../atoms/link/nav-link";
 
 import SidebarLinkGroup from "./link-group";
+import { useAuth } from "@/context/AuthContext";
 
 interface DashboardSidebarProperties {
   sidebarOpen: boolean;
@@ -18,6 +19,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
   sidebarOpen,
   setSidebarOpen,
 }) => {
+  const { setAuthData } = useAuth();
   const router = useRouter();
   const { pathname } = router;
   console.log(pathname);
@@ -194,7 +196,14 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
             })}
           </div>
           <div className="my-3 px-3"></div>
-          <button className="center mx-auto my-2 w-10/12 justify-start gap-4 rounded-lg px-3 py-2 text-primary-cool-grey transition-all duration-300  ease-in-out hover:bg-primary-light-bright-blue/90 hover:text-white">
+          <button
+            className="center mx-auto my-2 w-10/12 justify-start gap-4 rounded-lg px-3 py-2 text-primary-cool-grey transition-all duration-300  ease-in-out hover:bg-primary-light-bright-blue/90 hover:text-white"
+            onClick={() => {
+              localStorage.removeItem("token");
+              setAuthData(null);
+              router.push("/auth/login");
+            }}
+          >
             <Image src={LogoutIcon} alt={""} />
             <h1 className="relative font-medium ">Logout</h1>
           </button>

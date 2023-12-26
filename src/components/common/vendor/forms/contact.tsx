@@ -56,24 +56,24 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
       <FormHeading heading="Receivables" />
       <FormInputText
         label="Contact Name Title"
-        name="salesName"
+        name="accountsName"
         control={control}
       />
       <InputGroup inputs={2}>
         <FormInputText
           label="Mobile Number"
-          name="salesmobile"
+          name="accountsmobile"
           control={control}
         />
         <FormInputText
           label="Land Line Number"
-          name="saleslandline"
+          name="accountslandline"
           control={control}
         />
       </InputGroup>
       <FormInputText
         label="Email Address"
-        name="salesemail"
+        name="accountsemail"
         control={control}
       />
     </FormControl>
