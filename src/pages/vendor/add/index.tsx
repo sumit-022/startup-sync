@@ -14,7 +14,6 @@ import BankDetails from "@/components/common/vendor/forms/bank";
 import CommercialDetails from "@/components/common/vendor/forms/commercial";
 
 const VendorRegistrationPage = () => {
-  const { authData } = useAuth();
   const labels = [
     { label: "Vendor Details", icon: FaRegAddressCard },
     { label: "Contact Details", icon: FaPhone },
@@ -42,7 +41,7 @@ const VendorRegistrationPage = () => {
   };
 
   return (
-    <DashboardLayout header={true} user={authData}>
+    <DashboardLayout header={true}>
       <Typography
         variant="h4"
         sx={{

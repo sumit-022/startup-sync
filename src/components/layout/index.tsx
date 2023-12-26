@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import Sidebar from "./sidebar";
 import Header from "./header";
+import { useAuth } from "@/context/AuthContext";
+import Loading from "../atoms/loading";
 
 interface DashboardLayoutProperties {
   children: React.ReactNode;
@@ -10,7 +12,6 @@ interface DashboardLayoutProperties {
   header?: boolean;
   className?: string;
   decoration?: string;
-  user: AuthData | null;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
@@ -20,17 +21,18 @@ const DashboardLayout: React.FC<DashboardLayoutProperties> = ({
   decoration,
   sidebar,
   header,
-  user,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { authData, isLoading } = useAuth();
 
+  if (isLoading) return <Loading />;
   return (
     <div className="grid grid-rows-[auto,1fr] overflow-hidden h-screen">
       {header && (
         <Header
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
-          user={user}
+          user={authData}
         />
       )}
       <div className="grid relative grid-cols-[auto,1fr,auto] overflow-hidden">

@@ -25,7 +25,7 @@ export default function SalesDashboard() {
   const allData = useRef<any[]>([]);
 
   const [data, setData] = useState<any[]>([]);
-  const { authData, isLoading } = useAuth();
+  const { authData } = useAuth();
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [filters, setFilters] = useState<FilterType>({
     queriedFrom: () => true,
@@ -91,7 +91,7 @@ export default function SalesDashboard() {
   };
 
   return (
-    <DashboardLayout header sidebar user={authData}>
+    <DashboardLayout header sidebar>
       <div className="flex gap-4">
         <Button
           icon={<MdAdd />}

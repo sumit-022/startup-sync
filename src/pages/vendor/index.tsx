@@ -5,9 +5,8 @@ import { Button, IconButton } from "@mui/material";
 import { FaPlus } from "react-icons/fa6";
 
 const VendorPage = () => {
-  const { authData } = useAuth();
   return (
-    <DashboardLayout header sidebar user={authData}>
+    <DashboardLayout header sidebar>
       <div className="flex gap-4">
         <Button
           variant="contained"
