@@ -1,14 +1,17 @@
 import DashboardLayout from "@/components/layout";
 import React from "react";
-import { useAuth } from "@/context/AuthContext";
-import { IconButton } from "@mui/material";
-import { FaPlus } from "react-icons/fa6";
+import { MdAdd } from "react-icons/md";
+import Button from "@/components/atoms/button";
+import { useRouter } from "next/router";
 
 const VendorPage = () => {
+  const router = useRouter();
   return (
     <DashboardLayout header sidebar>
       <div className="flex gap-4">
-        
+        <Button icon={<MdAdd />} onClick={() => router.push("/vendor/add")}>
+          Register Vendor
+        </Button>
       </div>
     </DashboardLayout>
   );
