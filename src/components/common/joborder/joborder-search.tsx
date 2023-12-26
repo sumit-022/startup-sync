@@ -1,4 +1,4 @@
-import Input from "@/components/atoms/input";
+import { TextField } from "@mui/material";
 import React from "react";
 import { FiSearch } from "react-icons/fi";
 
@@ -13,10 +13,9 @@ const SearchJobOrder: React.FC<SearchJobOrderProperties> = ({
 }) => {
   return (
     <div className="flex w-full">
-      <Input
+      <TextField
         placeholder="Enter Job Code to search.."
-        className="rounded-none"
-        wrapperClassName="w-full"
+        className="rounded-none flex-1 focus:border-transparent focus:ring-0 focus:outline-transparent"
         onChange={onChange}
       />
       <button className="bg-yellow-500 text-white p-2 px-4">
