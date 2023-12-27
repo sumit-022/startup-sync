@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
@@ -8,7 +8,7 @@ import { sidebar as MenuData } from "../../../data/dashboard";
 import Link from "../../atoms/link/nav-link";
 
 import SidebarLinkGroup from "./link-group";
-import { useAuth } from "@/context/AuthContext";
+import AuthContext from "@/context/AuthContext";
 
 interface DashboardSidebarProperties {
   sidebarOpen: boolean;
@@ -19,7 +19,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
   sidebarOpen,
   setSidebarOpen,
 }) => {
-  const { setAuthData } = useAuth();
+  const { setAuthData } = useContext(AuthContext);
   const router = useRouter();
   const { pathname } = router;
   console.log(pathname);

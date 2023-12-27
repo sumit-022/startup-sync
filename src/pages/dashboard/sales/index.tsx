@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { CgMediaLive } from "react-icons/cg";
 import dynamic from "next/dynamic";
@@ -17,15 +17,15 @@ import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import SearchJobOrder from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
-import { useAuth } from "@/context/AuthContext";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
+import AuthContext from "@/context/AuthContext";
 
 export default function SalesDashboard() {
   const allData = useRef<any[]>([]);
 
   const [data, setData] = useState<any[]>([]);
-  const { authData } = useAuth();
+  const { user } = useContext(AuthContext);
   const [showModal, setShowModal] = useAtom(modalAtom);
   const [filters, setFilters] = useState<FilterType>({
     queriedFrom: () => true,
@@ -155,7 +155,7 @@ export default function SalesDashboard() {
       >
         <JobOrderForm
           mode="create"
-          authData={authData}
+          authData={user}
           setShowModal={setShowModal}
           callback={fetchTableData}
         />

@@ -12,7 +12,7 @@ const AuthContext = React.createContext<{
   setAuthData: () => {},
 });
 
-export function useAuth() {
+function useAuth() {
   const router = useRouter();
   const [authData, setAuthData] = React.useState<AuthData | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -54,3 +54,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

@@ -1,6 +1,5 @@
 import Steps from "@/components/atoms/step";
 import DashboardLayout from "@/components/layout";
-import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { FaRegAddressCard } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
@@ -41,7 +40,7 @@ const VendorRegistrationPage = () => {
   };
 
   return (
-    <DashboardLayout header={true}>
+    <>
       <Typography
         variant="h4"
         sx={{
@@ -99,7 +98,7 @@ const VendorRegistrationPage = () => {
           </Button>
         )}
       </div>
-    </DashboardLayout>
+    </>
   );
 };
 
