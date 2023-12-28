@@ -1,5 +1,5 @@
 import React from "react";
-import { Controller } from "react-hook-form";
+import { Controller, FieldValues, RegisterOptions } from "react-hook-form";
 import { TextField } from "@mui/material";
 
 const FormInputText = ({
@@ -11,7 +11,7 @@ const FormInputText = ({
   multiline,
   rows,
   type,
-  required,
+  rules,
 }: {
   name: string;
   label: string;
@@ -21,12 +21,15 @@ const FormInputText = ({
   className?: string;
   rows?: number;
   type?: "text" | "password";
-  required?: boolean;
+  rules?: Omit<
+    RegisterOptions<FieldValues, string>,
+    "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
+  >;
 }) => {
   return (
     <Controller
       name={name}
-      rules={{ required: required ? "This field is required" : false }}
+      rules={rules}
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextField

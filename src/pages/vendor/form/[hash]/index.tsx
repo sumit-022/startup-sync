@@ -37,7 +37,12 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     { label: "Commercial & Company Details", icon: BiSolidDetail },
   ];
   const [activeStep, setActiveStep] = React.useState(initStep || 0);
-  const { control, handleSubmit, getValues } = useForm({
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    trigger,
+  } = useForm({
     defaultValues: cachedForm
       ? initValues
       : {
@@ -49,21 +54,21 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     console.log(data);
   };
 
-  const cacheData = async () => {
+  const cacheData = async (step: number) => {
     // Store the form in local storage
     localStorage.setItem(
       "vendorForm",
-      JSON.stringify({ ...getValues(), step: activeStep + 1 })
+      JSON.stringify({ ...getValues(), step })
     );
   };
 
   const stepcontrols = {
     nextStep: () => {
-      cacheData();
+      cacheData(activeStep + 1);
       setActiveStep((prev) => prev + 1);
     },
     prevStep: () => {
-      cacheData();
+      cacheData(activeStep);
       setActiveStep((prev) => prev - 1);
     },
   };
@@ -112,7 +117,13 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
           <Button
             variant="contained"
             className="bg-blue-500 hover:bg-blue-600"
-            onClick={stepcontrols.nextStep}
+            onClick={() => {
+              // Trigger a recheck of the form
+              trigger().then((noErrors) => {
+                if (!noErrors) return;
+                stepcontrols.nextStep();
+              });
+            }}
           >
             Next
           </Button>
