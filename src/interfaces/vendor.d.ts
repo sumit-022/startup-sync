@@ -19,4 +19,5 @@ interface VendorFormType {
   declaration: boolean;
   filled: boolean;
   hash: string;
+  categories: number[];
 }

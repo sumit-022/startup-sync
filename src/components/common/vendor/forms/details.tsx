@@ -20,6 +20,7 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
     >
       <FormInputText
         label="Legal Name of Vendor"
+        required={{ value: true, message: "This field is required" }}
         name="name"
         control={control}
         rules={{ required: "This field is required" }}
@@ -27,6 +28,11 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
       <FormInputText
         label="Tax and Business Registration Number"
         name="regNumber"
+        required={{ value: true, message: "This field is required" }}
+        pattern={{
+          value: /^[0-9]+$/,
+          message: "Only numbers are allowed",
+        }}
         control={control}
         rules={{ required: "This field is required" }}
       />

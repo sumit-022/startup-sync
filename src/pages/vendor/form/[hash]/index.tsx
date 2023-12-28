@@ -24,7 +24,6 @@ export default dynamic(() => Promise.resolve(VendorFormPage), {
 });
 
 const VendorFormPage = ({ hash }: VendorFormPageProps) => {
-  // Check if the form is in local storage
   const cachedForm = JSON.parse(localStorage.getItem("vendorForm") || "{}") as
     | (VendorFormType & { step: number })
     | undefined;
@@ -37,12 +36,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     { label: "Commercial & Company Details", icon: BiSolidDetail },
   ];
   const [activeStep, setActiveStep] = React.useState(initStep || 0);
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    trigger,
-  } = useForm({
+  const { control, handleSubmit, getValues, trigger } = useForm({
     defaultValues: cachedForm
       ? initValues
       : {
@@ -74,7 +68,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
   };
 
   return (
-    <>
+    <div className="p-8">
       <Typography
         variant="h4"
         sx={{
@@ -138,7 +132,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
           </Button>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
