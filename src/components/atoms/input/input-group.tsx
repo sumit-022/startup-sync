@@ -10,7 +10,7 @@ interface InputGroupProperties {
 const InputGroup: React.FC<InputGroupProperties> = ({
   children,
   className,
-  inputs = 3,
+  inputs,
 }) => {
   return (
     <div className={clsx(`grid gap-4 grid-cols-${inputs}`, className)}>

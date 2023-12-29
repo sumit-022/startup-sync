@@ -20,7 +20,6 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
     >
       <FormInputText
         label="Legal Name of Vendor"
-        required={{ value: true, message: "This field is required" }}
         name="name"
         control={control}
         rules={{ required: "This field is required" }}
@@ -28,13 +27,8 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
       <FormInputText
         label="Tax and Business Registration Number"
         name="regNumber"
-        required={{ value: true, message: "This field is required" }}
-        pattern={{
-          value: /^[0-9]+$/,
-          message: "Only numbers are allowed",
-        }}
         control={control}
-        rules={{ required: "This field is required" }}
+        // rules={{ required: "This field is required" }}
       />
       <FormHeading heading="Address" />
       <FormInputText
@@ -43,27 +37,27 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
         multiline
         rows={3}
         control={control}
-        rules={{ required: "This field is required" }}
+        // rules={{ required: "This field is required" }}
       />
       <InputGroup inputs={2}>
         <FormInputText
           label="City"
           name="city"
           control={control}
-          rules={{ required: "This field is required" }}
+          // rules={{ required: "This field is required" }}
         />
         <FormInputText
           label="Postal Code"
           name="zip"
           control={control}
-          rules={{ required: "This field is required" }}
+          // rules={{ required: "This field is required" }}
         />
       </InputGroup>
       <FormInputText
         label="Country"
         name="country"
         control={control}
-        rules={{ required: "This field is required" }}
+        // rules={{ required: "This field is required" }}
       />
     </FormControl>
   );

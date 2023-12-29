@@ -37,15 +37,20 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
   ];
   const [activeStep, setActiveStep] = React.useState(initStep || 0);
   const { control, handleSubmit, getValues, trigger } = useForm({
-    defaultValues: cachedForm
-      ? initValues
-      : {
-          services: [],
-        },
+    defaultValues: cachedForm ? initValues : {},
   });
 
   const onSubmit = (data: any) => {
-    console.log(data);
+    instance.post(`/vendors/form/${hash}`, {
+      ...data,
+      salescontact: {
+        name: data.salesName,
+        mobile: data.salesmobile,
+        landline: data.saleslandline,
+        email: data.salesemail,
+      },
+    });
+    localStorage.removeItem("vendorForm");
   };
 
   const cacheData = async (step: number) => {
@@ -112,7 +117,6 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
             variant="contained"
             className="bg-blue-500 hover:bg-blue-600"
             onClick={() => {
-              // Trigger a recheck of the form
               trigger().then((noErrors) => {
                 if (!noErrors) return;
                 stepcontrols.nextStep();

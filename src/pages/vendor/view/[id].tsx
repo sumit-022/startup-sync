@@ -1,27 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DashboardLayout from "@/components/layout";
-import { FormControl } from "@mui/material";
-import FormInputText from "@/components/atoms/input/text";
-import { useForm } from "react-hook-form";
-import FormHeading from "@/components/atoms/heading/form-heading";
+import VendorDetailForm from "@/components/common/vendor/forms/vendor-detail";
+import instance from "@/config/axios.config";
+import parseAttributes from "@/utils/parse-data";
 
 const VendorDetailsPage = (data: any) => {
-  const { handleSubmit, control } = useForm({
-    defaultValues: data,
-  });
+  const [categories, setCategories] = React.useState([]);
   return (
     <DashboardLayout header sidebar>
-      <h1 className="text-center font-bold text-2xl bg-primary-bright-blue rounded-full text-white">
-        VENDOR DETAILS
+      <h1 className="text-center font-bold text-2xl py-2 bg-[#fb5913] rounded-full text-white">
+        VIEW VENDOR DETAILS
       </h1>
-      <FormControl
-        fullWidth
-        sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}
-      >
-        <FormHeading heading="Vendor Details" />
-        <FormInputText label="Vendor Name" name="name" control={control} />
-        <FormInputText label="Email" name="email" control={control} />
-      </FormControl>
+      <VendorDetailForm mode="view" data={data} />
     </DashboardLayout>
   );
 };
