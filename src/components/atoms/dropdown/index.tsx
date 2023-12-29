@@ -3,10 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 type DropdownProperties = {
   children: (handleClick: () => void, open: boolean) => React.ReactNode;
   activeCondition: boolean;
-  table: boolean;
 };
 
-const Dropdown = ({ children, activeCondition, table }: DropdownProperties) => {
+const Dropdown = ({ children, activeCondition }: DropdownProperties) => {
   const [open, setOpen] = useState(activeCondition);
   const dropdownRef = useRef(null);
 
@@ -36,14 +35,10 @@ const Dropdown = ({ children, activeCondition, table }: DropdownProperties) => {
     };
   }, [open]);
 
-  return !table ? (
+  return (
     <li className="list-none" ref={dropdownRef}>
       {children(handleClick, open)}
     </li>
-  ) : (
-    <th className="text-center py-2" ref={dropdownRef}>
-      {children(handleClick, open)}
-    </th>
   );
 };
 

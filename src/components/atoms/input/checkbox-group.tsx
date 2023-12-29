@@ -5,7 +5,7 @@ import { Controller } from "react-hook-form";
 interface FormInputCheckboxGroupProperties {
   control: any;
   name: string;
-  labels: string[];
+  labels: { title: string; id: string }[];
 }
 
 const FormInputCheckboxGroup: React.FC<FormInputCheckboxGroupProperties> = ({
@@ -17,28 +17,33 @@ const FormInputCheckboxGroup: React.FC<FormInputCheckboxGroupProperties> = ({
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <FormGroup>
-          {labels.map((label, index) => (
-            <FormControlLabel
-              key={index}
-              control={
-                <Checkbox
-                  checked={value.includes(label)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      onChange([...value, label]);
-                    } else {
-                      onChange(value.filter((item: any) => item !== label));
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
+        if (!value) {
+          value = [];
+        }
+        return (
+          <FormGroup>
+            {labels.map((label, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={value.includes(label.id)}
+                    onChange={(e) =>
+                      onChange(
+                        e.target.checked
+                          ? [...value, label.id]
+                          : value.filter((id: string) => id !== label.id)
+                      )
                     }
-                  }}
-                />
-              }
-              label={label}
-            />
-          ))}
-        </FormGroup>
-      )}
+                  />
+                }
+                label={label.title}
+              />
+            ))}
+          </FormGroup>
+        );
+      }}
     />
   );
 };

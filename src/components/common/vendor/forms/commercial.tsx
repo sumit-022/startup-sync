@@ -61,8 +61,8 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
       {services.length > 0 && (
         <FormInputCheckboxGroup
           control={control}
-          name="services"
-          labels={services.map((service: any) => service.title)}
+          name="categories"
+          labels={services}
         />
       )}
       <FormHeading heading="Declaration" />

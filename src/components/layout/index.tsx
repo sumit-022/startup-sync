@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import Sidebar from "./sidebar";
 import Header from "./header";
 import AuthContext, { AuthProvider } from "@/context/AuthContext";
