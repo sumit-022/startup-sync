@@ -25,7 +25,11 @@ type FlagForm = {
 const FlagJobButton = ({ job }: { job: JobType }) => {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { control, handleSubmit } = useForm<FlagForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, isDirty, isValid },
+  } = useForm<FlagForm>({
     defaultValues: {
       body: job.notification?.body || "",
       title: job.notification?.title || "",
@@ -33,6 +37,7 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
         ? job.notification?.timestamp
         : undefined,
     },
+    mode: "onChange",
   });
 
   const n = useContext(NotificationContext);
@@ -62,13 +67,12 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
         title: data.title,
         body: data.body,
         timestamp: data.timestamp,
+        viewed: false,
       });
     }
   };
 
-  const overdue =
-    new Date(job.notification?.timestamp || new Date().toISOString()) <
-      new Date() && !job.notification?.viewed;
+  let overdue = n.checkOverdue(job.id.toString());
 
   return (
     <>
@@ -76,7 +80,14 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
         className={`text-white text-sm p-2 rounded-full ${
           job.notification ? "bg-red-600" : "bg-gray-400"
         } hover:bg-red-700 ${overdue && "animate-pulse"}`}
-        onClick={() => setModal(true)}
+        onClick={() => {
+          setModal(true);
+          // Mark the notification as viewed
+          if (overdue) {
+            n.markViewed(job.id.toString());
+            overdue = false;
+          }
+        }}
       >
         <FaFlag />
       </IconButton>
@@ -140,9 +151,10 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
               className="bg-red-600 hover:bg-red-700 w-full flex gap-1"
               onClick={handleSubmit(onSubmit)}
               loading={loading}
+              disabled={!isDirty || !isValid}
             >
               <FaFlag />
-              Flag
+              {overdue ? "Update" : "Flag"}
             </LoadingButton>
           </FormControl>
         </Box>

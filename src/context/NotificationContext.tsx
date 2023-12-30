@@ -1,19 +1,18 @@
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import AuthContext from "./AuthContext";
 
 export type NotificationData = {
   title: string;
   body: string;
   timestamp: string;
+  viewed: boolean;
 };
 
 export type JobNotificationData = {
-  title?: string;
-  body?: string;
-  timestamp: string;
-  viewed: boolean;
-};
+  jobId: string;
+} & NotificationData;
 
 export type NotificationId = ReturnType<typeof setTimeout>;
 
@@ -27,8 +26,9 @@ export const NotificationContext = createContext<{
   replaceNotification: (jobId: string, notification: NotificationData) => void;
   deleteNotification: (jobId: string) => void;
   getAllNotifications: () => JobNotificationData[];
-
+  checkOverdue: (jobId: string) => boolean;
   refreshNotificationData: (data: JobType[]) => void;
+  markViewed: (jobId: string) => Promise<void>;
 }>({
   activeNotifications: [],
   scheduleNotification: (id, notification) => {
@@ -41,7 +41,9 @@ export const NotificationContext = createContext<{
   replaceNotification: () => {},
   deleteNotification: () => {},
   getAllNotifications: () => [],
+  checkOverdue: () => false,
   refreshNotificationData: () => {},
+  markViewed: () => Promise.resolve(),
 });
 
 export const NotificationProvider = ({
@@ -49,6 +51,8 @@ export const NotificationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { user } = useContext(AuthContext);
+
   const [timers, setTimers] = useState<
     { id: NotificationId; data: NotificationData; jobId: string }[]
   >([]);
@@ -73,30 +77,22 @@ export const NotificationProvider = ({
     };
   };
 
-  const scheduleNotifs = (data: JobType[]) => {
+  const bulkSchedule = (data: JobType[]) => {
     // Schedule notifications for each job
     data.forEach((job) => {
-      if (job?.notification && job?.notification?.viewed === false) {
+      if (job?.notification && job?.notification.viewed === false) {
         scheduleNotification(
           job.id.toString(),
           {
             title: job.notification.title,
             body: job.notification.body,
             timestamp: job.notification.timestamp,
+            viewed: job.notification.viewed,
           },
           () => {
             console.log("CLOSED");
             // Update the notification to viewed
-            instance
-              .put(`/jobs/${job.id}`, {
-                data: {
-                  notification: {
-                    ...job.notification,
-                    viewed: true,
-                  },
-                },
-              })
-              .then((res) => console.log({ res }));
+            markViewed(job.id.toString()).then((res) => console.log({ res }));
           }
         );
       }
@@ -105,19 +101,20 @@ export const NotificationProvider = ({
 
   // Ask for permission to use notifications
   useEffect(() => {
+    if (!user) {
+      console.warn("No user, aborting notification setup");
+      resetTimers();
+      return;
+    }
+
     Notification.requestPermission();
 
     // Fetch the data too
     instance.get("/jobs?populate=*").then((res) => {
-      const data = parseAttributes(res.data.data);
-
-      allNotifications.current = data
-        .map((job: any) => job?.notification)
-        .filter((notif: any) => notif);
-
-      scheduleNotifs(data);
+      const data = parseAttributes(res.data.data) as JobType[];
+      refreshNotificationData(data);
     });
-  }, []);
+  }, [user]);
 
   const scheduleNotification = (
     jobId: string,
@@ -138,21 +135,21 @@ export const NotificationProvider = ({
     jobId: string,
     notification: NotificationData
   ) => {
-    console.log({ jobId, notification });
-    const newId = setTimeout(() => {
-      triggerNotification(notification);
-      setTimers(timers.filter((timer) => timer.id !== newId));
-    }, new Date(notification.timestamp).getTime() - Date.now());
-
-    setTimers(
-      timers.map((timer) => {
-        if (timer.jobId === jobId) {
-          clearTimeout(timer.id);
-          return { id: newId, data: notification, jobId: timer.jobId };
-        }
-        return timer;
-      })
+    setTimers((timers) => timers.filter((timer) => timer.jobId !== jobId));
+    allNotifications.current = allNotifications.current.filter(
+      (n) => n.jobId !== jobId
     );
+
+    allNotifications.current.push({
+      jobId,
+      ...notification,
+    });
+
+    return scheduleNotification(jobId, notification, () => {
+      console.log("CLOSED");
+      // Update the notification to viewed
+      markViewed(jobId).then((res) => console.log({ res }));
+    });
   };
 
   const deleteNotification = (jobId: string) => {
@@ -161,17 +158,68 @@ export const NotificationProvider = ({
     setTimers(timers.filter((timer) => timer.jobId !== jobId));
   };
 
+  const markViewed = async (jobId: string) => {
+    const notif = allNotifications.current.find((n) => n.jobId === jobId);
+    await instance.put(`/jobs/${jobId}`, {
+      data: {
+        notification: {
+          ...notif,
+          viewed: true,
+        },
+      },
+    });
+    // Update the notification to viewed
+    allNotifications.current = allNotifications.current.map((n) => {
+      if (n.jobId === jobId) {
+        return {
+          ...n,
+          viewed: true,
+        };
+      }
+      return n;
+    });
+    // Update the timer
+    setTimers((timers) => timers.filter((timer) => timer.jobId !== jobId));
+  };
+
   const getAllNotifications = () => {
     return allNotifications.current;
   };
 
-  const refreshNotificationData = (data: JobType[]) => {
-    allNotifications.current = data
-      .map((job: any) => job?.notification)
-      .filter((notif: any) => notif);
-
-    scheduleNotifs(data);
+  const resetTimers = () => {
+    timers.forEach((timer) => {
+      clearInterval(timer.id);
+    });
+    setTimers([]);
   };
+
+  const refreshNotificationData = (data: JobType[]) => {
+    console.log({
+      refreshData: data
+        .filter((job) => !!job.notification)
+        .map((job) => ({
+          jobId: job.id.toString(),
+          ...(job.notification as NonNullable<JobType["notification"]>),
+        })),
+    });
+    allNotifications.current = data
+      .filter((job) => !!job.notification)
+      .map((job) => ({
+        jobId: job.id.toString(),
+        ...(job.notification as NonNullable<JobType["notification"]>),
+      }));
+
+    bulkSchedule(data);
+  };
+
+  const checkOverdue = (jobId: string) => {
+    const job = allNotifications.current.find((n) => n.jobId === jobId);
+    if (!job) return false;
+
+    return new Date(job.timestamp) < new Date() && !job.viewed;
+  };
+
+  if (!user) return <>{children}</>;
 
   return (
     <NotificationContext.Provider
@@ -182,6 +230,8 @@ export const NotificationProvider = ({
         deleteNotification,
         getAllNotifications,
         refreshNotificationData,
+        checkOverdue,
+        markViewed,
       }}
     >
       {children}

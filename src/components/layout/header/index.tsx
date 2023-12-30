@@ -55,7 +55,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
             src={NotificationIcon}
             alt=""
             onClick={() => {
-              console.log(n.activeNotifications);
+              console.log(n.getAllNotifications());
             }}
           />
           <div className="flex cursor-pointer flex-row gap-2 hover:text-black">
