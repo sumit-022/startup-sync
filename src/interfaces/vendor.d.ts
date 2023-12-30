@@ -3,8 +3,6 @@ interface VendorFormType {
   name: any;
   email: any;
   description: any;
-  createdAt: string;
-  updatedAt: string;
   publishedAt: any;
   bankname: any;
   bankcountry: any;
@@ -20,4 +18,23 @@ interface VendorFormType {
   filled: boolean;
   hash: string;
   categories: number[];
+}
+
+interface VendorType {
+  name: string;
+  email: string;
+  description: string;
+  salescontact: ContactType;
+  accountscontact: ContactType;
+  emergencycontact: ContactType;
+  bankname: string;
+  bankcountry: string;
+  accountname: string;
+  accountnumber: string;
+  swiftcode: string;
+  ibannumber: string;
+  payterms: string;
+  paymethod: string;
+  freightterms: string;
+  ownership: string;
 }

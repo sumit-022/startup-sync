@@ -27,3 +27,11 @@ interface ServiceType {
   id: number;
   title: string;
 }
+
+interface ContactType {
+  id: number;
+  name: string;
+  mail: string;
+  mobile: string;
+  landline: string;
+}

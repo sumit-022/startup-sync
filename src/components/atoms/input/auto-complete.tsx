@@ -1,6 +1,6 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, Autocomplete } from "@mui/material";
+import { TextField, Autocomplete, Checkbox } from "@mui/material";
 
 const FormInputAutoComplete = ({
   title,
@@ -24,8 +24,24 @@ const FormInputAutoComplete = ({
         <Autocomplete
           multiple
           options={options}
+          disableCloseOnSelect
           value={value}
           getOptionLabel={(option: { id: any; title: string }) => option.title}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                checked={selected}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  onChange(
+                    e.target.checked
+                      ? [...value, option.id]
+                      : value.filter((id: string) => id !== option.id)
+                  );
+                }}
+              />
+              {option.title}
+            </li>
+          )}
           renderInput={(params) => (
             <TextField
               {...params}

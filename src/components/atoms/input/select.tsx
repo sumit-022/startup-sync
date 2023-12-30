@@ -10,6 +10,7 @@ const FormInputSelect = ({
   className,
   disabled,
   fetchFunction,
+  multiple = false,
 }: {
   id: string;
   name: string;
@@ -22,6 +23,7 @@ const FormInputSelect = ({
       name: string;
     }[]
   >;
+  multiple?: boolean;
   disabled?: boolean;
 }) => {
   const [options, setOptions] = useState<
@@ -64,6 +66,7 @@ const FormInputSelect = ({
         render={({ field: { onChange, value } }) => (
           <Select
             label={label}
+            multiple={multiple}
             disabled={disabled}
             value={value}
             onChange={onChange}

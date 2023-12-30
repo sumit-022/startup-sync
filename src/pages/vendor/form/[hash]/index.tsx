@@ -12,7 +12,9 @@ import BankDetails from "@/components/common/vendor/forms/bank";
 import CommercialDetails from "@/components/common/vendor/forms/commercial";
 import { GetServerSideProps } from "next";
 import instance from "@/config/axios.config";
+import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import { toast } from "react-toastify";
 
 type VendorFormPageProps = {
   hash: string;
@@ -29,6 +31,8 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     | undefined;
   const { step: initStep, ...initValues } = cachedForm || {};
 
+  const router = useRouter();
+
   const labels = [
     { label: "Vendor Details", icon: FaRegAddressCard },
     { label: "Contact Details", icon: FaPhone },
@@ -41,16 +45,34 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
   });
 
   const onSubmit = (data: any) => {
-    instance.post(`/vendors/form/${hash}`, {
-      ...data,
-      salescontact: {
-        name: data.salesName,
-        mobile: data.salesmobile,
-        landline: data.saleslandline,
-        email: data.salesemail,
-      },
-    });
-    localStorage.removeItem("vendorForm");
+    instance
+      .put(`/vendors/form/${hash}`, {
+        ...data,
+        salescontact: {
+          name: data.salesname,
+          mail: data.salesemail,
+          mobile: data.salesmobile,
+          landline: data.saleslandline,
+        },
+        accountscontact: {
+          name: data.accountsname,
+          mail: data.accountsemail,
+          mobile: data.accountsmobile,
+          landline: data.accountslandline,
+        },
+        emergencycontact: {
+          name: data.emergencyname,
+          mail: data.emergencyemail,
+          mobile: data.emergencymobile,
+          landline: data.emergencylandline,
+        },
+      })
+      .then(() => {
+        
+      })
+      .finally(() => {
+        localStorage.removeItem("vendorForm");
+      });
   };
 
   const cacheData = async (step: number) => {
@@ -157,6 +179,7 @@ export const getServerSideProps: GetServerSideProps<
 
   try {
     vendorForm = await instance.get(`/vendors/form/${hash}`);
+    if (vendorForm.data.filled) throw new Error("Form already filled");
   } catch (error) {
     return {
       notFound: true,

@@ -8,10 +8,12 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { NotificationContext } from "@/context/NotificationContext";
 import FormInputText from "@/components/atoms/input/text";
+import AuthContext from "@/context/AuthContext";
 
 const LoginForm = () => {
   const { handleSubmit, control } = useForm();
   const router = useRouter();
+  const { setAuthData } = useContext(AuthContext);
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -20,6 +22,8 @@ const LoginForm = () => {
       .post("/auth/local", data)
       .then((res) => {
         console.log(res.data);
+
+        setAuthData(res.data.user);
         localStorage.setItem("token", res.data.jwt);
         router.push("/");
       })

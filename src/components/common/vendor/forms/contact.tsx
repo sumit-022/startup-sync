@@ -21,7 +21,7 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
       <FormHeading heading="Sales Incharge" />
       <FormInputText
         label="Contact Name Title"
-        name="salesName"
+        name="salesname"
         control={control}
       />
       <InputGroup inputs={2}>
@@ -41,22 +41,33 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
         name="salesemail"
         control={control}
       />
+      <FormHeading heading="Emergency Contact" />
       <InputGroup inputs={2}>
         <FormInputText
           label="Emergency Contact Person Name"
-          name="emergencyName"
+          name="emergencyname"
           control={control}
         />
         <FormInputText
           label="Emergency Contact Number"
-          name="emergencyNumber"
+          name="emergencymobile"
+          control={control}
+        />
+        <FormInputText
+          label="Emergency Contact Email"
+          name="emergencyemail"
+          control={control}
+        />
+        <FormInputText
+          label="Emergency Contact Landline"
+          name="emergencylandline"
           control={control}
         />
       </InputGroup>
       <FormHeading heading="Receivables" />
       <FormInputText
         label="Contact Name Title"
-        name="accountsName"
+        name="accountsname"
         control={control}
       />
       <InputGroup inputs={2}>

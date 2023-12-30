@@ -1,13 +1,14 @@
 import FormInputText from "@/components/atoms/input/text";
 import { Checkbox, FormControl, FormGroup } from "@mui/material";
 import FormHeading from "@/components/atoms/heading/form-heading";
-import React from "react";
+import React, { useEffect } from "react";
 import InputGroup from "@/components/atoms/input/input-group";
 import FormInputRadioGroup from "@/components/atoms/input/radio-group";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import FormInputCheckboxGroup from "@/components/atoms/input/checkbox-group";
 import FormInputCheckbox from "@/components/atoms/input/checkbox";
+import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 
 interface CommercialDetailsProperties {
   control: any;
@@ -16,12 +17,14 @@ interface CommercialDetailsProperties {
 const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
   control,
 }) => {
-  const [services, setServices] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
 
-  React.useEffect(() => {
-    instance.get("/services").then((response) => {
-      setServices(parseAttributes(response.data.data));
-    });
+  useEffect(() => {
+    instance
+      .get("/services?pagination[page]=1&pagination[pageSize]=1000")
+      .then((res) => {
+        setCategories(parseAttributes(res.data.data));
+      });
   }, []);
 
   return (
@@ -55,16 +58,19 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
       <FormInputRadioGroup
         control={control}
         name="ownership"
-        labels={["Public", "Private", "Government Owned"]}
+        labels={[
+          { value: "PUBLIC", label: "Public" },
+          { value: "PRIVATE", label: "Private" },
+          { value: "GOVERNMENTOWNED", label: "Government Owned" },
+        ]}
       />
       <FormHeading heading="Category" />
-      {services.length > 0 && (
-        <FormInputCheckboxGroup
-          control={control}
-          name="categories"
-          labels={services}
-        />
-      )}
+      <FormInputAutoComplete
+        title="categories"
+        control={control}
+        label="Category"
+        options={categories}
+      />
       <FormHeading heading="Declaration" />
       <FormInputCheckbox
         control={control}

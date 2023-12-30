@@ -12,6 +12,8 @@ const FormInputText = ({
   rows,
   type,
   rules,
+  readOnly,
+  endAdornment,
 }: {
   name: string;
   label: string;
@@ -25,6 +27,8 @@ const FormInputText = ({
     RegisterOptions<FieldValues, string>,
     "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
   >;
+  readOnly?: boolean;
+  endAdornment?: React.ReactNode;
 }) => {
   return (
     <Controller
@@ -34,11 +38,16 @@ const FormInputText = ({
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextField
           label={label}
+          name={name}
           variant="outlined"
           multiline={multiline}
           rows={rows}
           onChange={onChange}
           disabled={disabled}
+          InputProps={{
+            readOnly: readOnly,
+            endAdornment: endAdornment,
+          }}
           type={type}
           value={value}
           error={!!error}

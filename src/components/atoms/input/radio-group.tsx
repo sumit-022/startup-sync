@@ -3,7 +3,7 @@ import { Controller } from "react-hook-form";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 interface FormInputRadioGroupProperties {
-  labels: string[];
+  labels: { label: string; value: string }[];
   name: string;
   control: any;
 }
@@ -25,10 +25,10 @@ const FormInputRadioGroup: React.FC<FormInputRadioGroupProperties> = ({
           value={value}
           onChange={onChange}
         >
-          {labels.map((label) => (
+          {labels.map(({ label, value }) => (
             <FormControlLabel
               key={label}
-              value={label}
+              value={value}
               control={<Radio />}
               label={label}
             />
