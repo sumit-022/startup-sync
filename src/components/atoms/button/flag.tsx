@@ -48,6 +48,7 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
             title: data.title,
             body: data.body,
             timestamp: data.timestamp,
+            viewed: false,
           },
         },
       });
