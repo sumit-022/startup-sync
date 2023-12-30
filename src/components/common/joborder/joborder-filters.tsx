@@ -1,45 +1,81 @@
-import { Button } from "@mui/material";
-import React from "react";
+import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import React, { useCallback, useState } from "react";
 
 interface Props {
-  allcount: number;
-  querycount: string;
-  qoutedcount: string;
+  data: any[];
+  callback: (status: JobType["status"][]) => void;
 }
 
-const Tabs: React.FC<Props> = ({ allcount, querycount, qoutedcount }) => {
-  const buttons = [
+const Tabs: React.FC<Props> = ({ callback, data }) => {
+  const getCounts = useCallback(() => {
+    const counts = {
+      query: 0,
+      quoted: 0,
+      order: 0,
+      completed: 0,
+    };
+    data.forEach((item) => {
+      if (item.status === "QUERYRECEIVED") {
+        counts.query++;
+      } else if (item.status === "QUOTEDTOCLIENT") {
+        counts.quoted++;
+      } else if (item.status === "ORDERCONFIRMED") {
+        counts.order++;
+      } else if (item.status === "JOBCOMPLETED") {
+        counts.completed++;
+      }
+    });
+    return counts;
+  }, [data]);
+
+  const counts = getCounts();
+
+  const [statuses, setStatuses] = useState<JobType["status"][]>([]);
+
+  const handleStatusSelection = (
+    event: React.MouseEvent<HTMLElement>,
+    newStatuses: JobType["status"][]
+  ) => {
+    setStatuses(() => {
+      callback(newStatuses);
+      return newStatuses;
+    });
+  };
+
+  const buttons: { name: string; value: JobType["status"]; count: number }[] = [
     {
       name: "Query",
-      count: allcount,
+      value: "QUERYRECEIVED",
+      count: counts.query,
     },
     {
       name: "Quoted",
-      count: qoutedcount,
+      value: "QUOTEDTOCLIENT",
+      count: counts.quoted,
     },
     {
       name: "Order Confirmed",
-      count: querycount,
+      value: "ORDERCONFIRMED",
+      count: counts.order,
     },
     {
       name: "Job Completed",
-      count: querycount,
+      value: "JOBCOMPLETED",
+      count: counts.completed,
     },
   ];
   return (
-    <div className="flex gap-4">
-      {buttons.map((item, index) => {
-        return (
-          <Button
-            key={index}
-            variant="contained"
-            className="bg-primary-bright-blue hover:bg-primary-bright-blue/105"
-          >
-            {item.name} ({item.count})
-          </Button>
-        );
-      })}
-    </div>
+    <ToggleButtonGroup
+      value={statuses}
+      onChange={handleStatusSelection}
+      aria-label="status selection"
+    >
+      {buttons.map(({ count, name, value }) => (
+        <ToggleButton value={value} key={value} color="primary">
+          {`${name} (${count})`}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
   );
 };
 

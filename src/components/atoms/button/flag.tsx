@@ -6,19 +6,75 @@ import {
   Modal,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import LoadingButton from "@mui/lab/LoadingButton";
+import React, { useContext, useState } from "react";
 import { FaFlag } from "react-icons/fa";
 import FormInputText from "../input/text";
 import { useForm } from "react-hook-form";
-import FormInputDate from "../input/date";
+import instance from "@/config/axios.config";
+import { toast } from "react-toastify";
+import FormInputDateTime from "../input/datetime";
+import { NotificationContext } from "@/context/NotificationContext";
 
-const FlagJobButton = () => {
+type FlagForm = {
+  title: string;
+  body: string;
+  timestamp: string;
+};
+
+const FlagJobButton = ({ job }: { job: JobType }) => {
   const [modal, setModal] = useState(false);
-  const { control } = useForm();
+  const [loading, setLoading] = useState(false);
+  const { control, handleSubmit } = useForm<FlagForm>({
+    defaultValues: {
+      body: job.notification?.body || "",
+      title: job.notification?.title || "",
+      timestamp: job.notification?.timestamp
+        ? job.notification?.timestamp
+        : undefined,
+    },
+  });
+
+  const n = useContext(NotificationContext);
+
+  const onSubmit = async (data: FlagForm) => {
+    // Update the job with the flag
+    setLoading(true);
+    try {
+      await instance.put(`/jobs/${job.id}`, {
+        data: {
+          ...job,
+          notification: {
+            title: data.title,
+            body: data.body,
+            timestamp: data.timestamp,
+          },
+        },
+      });
+      toast.success("Job flagged!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error flagging job!");
+    } finally {
+      setLoading(false);
+      n.replaceNotification(job.id.toString(), {
+        title: data.title,
+        body: data.body,
+        timestamp: data.timestamp,
+      });
+    }
+  };
+
+  const overdue =
+    new Date(job.notification?.timestamp || new Date().toISOString()) <
+      new Date() && !job.notification?.viewed;
+
   return (
     <>
       <IconButton
-        className="text-white text-sm p-2 rounded-full bg-pink-600 hover:bg-pink-600"
+        className={`text-white text-sm p-2 rounded-full ${
+          job.notification ? "bg-red-600" : "bg-gray-400"
+        } hover:bg-red-700 ${overdue && "animate-pulse"}`}
         onClick={() => setModal(true)}
       >
         <FaFlag />
@@ -51,28 +107,42 @@ const FlagJobButton = () => {
               variant="subtitle1"
               component="body"
             >
-              Flag Job
+              Flag Job {job.jobCode}
             </Typography>
-            <FormInputDate
-              label="Reminder set for"
-              control={control}
-              name="date"
-            />
             <FormInputText
-              label="Comment"
+              label="Title"
               control={control}
+              rules={{ required: true }}
               className="w-full"
               multiline
               rows={3}
-              name="comment"
+              name="title"
             />
-            <Button
+            <FormInputDateTime
+              label="Reminder set for"
+              className="w-full"
+              rules={{ required: true }}
+              control={control}
+              name="timestamp"
+            />
+            <FormInputText
+              label="Body"
+              control={control}
+              rules={{ required: true }}
+              className="w-full"
+              multiline
+              rows={3}
+              name="body"
+            />
+            <LoadingButton
               variant="contained"
               className="bg-red-600 hover:bg-red-700 w-full flex gap-1"
+              onClick={handleSubmit(onSubmit)}
+              loading={loading}
             >
               <FaFlag />
               Flag
-            </Button>
+            </LoadingButton>
           </FormControl>
         </Box>
       </Modal>

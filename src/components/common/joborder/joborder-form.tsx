@@ -41,8 +41,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState(false);
 
-  const n = useContext(NotificationContext);
-
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
       ...data,

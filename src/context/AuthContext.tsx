@@ -13,7 +13,6 @@ const AuthContext = React.createContext<{
 });
 
 function useAuth() {
-  const router = useRouter();
   const [authData, setAuthData] = React.useState<AuthData | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -27,6 +26,7 @@ function useAuth() {
         })
         .then((res) => {
           if (res.data) {
+            console.log(res.data);
             setAuthData({
               fullname: res.data.fullname,
               email: res.data.email,
@@ -34,10 +34,12 @@ function useAuth() {
               role: res.data.role.name,
             });
           }
-          setIsLoading(false);
         })
         .catch((err) => {
-          router.push("/auth/login");
+          console.warn(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     };
     initializeAuth();

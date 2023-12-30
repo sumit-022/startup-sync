@@ -5,13 +5,13 @@ import { createContext, useEffect, useRef, useState } from "react";
 export type NotificationData = {
   title: string;
   body: string;
-  timestamp: number;
+  timestamp: string;
 };
 
 export type JobNotificationData = {
   title?: string;
   body?: string;
-  timestamp: number;
+  timestamp: string;
   viewed: boolean;
 };
 
@@ -20,27 +20,28 @@ export type NotificationId = ReturnType<typeof setTimeout>;
 export const NotificationContext = createContext<{
   activeNotifications: NotificationData[];
   scheduleNotification: (
+    jobId: string,
     notification: NotificationData,
     onClear: () => void
   ) => NotificationId;
-  replaceNotification: (
-    id: NotificationId,
-    notification: NotificationData
-  ) => void;
-  deleteNotification: (id: NotificationId) => void;
+  replaceNotification: (jobId: string, notification: NotificationData) => void;
+  deleteNotification: (jobId: string) => void;
   getAllNotifications: () => JobNotificationData[];
+
+  refreshNotificationData: (data: JobType[]) => void;
 }>({
   activeNotifications: [],
-  scheduleNotification: (notification) => {
+  scheduleNotification: (id, notification) => {
     const n = new Notification(notification.title, {
       body: notification.body,
-      timestamp: notification.timestamp,
+      timestamp: new Date(notification.timestamp).getTime(),
     });
     return setTimeout(() => {}, 0);
   },
   replaceNotification: () => {},
   deleteNotification: () => {},
   getAllNotifications: () => [],
+  refreshNotificationData: () => {},
 });
 
 export const NotificationProvider = ({
@@ -49,7 +50,7 @@ export const NotificationProvider = ({
   children: React.ReactNode;
 }) => {
   const [timers, setTimers] = useState<
-    { id: NotificationId; data: NotificationData }[]
+    { id: NotificationId; data: NotificationData; jobId: string }[]
   >([]);
 
   const allNotifications = useRef<JobNotificationData[]>([]);
@@ -60,7 +61,7 @@ export const NotificationProvider = ({
   ) => {
     const n = new Notification(notification.title, {
       body: notification.body,
-      timestamp: notification.timestamp,
+      timestamp: new Date(notification.timestamp).getTime(),
     });
 
     n.onclick = () => {
@@ -70,6 +71,36 @@ export const NotificationProvider = ({
     n.onclose = () => {
       onClear();
     };
+  };
+
+  const scheduleNotifs = (data: JobType[]) => {
+    // Schedule notifications for each job
+    data.forEach((job) => {
+      if (job?.notification && job?.notification?.viewed === false) {
+        scheduleNotification(
+          job.id.toString(),
+          {
+            title: job.notification.title,
+            body: job.notification.body,
+            timestamp: job.notification.timestamp,
+          },
+          () => {
+            console.log("CLOSED");
+            // Update the notification to viewed
+            instance
+              .put(`/jobs/${job.id}`, {
+                data: {
+                  notification: {
+                    ...job.notification,
+                    viewed: true,
+                  },
+                },
+              })
+              .then((res) => console.log({ res }));
+          }
+        );
+      }
+    });
   };
 
   // Ask for permission to use notifications
@@ -84,76 +115,62 @@ export const NotificationProvider = ({
         .map((job: any) => job?.notification)
         .filter((notif: any) => notif);
 
-      // Schedule notifications for each job
-      data.forEach((job: any) => {
-        if (job?.notification && job?.notification?.viewed === false) {
-          scheduleNotification(
-            {
-              title: job.notification.title,
-              body: job.notification.body,
-              timestamp: new Date(job.notification).getTime(),
-            },
-            () => {
-              console.log("CLOSED");
-              // Update the notification to viewed
-              instance
-                .put(`/jobs/${job.id}`, {
-                  data: {
-                    notification: {
-                      ...job.notification,
-                      viewed: true,
-                    },
-                  },
-                })
-                .then((res) => console.log({ res }));
-            }
-          );
-        }
-      });
+      scheduleNotifs(data);
     });
   }, []);
 
   const scheduleNotification = (
+    jobId: string,
     notification: NotificationData,
     onClear: () => void = () => {}
   ) => {
     const id = setTimeout(() => {
       triggerNotification(notification, onClear);
       setTimers(timers.filter((timer) => timer.id !== id));
-    }, notification.timestamp - Date.now());
+    }, new Date(notification.timestamp).getTime() - Date.now());
 
-    setTimers([...timers, { id, data: notification }]);
+    setTimers([...timers, { id, data: notification, jobId }]);
 
     return id;
   };
 
   const replaceNotification = (
-    id: NotificationId,
+    jobId: string,
     notification: NotificationData
   ) => {
+    console.log({ jobId, notification });
     const newId = setTimeout(() => {
       triggerNotification(notification);
       setTimers(timers.filter((timer) => timer.id !== newId));
-    });
+    }, new Date(notification.timestamp).getTime() - Date.now());
 
     setTimers(
       timers.map((timer) => {
-        if (timer.id === id) {
+        if (timer.jobId === jobId) {
           clearTimeout(timer.id);
-          return { id: newId, data: notification };
+          return { id: newId, data: notification, jobId: timer.jobId };
         }
         return timer;
       })
     );
   };
 
-  const deleteNotification = (id: NotificationId) => {
-    clearTimeout(id);
-    setTimers(timers.filter((timer) => timer.id !== id));
+  const deleteNotification = (jobId: string) => {
+    const timer = timers.find((timer) => timer.jobId === jobId);
+    clearInterval(timer?.id);
+    setTimers(timers.filter((timer) => timer.jobId !== jobId));
   };
 
   const getAllNotifications = () => {
     return allNotifications.current;
+  };
+
+  const refreshNotificationData = (data: JobType[]) => {
+    allNotifications.current = data
+      .map((job: any) => job?.notification)
+      .filter((notif: any) => notif);
+
+    scheduleNotifs(data);
   };
 
   return (
@@ -164,6 +181,7 @@ export const NotificationProvider = ({
         replaceNotification,
         deleteNotification,
         getAllNotifications,
+        refreshNotificationData,
       }}
     >
       {children}

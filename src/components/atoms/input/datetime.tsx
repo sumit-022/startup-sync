@@ -1,10 +1,10 @@
 import React from "react";
 import { Controller, FieldValues, RegisterOptions } from "react-hook-form";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-const FormInputDate = ({
+const FormInputDateTime = ({
   name,
   label,
   control,
@@ -27,16 +27,14 @@ const FormInputDate = ({
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
+          <DateTimePicker
             className={className}
             label={label}
             value={value}
-            format="DD/MM/YYYY"
+            format="DD/MM/YYYY hh:mm A"
             {...(value && { value: dayjs(value as Date) })}
             onChange={(value: any) => {
-              var os = value.$d.getTimezoneOffset() * 60 * 1000;
-              var date = new Date(value.$d.getTime() - os);
-              onChange(date);
+              onChange(value.$d.toISOString());
             }}
             slotProps={{
               textField: {
@@ -51,4 +49,4 @@ const FormInputDate = ({
   );
 };
 
-export default FormInputDate;
+export default FormInputDateTime;

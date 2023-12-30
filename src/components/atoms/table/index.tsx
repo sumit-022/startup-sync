@@ -126,7 +126,7 @@ const Table: React.FC<TableProperties> = ({
                   return (
                     <td>
                       <div className="flex gap-2 justify-center">
-                        <FlagJobButton />
+                        <FlagJobButton job={item} />
                         <ViewJobButton data={item} />
                         <EditJobButton data={item} callback={callback} />
                         <CancelJobButton data={item} callback={callback} />

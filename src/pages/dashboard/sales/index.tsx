@@ -131,8 +131,27 @@ export default function SalesDashboard() {
         </Button>
       </div>
       <div className="my-4 flex flex-col gap-3">
-        <SearchJobOrder />
-        <Tabs allcount={data.length ?? 0} qoutedcount="100" querycount="100" />
+        <SearchJobOrder
+          onChange={(event) => {
+            // Filter using job code
+            const newData = allData.current.filter((item) => {
+              return item.jobCode.includes(event.target.value);
+            });
+
+            setData(newData);
+          }}
+        />
+        <Tabs
+          data={data}
+          callback={(status: JobType["status"][]) => {
+            console.log(status);
+            setFilters({
+              ...filters,
+              status: (item) =>
+                status.length > 0 ? status.includes(item.status) : true,
+            });
+          }}
+        />
         <Filters
           availableHeaders={selectedHeaders}
           setSelectedHeaders={setSelectedHeaders}

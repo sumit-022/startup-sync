@@ -26,8 +26,6 @@ declare interface SidebarMenu {
 // reminderSent: true,
 // status: "Completed",
 
-declare type JobNature = "SERVICES" | "SPARES SUPPLY";
-
 declare interface JobType {
   id: number;
   jobCode: string;
@@ -37,15 +35,33 @@ declare interface JobType {
   company: CompanyType;
   assignedTo: ServiceCoordinatorType;
   poNumber: string | undefined;
-  status: string;
-  type: JobNature | undefined;
+  status: JobStatus;
+  type: JobType | undefined;
   jobCompleted: boolean;
   services: ServiceType[];
   invoiceDate: Date | undefined;
   targetPort: string | undefined;
   vesselEta: string | undefined;
   description: string | undefined;
+  notification?: {
+    body: string;
+    title: string;
+    timestamp: string;
+    viewed: boolean;
+  };
 }
+
+declare type JobStatus =
+  | "QUERYRECEIVED"
+  | "QUOTEDTOVENDOR"
+  | "QUOTERECEIVED"
+  | "QUOTEDTOCLIENT"
+  | "ORDERCONFIRMED"
+  | "JOBCOMPLETED"
+  | "JOBCANCELLED"
+  | "PODAWAITED";
+
+declare type JobService = "SPARES SUPPLY" | "SERVICES";
 
 declare interface TableHeader {
   name: string;
