@@ -22,7 +22,6 @@ const LoginForm = () => {
       .post("/auth/local", data)
       .then((res) => {
         console.log(res.data);
-
         setAuthData(res.data.user);
         localStorage.setItem("token", res.data.jwt);
         router.push("/");

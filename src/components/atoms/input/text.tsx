@@ -14,6 +14,7 @@ const FormInputText = ({
   rules,
   readOnly,
   endAdornment,
+  required,
 }: {
   name: string;
   label: string;
@@ -27,6 +28,7 @@ const FormInputText = ({
     RegisterOptions<FieldValues, string>,
     "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
   >;
+  required?: boolean;
   readOnly?: boolean;
   endAdornment?: React.ReactNode;
 }) => {
@@ -41,6 +43,7 @@ const FormInputText = ({
           name={name}
           variant="outlined"
           multiline={multiline}
+          required={required}
           rows={rows}
           onChange={onChange}
           disabled={disabled}

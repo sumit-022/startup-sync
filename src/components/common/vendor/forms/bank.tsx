@@ -27,29 +27,29 @@ const BankDetails: React.FC<BankDetailsProperties> = ({ control }) => {
         />
         <FormInputText
           label="Bank Code / Routing Number"
-          name="bankCode"
+          name="bankcode"
           control={control}
         />
       </InputGroup>
       <FormInputText
         label="Bank Account Name"
-        name="accountName"
+        name="accountname"
         control={control}
       />
       <InputGroup inputs={3}>
         <FormInputText
           label="Bank Account Number"
-          name="accountNumber"
+          name="accountnumber"
           control={control}
         />
         <FormInputText
           label="Swift Code / DFI Number"
-          name="swiftCode"
+          name="swiftcode"
           control={control}
         />
         <FormInputText
           label="IBAN Number"
-          name="ibanNumber"
+          name="ibannumber"
           control={control}
         />
       </InputGroup>

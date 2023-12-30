@@ -11,6 +11,9 @@ import { DataGrid, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import parseAttributes from "@/utils/parse-data";
 import { IconButton } from "@mui/material";
 import MailFormLink from "@/components/atoms/button/mail-formlink";
+import VendorFilters from "@/components/common/vendor/filters";
+import EditVendor from "@/components/atoms/button/edit-vendor";
+import Search from "@/components/common/joborder/joborder-search";
 
 const VendorPage = () => {
   const router = useRouter();
@@ -125,12 +128,7 @@ const VendorPage = () => {
       renderCell: (params) => {
         return (
           <div className="flex gap-4">
-            <IconButton
-              className="bg-yellow-500 text-sm hover:bg-yellow-600 text-white"
-              onClick={() => router.push(`/vendor/view/${params.row.id}`)}
-            >
-              <MdEdit />
-            </IconButton>
+            <EditVendor id={params.row.id} callback={getVendors} />
             <DeleteVendor id={params.row.id} callback={getVendors} />
           </div>
         );
@@ -177,6 +175,10 @@ const VendorPage = () => {
             </div>
           )}
         </Dropdown>
+      </div>
+      <div className="my-4">
+        <Search placeholder="Search Vendor by Name" className="mb-4" />
+        <VendorFilters />
       </div>
       <div className="mt-4">
         <DataGrid

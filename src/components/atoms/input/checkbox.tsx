@@ -6,12 +6,14 @@ interface FormInputCheckboxProperties {
   name: string;
   control: any;
   label: string;
+  required?: boolean;
 }
 
 const FormInputCheckbox: React.FC<FormInputCheckboxProperties> = ({
   name,
   control,
   label,
+  required,
 }) => {
   return (
     <Controller
@@ -22,6 +24,7 @@ const FormInputCheckbox: React.FC<FormInputCheckboxProperties> = ({
           control={
             <Checkbox
               checked={value}
+              required={required}
               onChange={(e) => onChange(e.target.checked)}
             />
           }

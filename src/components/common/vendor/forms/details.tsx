@@ -20,44 +20,59 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
     >
       <FormInputText
         label="Legal Name of Vendor"
+        required
         name="name"
         control={control}
         rules={{ required: "This field is required" }}
       />
-      <FormInputText
-        label="Tax and Business Registration Number"
-        name="regNumber"
-        control={control}
-        // rules={{ required: "This field is required" }}
-      />
+      <InputGroup inputs={2}>
+        <FormInputText
+          label="Vendor Email"
+          name="email"
+          control={control}
+          required
+          rules={{
+            required: "This field is required",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Invalid email address",
+            },
+          }}
+        />
+        <FormInputText
+          label="Tax and Business Registration Number"
+          name="regNumber"
+          control={control}
+          required
+          rules={{
+            required: "This field is required",
+            pattern: {
+              value: /^[0-9]*$/i,
+              message: "Only numbers are allowed",
+            },
+          }}
+        />
+      </InputGroup>
       <FormHeading heading="Address" />
       <FormInputText
         label="Address"
         name="address"
         multiline
         rows={3}
+        required
         control={control}
-        // rules={{ required: "This field is required" }}
+        rules={{ required: "This field is required" }}
       />
       <InputGroup inputs={2}>
-        <FormInputText
-          label="City"
-          name="city"
-          control={control}
-          // rules={{ required: "This field is required" }}
-        />
-        <FormInputText
-          label="Postal Code"
-          name="zip"
-          control={control}
-          // rules={{ required: "This field is required" }}
-        />
+        <FormInputText label="City" name="city" control={control} />
+        <FormInputText label="Postal Code" name="zip" control={control} />
       </InputGroup>
       <FormInputText
         label="Country"
         name="country"
         control={control}
-        // rules={{ required: "This field is required" }}
+        required
+        rules={{ required: "This field is required" }}
       />
     </FormControl>
   );

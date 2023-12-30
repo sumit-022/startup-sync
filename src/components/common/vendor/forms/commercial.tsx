@@ -54,9 +54,11 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
           label="Freight Terms"
         />
       </InputGroup>
-      <FormHeading heading="Ownership Type" />
       <FormInputRadioGroup
+        required
         control={control}
+        rules={{ required: "This field is required" }}
+        label="Ownership Type"
         name="ownership"
         labels={[
           { value: "PUBLIC", label: "Public" },
@@ -66,8 +68,10 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
       />
       <FormHeading heading="Category" />
       <FormInputAutoComplete
-        title="categories"
+        required
+        title="services"
         control={control}
+        rules={{ required: "This field is required" }}
         label="Category"
         options={categories}
       />
@@ -76,6 +80,7 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
         control={control}
         name="declaration"
         label="I hereby declare that the information provided is true and correct to the best of my knowledge."
+        required
       />
     </FormControl>
   );

@@ -15,7 +15,7 @@ import Modal from "@/components/atoms/modal";
 import { modalAtom } from "@/atoms/modal.atom";
 import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
-import SearchJobOrder from "../../../components/common/joborder/joborder-search";
+import Search from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
@@ -131,9 +131,9 @@ export default function SalesDashboard() {
         </Button>
       </div>
       <div className="my-4 flex flex-col gap-3">
-        <SearchJobOrder
+        <Search
+          placeholder="Enter Job Code to search.."
           onChange={(event) => {
-            // Filter using job code
             const newData = allData.current.filter((item) => {
               return item.jobCode.includes(event.target.value);
             });

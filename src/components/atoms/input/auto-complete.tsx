@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, RegisterOptions, FieldValues } from "react-hook-form";
 import { TextField, Autocomplete, Checkbox } from "@mui/material";
 
 const FormInputAutoComplete = ({
@@ -7,6 +7,8 @@ const FormInputAutoComplete = ({
   label,
   control,
   options,
+  rules,
+  required,
 }: {
   title: string;
   label: string;
@@ -15,10 +17,16 @@ const FormInputAutoComplete = ({
     id: any;
     title: string;
   }[];
+  rules?: Omit<
+    RegisterOptions<FieldValues, string>,
+    "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
+  >;
+  required?: boolean;
 }) => {
   return (
     <Controller
       name={title}
+      rules={rules}
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Autocomplete
@@ -49,6 +57,7 @@ const FormInputAutoComplete = ({
               variant="outlined"
               value={value}
               error={!!error}
+              required={required}
               helperText={error ? error.message : null}
             />
           )}

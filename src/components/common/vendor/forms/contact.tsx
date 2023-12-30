@@ -22,13 +22,23 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
       <FormInputText
         label="Contact Name Title"
         name="salesname"
+        required
         control={control}
+        rules={{ required: "This field is required" }}
       />
       <InputGroup inputs={2}>
         <FormInputText
           label="Mobile Number"
           name="salesmobile"
+          required
           control={control}
+          rules={{
+            required: "This field is required",
+            pattern: {
+              value: /^[0-9]*$/i,
+              message: "Only numbers are allowed",
+            },
+          }}
         />
         <FormInputText
           label="Land Line Number"
@@ -39,7 +49,15 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
       <FormInputText
         label="Email Address"
         name="salesemail"
+        required
         control={control}
+        rules={{
+          required: "This field is required",
+          pattern: {
+            value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+            message: "Invalid email address",
+          },
+        }}
       />
       <FormHeading heading="Emergency Contact" />
       <InputGroup inputs={2}>
@@ -67,14 +85,24 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
       <FormHeading heading="Receivables" />
       <FormInputText
         label="Contact Name Title"
+        required
         name="accountsname"
         control={control}
+        rules={{ required: "This field is required" }}
       />
       <InputGroup inputs={2}>
         <FormInputText
           label="Mobile Number"
           name="accountsmobile"
+          required
           control={control}
+          rules={{
+            required: "This field is required",
+            pattern: {
+              value: /^[0-9]*$/i,
+              message: "Only numbers are allowed",
+            },
+          }}
         />
         <FormInputText
           label="Land Line Number"
@@ -86,6 +114,14 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
         label="Email Address"
         name="accountsemail"
         control={control}
+        required
+        rules={{
+          required: "This field is required",
+          pattern: {
+            value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+            message: "Invalid email address",
+          },
+        }}
       />
     </FormControl>
   );

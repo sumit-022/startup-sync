@@ -1,20 +1,23 @@
 import { TextField } from "@mui/material";
+import clsx from "clsx";
 import React from "react";
 import { FiSearch } from "react-icons/fi";
 
 interface SearchJobOrderProperties {
   className?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }
 
-const SearchJobOrder: React.FC<SearchJobOrderProperties> = ({
+const SearchInput: React.FC<SearchJobOrderProperties> = ({
   className,
+  placeholder,
   onChange,
 }) => {
   return (
-    <div className="flex w-full">
+    <div className={clsx("flex w-full", className)}>
       <TextField
-        placeholder="Enter Job Code to search.."
+        placeholder={placeholder}
         className="rounded-none flex-1 focus:border-transparent focus:ring-0 focus:outline-transparent"
         onChange={onChange}
       />
@@ -25,4 +28,4 @@ const SearchJobOrder: React.FC<SearchJobOrderProperties> = ({
   );
 };
 
-export default SearchJobOrder;
+export default SearchInput;

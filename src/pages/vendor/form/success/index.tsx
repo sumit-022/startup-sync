@@ -7,9 +7,6 @@ import Button from "@/components/atoms/button";
 import { useRouter } from "next/router";
 
 const VendorRegisterSuccess = () => {
-  const { user } = useContext(AuthContext);
-
-  const router = useRouter();
   return (
     <div className="flex h-screen w-screen items-center justify-center">
       <div className="flex flex-col items-center gap-4">
@@ -17,14 +14,7 @@ const VendorRegisterSuccess = () => {
         <h1 className="text-2xl font-semibold">
           Thank you for registering with us
         </h1>
-        {user && (
-          <Button
-            onClick={() => router.push("/vendor")}
-            className="mt-4 bg-red-500 hover:bg-red-600"
-          >
-            Go back
-          </Button>
-        )}
+        <p className="text-center">Now you can close this tab.</p>
       </div>
     </div>
   );

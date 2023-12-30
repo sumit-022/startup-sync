@@ -15,6 +15,7 @@ import instance from "@/config/axios.config";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
+import Loading from "@/components/atoms/loading";
 
 type VendorFormPageProps = {
   hash: string;
@@ -40,11 +41,13 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     { label: "Commercial & Company Details", icon: BiSolidDetail },
   ];
   const [activeStep, setActiveStep] = React.useState(initStep || 0);
+  const [loading, setLoading] = React.useState(false);
   const { control, handleSubmit, getValues, trigger } = useForm({
     defaultValues: cachedForm ? initValues : {},
   });
 
   const onSubmit = (data: any) => {
+    setLoading(true);
     instance
       .put(`/vendors/form/${hash}`, {
         ...data,
@@ -68,10 +71,14 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
         },
       })
       .then(() => {
-        
+        router.push("/vendor/form/success");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
       })
       .finally(() => {
         localStorage.removeItem("vendorForm");
+        setLoading(false);
       });
   };
 
@@ -94,6 +101,10 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
     },
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="p-8">
       <Typography
@@ -107,7 +118,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
           marginBottom: "2rem",
         }}
       >
-        Vendor Registration
+        Shinpo Vendor Registration
       </Typography>
       <Steps steps={labels} activeStep={activeStep} />
       {(() => {

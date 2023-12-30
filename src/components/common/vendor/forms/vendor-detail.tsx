@@ -8,6 +8,8 @@ import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import { useForm } from "react-hook-form";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 interface VendorDetailFormProperties {
   data: any;
@@ -18,9 +20,11 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
   mode,
   data,
 }) => {
+  const router = useRouter();
   const { handleSubmit, control } = useForm({
     defaultValues: data || {},
   });
+  const { id } = data || {};
   const [categories, setCategories] = React.useState([]);
 
   useEffect(() => {
@@ -32,7 +36,35 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
   }, []);
 
   const onSubmit = (data: any) => {
-    console.log("data", data);
+    instance
+      .put(`/vendors/${id}`, {
+        ...data,
+        salescontact: {
+          name: data.salesname,
+          mail: data.salesemail,
+          mobile: data.salesmobile,
+          landline: data.saleslandline,
+        },
+        accountscontact: {
+          name: data.accountsname,
+          mail: data.accountsemail,
+          mobile: data.accountsmobile,
+          landline: data.accountslandline,
+        },
+        emergencycontact: {
+          name: data.emergencyname,
+          mail: data.emergencyemail,
+          mobile: data.emergencymobile,
+          landline: data.emergencylandline,
+        },
+      })
+      .then(() => {
+        router.push("/vendor");
+        toast.success("Vendor updated successfully");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+      });
   };
 
   return (
@@ -205,7 +237,7 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
           readOnly={mode === "view"}
         />
         <FormInputText
-          name="bankiban"
+          name="ibannumber"
           control={control}
           // rules={{ required: "This field is required" }}
           label="IBAN Number"
@@ -214,26 +246,24 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
       <FormHeading heading="Commercial Details" />
       <InputGroup inputs={3}>
         <FormInputText
-          name="commercialName"
+          name="payterms"
           control={control}
-          // rules={{ required: "This field is required" }}
           label="Payment Terms"
         />
         <FormInputText
-          name="commercialNumber"
+          name="paymethod"
           control={control}
-          // rules={{ required: "This field is required" }}
           label="Primary Currency"
         />
         <FormInputText
-          name="commercialEmail"
+          name="freightterms"
           control={control}
-          // rules={{ required: "This field is required" }}
           label="Freight Terms"
         />
       </InputGroup>
-      <FormHeading heading="Ownership Type" />
       <FormInputRadioGroup
+        label="Ownership Type"
+        required
         labels={[
           { value: "PUBLIC", label: "Public" },
           { value: "PRIVATE", label: "Private" },
@@ -249,16 +279,18 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         label="Category"
         options={categories}
       />
-      <Button
-        variant="contained"
-        className="bg-primary-bright-blue"
-        type="submit"
-        onClick={() => {
-          handleSubmit(onSubmit)();
-        }}
-      >
-        Submit
-      </Button>
+      {mode == "edit" && (
+        <Button
+          variant="contained"
+          className="bg-primary-bright-blue"
+          type="submit"
+          onClick={() => {
+            handleSubmit(onSubmit)();
+          }}
+        >
+          Submit
+        </Button>
+      )}
     </FormControl>
   );
 };
