@@ -12,7 +12,7 @@ type FilterForm = {
   queriedUpto: Date | null;
   quotedFrom: Date | null;
   quotedUpto: Date | null;
-  type: string | null;
+  type: JobType["type"] | null;
   assignedTo: number | null;
 };
 

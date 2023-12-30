@@ -36,19 +36,21 @@ declare interface JobType {
   assignedTo: ServiceCoordinatorType;
   poNumber: string | undefined;
   status: JobStatus;
-  type: JobType | undefined;
+  type: JobNature | undefined;
   jobCompleted: boolean;
   services: ServiceType[];
   invoiceDate: Date | undefined;
   targetPort: string | undefined;
   vesselEta: string | undefined;
   description: string | undefined;
-  notification?: {
-    body: string;
-    title: string;
-    timestamp: string;
-    viewed: boolean;
-  };
+  notification:
+    | {
+        body: string;
+        title: string;
+        timestamp: string;
+        viewed: boolean;
+      }
+    | undefined;
 }
 
 declare type JobStatus =
@@ -61,7 +63,7 @@ declare type JobStatus =
   | "JOBCANCELLED"
   | "PODAWAITED";
 
-declare type JobService = "SPARES SUPPLY" | "SERVICES";
+declare type JobNature = "SPARES SUPPLY" | "SERVICES";
 
 declare interface TableHeader {
   name: string;
