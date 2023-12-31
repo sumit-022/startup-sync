@@ -9,6 +9,7 @@ const FormInputAutoComplete = ({
   options,
   rules,
   required,
+  isOptionEqualToValue,
 }: {
   title: string;
   label: string;
@@ -22,6 +23,16 @@ const FormInputAutoComplete = ({
     "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
   >;
   required?: boolean;
+  isOptionEqualToValue?: (
+    option: {
+      id: any;
+      title: string;
+    },
+    value: {
+      id: any;
+      title: string;
+    }
+  ) => boolean;
 }) => {
   return (
     <Controller
@@ -34,6 +45,7 @@ const FormInputAutoComplete = ({
           options={options}
           disableCloseOnSelect
           value={value}
+          isOptionEqualToValue={isOptionEqualToValue}
           getOptionLabel={(option: { id: any; title: string }) => option.title}
           renderOption={(props, option, { selected }) => (
             <li {...props}>

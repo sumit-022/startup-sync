@@ -11,7 +11,9 @@ import { DataGrid, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import parseAttributes from "@/utils/parse-data";
 import { IconButton } from "@mui/material";
 import MailFormLink from "@/components/atoms/button/mail-formlink";
-import VendorFilters from "@/components/common/vendor/filters";
+import VendorFilters, {
+  VendorFilterType,
+} from "@/components/common/vendor/filters";
 import EditVendor from "@/components/atoms/button/edit-vendor";
 import Search from "@/components/common/joborder/joborder-search";
 
@@ -20,6 +22,18 @@ const VendorPage = () => {
   const [vendors, setVendors] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const allData = useRef<any[]>([]);
+
+  const [filters, setFilters] = useState<VendorFilterType>({
+    category: () => true,
+  });
+
+  useEffect(() => {
+    let newData = [...allData.current];
+    Object.values(filters).forEach((filterFunc) => {
+      newData = newData.filter(filterFunc);
+    });
+    setVendors(newData);
+  }, [filters]);
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
@@ -191,7 +205,11 @@ const VendorPage = () => {
             setVendors(newData);
           }}
         />
-        <VendorFilters />
+        <VendorFilters
+          setFilters={(filters) => {
+            setFilters(filters);
+          }}
+        />
       </div>
       <div className="mt-4">
         <DataGrid

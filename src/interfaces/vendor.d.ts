@@ -37,4 +37,5 @@ interface VendorType {
   paymethod: string;
   freightterms: string;
   ownership: string;
+  services: ServiceType[];
 }
