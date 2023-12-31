@@ -38,7 +38,10 @@ const VendorPage = () => {
   const handleRegisterVendor = () => {
     setIsLoading(true);
     instance.post("/vendors/form/generate-vendor-id").then((res) => {
-      router.push(`/vendor/form/${res.data}`);
+      // Open in a new tab
+      // Get the current base url
+      const base = window.location.origin;
+      window.open(`${base}/vendor/form/${res.data}`, "_blank");
     });
   };
 

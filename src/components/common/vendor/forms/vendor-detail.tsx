@@ -38,24 +38,26 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
   const onSubmit = (data: any) => {
     instance
       .put(`/vendors/${id}`, {
-        ...data,
-        salescontact: {
-          name: data.salesname,
-          mail: data.salesemail,
-          mobile: data.salesmobile,
-          landline: data.saleslandline,
-        },
-        accountscontact: {
-          name: data.accountsname,
-          mail: data.accountsemail,
-          mobile: data.accountsmobile,
-          landline: data.accountslandline,
-        },
-        emergencycontact: {
-          name: data.emergencyname,
-          mail: data.emergencyemail,
-          mobile: data.emergencymobile,
-          landline: data.emergencylandline,
+        data: {
+          ...data,
+          salescontact: {
+            name: data.salesname,
+            mail: data.salesemail,
+            mobile: data.salesmobile,
+            landline: data.saleslandline,
+          },
+          accountscontact: {
+            name: data.accountsname,
+            mail: data.accountsemail,
+            mobile: data.accountsmobile,
+            landline: data.accountslandline,
+          },
+          emergencycontact: {
+            name: data.emergencyname,
+            mail: data.emergencyemail,
+            mobile: data.emergencymobile,
+            landline: data.emergencylandline,
+          },
         },
       })
       .then(() => {
@@ -63,6 +65,7 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         toast.success("Vendor updated successfully");
       })
       .catch((err) => {
+        console.warn(err);
         toast.error("Something went wrong");
       });
   };
