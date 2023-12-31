@@ -11,11 +11,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <StyledEngineProvider injectFirst>
         <ToastContainer />
-        <NotificationProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <NotificationProvider>
             <Component {...pageProps} />
-          </AuthProvider>
-        </NotificationProvider>
+          </NotificationProvider>
+        </AuthProvider>
       </StyledEngineProvider>
     </>
   );
