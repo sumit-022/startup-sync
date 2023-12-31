@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DeleteVendor from "@/components/atoms/button/delete-vendor";
 import { MdAdd, MdEdit } from "react-icons/md";
 import Button from "@/components/atoms/button";
@@ -17,8 +17,9 @@ import Search from "@/components/common/joborder/joborder-search";
 
 const VendorPage = () => {
   const router = useRouter();
-  const [vendors, setVendors] = useState([]);
+  const [vendors, setVendors] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const allData = useRef<any[]>([]);
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
@@ -32,6 +33,7 @@ const VendorPage = () => {
     instance
       .get("/vendors?populate=*")
       .then((res) => {
+        allData.current = parseAttributes(res.data.data);
         setVendors(parseAttributes(res.data.data));
       })
       .finally(() => {
@@ -177,7 +179,18 @@ const VendorPage = () => {
         </Dropdown>
       </div>
       <div className="my-4">
-        <Search placeholder="Search Vendor by Name" className="mb-4" />
+        <Search
+          placeholder="Search Vendor by Name"
+          className="mb-4"
+          onChange={(event) => {
+            const newData = allData.current.filter((item) => {
+              return item.name
+                .toLowerCase()
+                .includes(event.target.value.toLowerCase());
+            });
+            setVendors(newData);
+          }}
+        />
         <VendorFilters />
       </div>
       <div className="mt-4">

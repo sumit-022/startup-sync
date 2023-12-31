@@ -137,7 +137,6 @@ export default function SalesDashboard() {
             const newData = allData.current.filter((item) => {
               return item.jobCode.includes(event.target.value);
             });
-
             setData(newData);
           }}
         />
