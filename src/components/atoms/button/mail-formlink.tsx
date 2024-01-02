@@ -15,7 +15,9 @@ const MailFormLink = () => {
     sendMail({
       recipient: data.email,
       subject: "Vendor Registration Link",
-      content: `Click this link to register as a vendor: ${process.env.NEXT_PUBLIC_BASE_FRONTEND_URL}/vendor/form/${response.data}`,
+      content: `Click this link to register as a vendor: ${
+        process.env.NEXT_PUBLIC_BASE_FRONTEND_URL || window.location.origin
+      }/vendor/form/${response.data}`,
     });
   };
 
