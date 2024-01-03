@@ -9,7 +9,6 @@ import Loading from "@/components/atoms/loading";
 import Dropdown from "@/components/atoms/dropdown";
 import { DataGrid, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import parseAttributes from "@/utils/parse-data";
-import { IconButton } from "@mui/material";
 import MailFormLink from "@/components/atoms/button/mail-formlink";
 import VendorFilters, {
   VendorFilterType,
@@ -39,8 +38,6 @@ const VendorPage = () => {
     setIsLoading(true);
     instance.post("/vendors/form/generate-vendor-id").then((res) => {
       setIsLoading(false);
-      // Open in a new tab
-      // Get the current base url
       const base =
         process.env.NEXT_PUBLIC_BASE_FRONTEND_URL || window.location.origin;
       window.open(`${base}/vendor/form/${res.data}`, "_blank");
@@ -54,6 +51,7 @@ const VendorPage = () => {
       .then((res) => {
         allData.current = parseAttributes(res.data.data);
         setVendors(parseAttributes(res.data.data));
+        console.log(parseAttributes(res.data.data));
       })
       .finally(() => {
         setIsLoading(false);
@@ -199,13 +197,15 @@ const VendorPage = () => {
       </div>
       <div className="my-4">
         <Search
-          placeholder="Search Vendor by Name"
+          placeholder="Search Vendor by Category"
           className="mb-4"
           onChange={(event) => {
             const newData = allData.current.filter((item) => {
-              return item.name
-                .toLowerCase()
-                .includes(event.target.value.toLowerCase());
+              return item.services.some((service: any) => {
+                return service.title
+                  .toLowerCase()
+                  .includes(event.target.value.toLowerCase());
+              });
             });
             setVendors(newData);
           }}
