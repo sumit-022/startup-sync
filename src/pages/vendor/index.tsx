@@ -197,15 +197,20 @@ const VendorPage = () => {
       </div>
       <div className="my-4">
         <Search
-          placeholder="Search Vendor by Category"
+          placeholder="Search Vendor by Name or Category"
           className="mb-4"
           onChange={(event) => {
             const newData = allData.current.filter((item) => {
-              return item.services.some((service: any) => {
-                return service.title
+              return (
+                item.services.some((service: any) =>
+                  service.title
+                    .toLowerCase()
+                    .includes(event.target.value.toLowerCase())
+                ) ||
+                item.name
                   .toLowerCase()
-                  .includes(event.target.value.toLowerCase());
-              });
+                  .includes(event.target.value.toLowerCase())
+              );
             });
             setVendors(newData);
           }}
