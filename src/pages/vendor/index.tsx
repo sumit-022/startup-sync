@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, use } from "react";
 import DeleteVendor from "@/components/atoms/button/delete-vendor";
 import { MdAdd, MdEdit } from "react-icons/md";
 import Button from "@/components/atoms/button";
@@ -14,25 +14,52 @@ import VendorFilters, {
   VendorFilterType,
 } from "@/components/common/vendor/filters";
 import EditVendor from "@/components/atoms/button/edit-vendor";
+import { useSearchParams } from "next/navigation";
 import Search from "@/components/common/joborder/joborder-search";
+import qs from "qs";
 
 const VendorPage = () => {
   const router = useRouter();
-  const [vendors, setVendors] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<{
+    loading: boolean;
+    totalPages: number;
+    total: number;
+    data: any[];
+  }>({
+    loading: false,
+    total: 0,
+    totalPages: 0,
+    data: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const allData = useRef<any[]>([]);
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page") ?? 1;
 
   const [filters, setFilters] = useState<VendorFilterType>({
     category: () => true,
   });
 
+  const getVendors = (page: number = 1) => {
+    setVendors({ ...vendors, loading: true });
+    instance
+      .get(
+        `/vendors?populate=*&pagination[page]=${page}&pagination[pageSize]=10`
+      )
+      .then((res) => {
+        setVendors({
+          loading: false,
+          total: res.data.meta.pagination.total,
+          totalPages: res.data.meta.pagination.pageCount,
+          data: parseAttributes(res.data.data),
+        });
+      });
+  };
+
   useEffect(() => {
-    let newData = [...allData.current];
-    Object.values(filters).forEach((filterFunc) => {
-      newData = newData.filter(filterFunc);
-    });
-    setVendors(newData);
-  }, [filters]);
+    getVendors(parseInt(page as string));
+  }, [page]);
+
+  let count = 0;
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
@@ -43,24 +70,6 @@ const VendorPage = () => {
       window.open(`${base}/vendor/form/${res.data}`, "_blank");
     });
   };
-
-  const getVendors = () => {
-    setIsLoading(true);
-    instance
-      .get("/vendors?populate=*")
-      .then((res) => {
-        allData.current = parseAttributes(res.data.data);
-        setVendors(parseAttributes(res.data.data));
-        console.log(parseAttributes(res.data.data));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    getVendors();
-  }, []);
 
   const columns: GridColDef[] = [
     {
@@ -155,7 +164,7 @@ const VendorPage = () => {
     },
   ];
 
-  const rows = vendors.map((vendor: any) => {
+  const rows = vendors.data.map((vendor: any) => {
     return {
       id: vendor.id,
       name: vendor.name,
@@ -200,19 +209,44 @@ const VendorPage = () => {
           placeholder="Search Vendor by Name or Category"
           className="mb-4"
           onChange={(event) => {
-            const newData = allData.current.filter((item) => {
-              return (
-                item.services.some((service: any) =>
-                  service.title
-                    .toLowerCase()
-                    .includes(event.target.value.toLowerCase())
-                ) ||
-                item.name
-                  .toLowerCase()
-                  .includes(event.target.value.toLowerCase())
-              );
-            });
-            setVendors(newData);
+            const query = event.target.value;
+            const apiquery = qs.stringify(
+              {
+                filters: {
+                  $or: [
+                    {
+                      name: {
+                        $containsi: query,
+                      },
+                    },
+                    {
+                      services: {
+                        title: {
+                          $containsi: query,
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                encodeValuesOnly: true,
+              }
+            );
+            instance
+              .get(
+                `/vendors?&${apiquery}&populate=*&pagination[page]=1&pagination[pageSize]=10`
+              )
+              .then((res) => {
+                console.log(res.data.data);
+
+                setVendors({
+                  loading: false,
+                  total: res.data.meta.pagination.total,
+                  totalPages: res.data.meta.pagination.pageCount,
+                  data: parseAttributes(res.data.data),
+                });
+              });
           }}
         />
         <VendorFilters
@@ -225,7 +259,23 @@ const VendorPage = () => {
         <DataGrid
           rows={rows}
           rowHeight={120}
+          rowCount={vendors.total}
+          onPaginationModelChange={(params) => {
+            router.push({
+              pathname: router.pathname,
+              query: { page: params.page + 1 },
+            });
+          }}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                page: parseInt(page as string) - 1,
+                pageSize: 10,
+              },
+            },
+          }}
           columns={columns}
+          loading={vendors.loading}
           getRowClassName={(params) => {
             return "cursor-pointer";
           }}
@@ -233,13 +283,7 @@ const VendorPage = () => {
           onRowClick={(params) => {
             router.push(`/vendor/view/${params.row.id}`);
           }}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
+          paginationMode="server"
         />
       </div>
     </DashboardLayout>
