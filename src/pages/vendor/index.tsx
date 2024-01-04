@@ -26,7 +26,7 @@ const VendorPage = () => {
     total: number;
     data: any[];
   }>({
-    loading: false,
+    loading: true,
     total: 0,
     totalPages: 0,
     data: [],
@@ -34,51 +34,68 @@ const VendorPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
-  const page = searchParams.get("page") ?? 1;
+  const page = parseInt(searchParams.get("page") || "1");
 
   const [filters, setFilters] = useState<VendorFilterType>({
-    category: () => true,
+    categories: [],
   });
 
-  const getVendors = (page: number = 1) => {
+  const searchTimeout = useRef<any>(null);
+
+  useEffect(() => {
+    clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      getVendors();
+    }, 1000);
+  }, [search, filters]);
+
+  const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({
       filters: {
-        $or: [
+        $and: [
           {
-            name: {
-              $containsi: search,
-            },
+            $or: [
+              {
+                name: {
+                  $containsi: search,
+                },
+              },
+              {
+                services: {
+                  title: {
+                    $containsi: search,
+                  },
+                },
+              },
+            ],
           },
-          {
+          filters.categories.length > 0 && {
             services: {
-              title: {
-                $containsi: search,
+              id: {
+                $in: filters.categories.map((category) => category.id),
               },
             },
           },
-        ],
+        ].filter(Boolean),
       },
     });
     setVendors({ ...vendors, loading: true });
-    instance
-      .get(
-        `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
-      )
-      .then((res) => {
-        setVendors({
-          loading: false,
-          total: res.data.meta.pagination.total,
-          totalPages: res.data.meta.pagination.pageCount,
-          data: parseAttributes(res.data.data),
-        });
-      });
+
+    const res = await instance.get(
+      `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
+    );
+
+    setVendors({
+      loading: false,
+      total: res.data.meta.pagination.total,
+      totalPages: res.data.meta.pagination.pageCount,
+      data: parseAttributes(res.data.data),
+    });
   };
 
   useEffect(() => {
-    getVendors(parseInt(page as string));
-  }, [page, search]);
-
-  let count = 0;
+    getVendors(page);
+  }, [page]);
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
@@ -228,7 +245,7 @@ const VendorPage = () => {
           placeholder="Search Vendor by Name or Category"
           className="mb-4"
           onChange={(event) => {
-            setSearch(event.target.value);
+            setSearch(() => event.target.value);
           }}
         />
         <VendorFilters
@@ -251,7 +268,7 @@ const VendorPage = () => {
           initialState={{
             pagination: {
               paginationModel: {
-                page: parseInt(page as string) - 1,
+                page: page - 1,
                 pageSize: 10,
               },
             },

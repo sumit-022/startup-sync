@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { IoFilter } from "react-icons/io5";
 
 export type VendorFilterType = {
-  category?: (vendor: VendorType) => boolean;
+  categories: VendorType["services"];
 };
 
 const VendorFilters = ({
@@ -17,23 +17,17 @@ const VendorFilters = ({
 }) => {
   const [filters, showFilters] = useState(false);
   const [categories, setCategories] = useState([]);
-  const { control, watch } = useForm({
+  const { control, watch } = useForm<VendorFilterType>({
     defaultValues: {
-      category: [],
+      categories: [],
     },
   });
 
-  const selectedCategories = watch("category") as ServiceType[];
+  const selectedCategories = watch("categories") as ServiceType[];
+
   useEffect(() => {
-    console.log({ selectedCategories });
     setFilters({
-      category: (vendor) => {
-        if (selectedCategories.length === 0) return true;
-        const vendorCategories = vendor.services.map((service) => service.id);
-        return selectedCategories.some((category) =>
-          vendorCategories.includes(category.id)
-        );
-      },
+      categories: selectedCategories,
     });
   }, [selectedCategories]);
 
@@ -56,10 +50,10 @@ const VendorFilters = ({
       </button>
       {filters && (
         <FormInputAutoComplete
-          label="Category"
+          label="Categories"
           options={categories}
           control={control}
-          title="category"
+          title="categories"
           isOptionEqualToValue={(option, value) => option.id === value.id}
         />
       )}

@@ -44,21 +44,11 @@ const FormInputAutoComplete = ({
           multiple
           options={options}
           disableCloseOnSelect
-          value={value}
           isOptionEqualToValue={isOptionEqualToValue}
           getOptionLabel={(option: { id: any; title: string }) => option.title}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Checkbox
-                checked={selected}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  onChange(
-                    e.target.checked
-                      ? [...value, option.id]
-                      : value.filter((id: string) => id !== option.id)
-                  );
-                }}
-              />
+              <Checkbox checked={selected} />
               {option.title}
             </li>
           )}
@@ -67,7 +57,6 @@ const FormInputAutoComplete = ({
               {...params}
               label={label}
               variant="outlined"
-              value={value}
               error={!!error}
               required={required}
               helperText={error ? error.message : null}
