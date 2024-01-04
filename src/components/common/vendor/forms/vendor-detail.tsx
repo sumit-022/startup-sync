@@ -104,14 +104,12 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         <FormInputText
           name="city"
           control={control}
-          rules={{ required: "This field is required" }}
           label="City"
           readOnly={mode === "view"}
         />
         <FormInputText
           name="zip"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Postal Code"
           readOnly={mode === "view"}
         />
@@ -174,21 +172,18 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         <FormInputText
           name="emergencyName"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Emergency Contact Name"
           readOnly={mode === "view"}
         />
         <FormInputText
           name="emergencyMobile"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Emergency Contact Number"
           readOnly={mode === "view"}
         />
         <FormInputText
           name="emergencyEmail"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Emergency Contact Email"
           readOnly={mode === "view"}
         />
@@ -198,14 +193,12 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         <FormInputText
           name="bankname"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Bank Name"
           readOnly={mode === "view"}
         />
         <FormInputText
           name="bankcountry"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Bank Country"
           readOnly={mode === "view"}
         />
@@ -213,7 +206,6 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
       <FormInputText
         name="accountname"
         control={control}
-        rules={{ required: "This field is required" }}
         label="Bank Account Name"
         readOnly={mode === "view"}
       />
@@ -221,14 +213,12 @@ const VendorDetailForm: React.FC<VendorDetailFormProperties> = ({
         <FormInputText
           name="accountnumber"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Bank Account Number"
           readOnly={mode === "view"}
         />
         <FormInputText
           name="swiftcode"
           control={control}
-          rules={{ required: "This field is required" }}
           label="Swift Code / DFI Number"
           readOnly={mode === "view"}
         />

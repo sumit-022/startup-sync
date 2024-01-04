@@ -50,12 +50,12 @@ const FormInputAutoComplete = ({
           renderOption={(props, option, { selected }) => (
             <li {...props}>
               <Checkbox
-                checked={selected}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                checked={value.findIndex((v: any) => v.id === option.id) > -1}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   onChange(
-                    e.target.checked
-                      ? [...value, option.id]
-                      : value.filter((id: string) => id !== option.id)
+                    event.target.checked
+                      ? [...value, option]
+                      : value.filter((v: any) => v.id !== option.id)
                   );
                 }}
               />

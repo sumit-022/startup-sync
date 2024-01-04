@@ -20,13 +20,12 @@ import qs from "qs";
 
 const VendorPage = () => {
   const router = useRouter();
+  const [tableLoading, setTableLoading] = useState(false);
   const [vendors, setVendors] = useState<{
-    loading: boolean;
     totalPages: number;
     total: number;
     data: any[];
   }>({
-    loading: true,
     total: 0,
     totalPages: 0,
     data: [],
@@ -79,18 +78,18 @@ const VendorPage = () => {
         ].filter(Boolean),
       },
     });
-    setVendors({ ...vendors, loading: true });
+    setTableLoading(true);
 
     const res = await instance.get(
       `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
     );
 
     setVendors({
-      loading: false,
       total: res.data.meta.pagination.total,
       totalPages: res.data.meta.pagination.pageCount,
       data: parseAttributes(res.data.data),
     });
+    setTableLoading(false);
   };
 
   useEffect(() => {
@@ -274,7 +273,7 @@ const VendorPage = () => {
             },
           }}
           columns={columns}
-          loading={vendors.loading}
+          loading={tableLoading}
           getRowClassName={(params) => {
             return "cursor-pointer";
           }}
