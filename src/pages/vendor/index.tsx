@@ -32,6 +32,7 @@ const VendorPage = () => {
     data: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
   const page = searchParams.get("page") ?? 1;
 
@@ -40,10 +41,28 @@ const VendorPage = () => {
   });
 
   const getVendors = (page: number = 1) => {
+    const apiqueries = qs.stringify({
+      filters: {
+        $or: [
+          {
+            name: {
+              $containsi: search,
+            },
+          },
+          {
+            services: {
+              title: {
+                $containsi: search,
+              },
+            },
+          },
+        ],
+      },
+    });
     setVendors({ ...vendors, loading: true });
     instance
       .get(
-        `/vendors?populate=*&pagination[page]=${page}&pagination[pageSize]=10`
+        `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
       )
       .then((res) => {
         setVendors({
@@ -57,7 +76,7 @@ const VendorPage = () => {
 
   useEffect(() => {
     getVendors(parseInt(page as string));
-  }, [page]);
+  }, [page, search]);
 
   let count = 0;
 
@@ -209,44 +228,7 @@ const VendorPage = () => {
           placeholder="Search Vendor by Name or Category"
           className="mb-4"
           onChange={(event) => {
-            const query = event.target.value;
-            const apiquery = qs.stringify(
-              {
-                filters: {
-                  $or: [
-                    {
-                      name: {
-                        $containsi: query,
-                      },
-                    },
-                    {
-                      services: {
-                        title: {
-                          $containsi: query,
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                encodeValuesOnly: true,
-              }
-            );
-            instance
-              .get(
-                `/vendors?&${apiquery}&populate=*&pagination[page]=1&pagination[pageSize]=10`
-              )
-              .then((res) => {
-                console.log(res.data.data);
-
-                setVendors({
-                  loading: false,
-                  total: res.data.meta.pagination.total,
-                  totalPages: res.data.meta.pagination.pageCount,
-                  data: parseAttributes(res.data.data),
-                });
-              });
+            setSearch(event.target.value);
           }}
         />
         <VendorFilters

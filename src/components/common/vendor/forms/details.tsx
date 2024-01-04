@@ -47,8 +47,8 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
           rules={{
             required: "This field is required",
             pattern: {
-              value: /^[0-9]*$/i,
-              message: "Only numbers are allowed",
+              value: /^[a-zA-Z0-9]*$/,
+              message: "Invalid registration number",
             },
           }}
         />
