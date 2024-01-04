@@ -44,6 +44,7 @@ const FormInputAutoComplete = ({
           multiple
           options={options}
           disableCloseOnSelect
+          defaultValue={value}
           isOptionEqualToValue={isOptionEqualToValue}
           getOptionLabel={(option: { id: any; title: string }) => option.title}
           renderOption={(props, option, { selected }) => (
