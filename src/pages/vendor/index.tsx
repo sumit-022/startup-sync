@@ -46,7 +46,7 @@ const VendorPage = () => {
     searchTimeout.current = setTimeout(() => {
       getVendors();
     }, 1000);
-  }, [search, filters, page]);
+  }, [search, filters]);
 
   const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({
@@ -91,6 +91,10 @@ const VendorPage = () => {
     });
     setTableLoading(false);
   };
+
+  useEffect(() => {
+    getVendors(page);
+  }, [page]);
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
