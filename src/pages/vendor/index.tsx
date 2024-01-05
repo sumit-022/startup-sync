@@ -78,8 +78,8 @@ const VendorPage = () => {
         ].filter(Boolean),
       },
     });
-    setTableLoading(true);
 
+    setTableLoading(true);
     const res = await instance.get(
       `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
     );
