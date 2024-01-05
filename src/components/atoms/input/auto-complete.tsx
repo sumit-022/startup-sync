@@ -39,43 +39,50 @@ const FormInputAutoComplete = ({
       name={title}
       rules={rules}
       control={control}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <Autocomplete
-          multiple
-          options={options}
-          disableCloseOnSelect
-          value={value}
-          isOptionEqualToValue={isOptionEqualToValue}
-          getOptionLabel={(option: { id: any; title: string }) => option.title}
-          renderOption={(props, option, { selected }) => (
-            <li {...props}>
-              <Checkbox
-                checked={value.findIndex((v: any) => v.id === option.id) > -1}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  onChange(
-                    event.target.checked
-                      ? [...value, option]
-                      : value.filter((v: any) => v.id !== option.id)
-                  );
-                }}
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
+        if (!value) {
+          value = [];
+        }
+        return (
+          <Autocomplete
+            multiple
+            options={options}
+            disableCloseOnSelect
+            value={value}
+            isOptionEqualToValue={isOptionEqualToValue}
+            getOptionLabel={(option: { id: any; title: string }) =>
+              option.title
+            }
+            renderOption={(props, option) => (
+              <li {...props}>
+                <Checkbox
+                  checked={value.findIndex((v: any) => v.id === option.id) > -1}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    onChange(
+                      event.target.checked
+                        ? [...value, option]
+                        : value.filter((v: any) => v.id !== option.id)
+                    );
+                  }}
+                />
+                {option.title}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                variant="outlined"
+                value={value}
+                error={!!error}
+                required={required}
+                helperText={error ? error.message : null}
               />
-              {option.title}
-            </li>
-          )}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={label}
-              variant="outlined"
-              value={value}
-              error={!!error}
-              required={required}
-              helperText={error ? error.message : null}
-            />
-          )}
-          onChange={(_, data) => onChange(data)}
-        />
-      )}
+            )}
+            onChange={(_, data) => onChange(data)}
+          />
+        );
+      }}
     />
   );
 };

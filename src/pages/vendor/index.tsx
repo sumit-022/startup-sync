@@ -46,7 +46,7 @@ const VendorPage = () => {
     searchTimeout.current = setTimeout(() => {
       getVendors();
     }, 1000);
-  }, [search, filters]);
+  }, [search, filters, page]);
 
   const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({
@@ -78,8 +78,8 @@ const VendorPage = () => {
         ].filter(Boolean),
       },
     });
-    setTableLoading(true);
 
+    setTableLoading(true);
     const res = await instance.get(
       `/vendors?pagination[page]=${page}&pagination[pageSize]=10&${apiqueries}&populate=*`
     );
@@ -91,10 +91,6 @@ const VendorPage = () => {
     });
     setTableLoading(false);
   };
-
-  useEffect(() => {
-    getVendors(page);
-  }, [page]);
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
