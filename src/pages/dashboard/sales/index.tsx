@@ -1,15 +1,10 @@
 import DashboardLayout from "@/components/layout";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdRemoveRedEye } from "react-icons/md";
 import { CgMediaLive } from "react-icons/cg";
-import dynamic from "next/dynamic";
 import { BiHistory } from "react-icons/bi";
 import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
-import { tableHeaders } from "@/data/dashboard";
-const Table = dynamic(() => import("@/components/atoms/table"), {
-  ssr: false,
-});
 import Filters from "@/components/common/joborder/joborder-sort";
 import Modal from "@/components/atoms/modal";
 import { modalAtom } from "@/atoms/modal.atom";
@@ -20,6 +15,15 @@ import Tabs from "@/components/common/joborder/joborder-filters";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import formatDate from "@/utils/date-formatter";
+import status from "@/components/atoms/table/status";
+import Action from "@/components/atoms/table/action";
+import ViewJobButton from "@/components/atoms/button/view";
+import CancelJobButton from "@/components/atoms/button/delete";
+import FlagJobButton from "@/components/atoms/button/flag";
+import EditJobButton from "@/components/atoms/button/edit";
+import GenerateRFQButton from "@/components/atoms/button/job-rfq";
 
 export default function SalesDashboard() {
   const allData = useRef<any[]>([]);
@@ -27,6 +31,7 @@ export default function SalesDashboard() {
   const [data, setData] = useState<any[]>([]);
   const { user } = useContext(AuthContext);
   const [showModal, setShowModal] = useAtom(modalAtom);
+
   const [filters, setFilters] = useState<FilterType>({
     queriedFrom: () => true,
     queriedUpto: () => true,
@@ -37,6 +42,84 @@ export default function SalesDashboard() {
     status: () => true,
   });
 
+  const columns: GridColDef[] = [
+    {
+      field: "jobCode",
+      headerName: "Job Code",
+      width: 130,
+    },
+    {
+      field: "description",
+      headerName: "Job Description",
+      width: 200,
+    },
+    {
+      field: "quotedAt",
+      headerName: "Quoted Date",
+      width: 150,
+    },
+    {
+      field: "receivedAt",
+      headerName: "Received Date",
+      width: 150,
+    },
+    {
+      field: "shipName",
+      headerName: "Ship Name",
+      width: 200,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 160,
+      renderCell: (params) => {
+        return status(params.value);
+      },
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      headerAlign: "center",
+      align: "center",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="flex gap-2">
+            <FlagJobButton
+              job={data.find((item) => item.id === params.row.id)}
+            />
+            <ViewJobButton
+              job={data.find((item) => item.id === params.row.id)}
+            />
+            <EditJobButton
+              job={data.find((item) => item.id === params.row.id)}
+              callback={fetchTableData}
+            />
+            <CancelJobButton
+              job={data.find((item) => item.id === params.row.id)}
+              callback={fetchTableData}
+            />
+            <GenerateRFQButton
+              job={data.find((item) => item.id === params.row.id)}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const rows = data.map((item) => {
+    return {
+      id: item.id,
+      jobCode: item.jobCode,
+      description: item.description,
+      quotedAt: formatDate(item.quotedAt),
+      receivedAt: formatDate(item.receivedAt),
+      shipName: item.shipName,
+      status: item.status,
+    };
+  });
+
   useEffect(() => {
     let newData = [...allData.current];
     Object.values(filters).forEach((filterFunc) => {
@@ -44,8 +127,6 @@ export default function SalesDashboard() {
     });
     setData(newData);
   }, [filters]);
-
-  const [selectedHeaders, setSelectedHeaders] = useState(tableHeaders);
 
   const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {
@@ -151,19 +232,11 @@ export default function SalesDashboard() {
             });
           }}
         />
-        <Filters
-          availableHeaders={selectedHeaders}
-          setSelectedHeaders={setSelectedHeaders}
-          onDownload={() => {
-            downloadTable();
-          }}
-          setFilters={setFilters}
-        />
-
-        <Table
-          data={data}
-          headers={selectedHeaders.filter((item) => item.show)}
-          callback={fetchTableData}
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          checkboxSelection
+          disableRowSelectionOnClick
         />
       </div>
       <Modal

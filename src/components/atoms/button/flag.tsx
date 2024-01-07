@@ -82,7 +82,6 @@ const FlagJobButton = ({ job }: { job: JobType }) => {
         } hover:bg-red-700 ${overdue && "animate-pulse"}`}
         onClick={() => {
           setModal(true);
-          // Mark the notification as viewed
           if (overdue) {
             n.markViewed(job.id.toString());
             overdue = false;

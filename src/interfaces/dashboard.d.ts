@@ -9,23 +9,6 @@ declare interface SidebarMenu {
   notifications: boolean;
 }
 
-//Tabke Data
-// id: 0,
-// jobCode: "J001",
-// date: "2021-08-01",
-// quotationDate: "2021-08-01",
-// shipName: "Ship 1",
-// companyName: "Company 1",
-// engineer: "Engineer 1",
-// poNumber: "PO 1",
-// targetPort: "Port 1",
-// vesselEta: "2021-08-01",
-// jobDescription: "Job 1",
-// spares: "Spares 1",
-// agent: "Agent 1",
-// reminderSent: true,
-// status: "Completed",
-
 declare interface JobType {
   id: number;
   jobCode: string;
@@ -78,4 +61,23 @@ declare interface FilterType {
   type: (val: JobType) => boolean;
   assignedTo: (val: JobType) => boolean;
   status?: (val: JobType) => boolean;
+}
+
+declare interface ActionModalType {
+  view: {
+    show: boolean;
+    job: JobType | undefined;
+  };
+  edit: {
+    show: boolean;
+    job: JobType | undefined;
+  };
+  cancel: {
+    show: boolean;
+    job: JobType | undefined;
+  };
+  flag: {
+    show: boolean;
+    job: JobType | undefined;
+  };
 }

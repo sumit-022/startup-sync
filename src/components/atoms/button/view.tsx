@@ -6,21 +6,24 @@ import JobOrderView from "@/components/common/joborder/joborder-view";
 
 interface ViewJobButtonProperties {
   className?: string;
-  data?: JobType;
+  job: JobType;
 }
 
 const ViewJobButton: React.FC<ViewJobButtonProperties> = ({
   className,
-  data,
+  job,
 }) => {
   const [showModal, setShowModal] = React.useState(false);
   return (
     <>
       <button
-        className="text-white text-sm p-2 rounded-full bg-yellow-500"
-        onClick={() => setShowModal(true)}
+        className="text-white flex gap-1 text-sm p-2 rounded-full bg-yellow-500"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowModal(true);
+        }}
       >
-        <FaEye className={className} />
+        <FaEye className="text-xs" />
       </button>
       <Modal open={showModal} onClose={() => setShowModal(false)}>
         <Box
@@ -51,7 +54,7 @@ const ViewJobButton: React.FC<ViewJobButtonProperties> = ({
           >
             Job Order Details
           </Typography>
-          <JobOrderView data={data} />
+          <JobOrderView data={job} />
           <Button
             variant="contained"
             color="error"

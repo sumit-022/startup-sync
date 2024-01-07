@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 interface CancelJobButtonProperties {
   className?: string;
   callback?: any;
-  data: any;
+  job: any;
 }
 
 const CancelJobButton: React.FC<CancelJobButtonProperties> = ({
   className,
   callback,
-  data,
+  job: data,
 }) => {
   const [open, setOpen] = React.useState(false);
   const handleCancel = () => {
@@ -32,10 +32,7 @@ const CancelJobButton: React.FC<CancelJobButtonProperties> = ({
   };
   return (
     <>
-      <button
-        className="text-white text-sm p-2 rounded-full bg-red-600"
-        onClick={() => setOpen(true)}
-      >
+      <button className="p-2 bg-red-500 rounded-full text-white" onClick={() => setOpen(true)}>
         <TiCancel />
       </button>
       <Modal open={open} onClose={() => setOpen(false)}>

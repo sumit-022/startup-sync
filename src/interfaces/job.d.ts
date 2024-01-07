@@ -1,4 +1,5 @@
 interface JobFormType {
+  id: string;
   jobCode: string;
   receivedAt: Date | string | null;
   quotedAt: Date | string | null;
