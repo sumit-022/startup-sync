@@ -23,7 +23,7 @@ const FormInputText = ({
   multiline?: boolean;
   className?: string;
   rows?: number;
-  type?: "text" | "password";
+  type?: "text" | "password" | "number";
   rules?: Omit<
     RegisterOptions<FieldValues, string>,
     "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"

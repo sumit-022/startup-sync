@@ -15,22 +15,31 @@ import Tabs from "@/components/common/joborder/joborder-filters";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridFilterItem,
+  GridFilterOperator,
+} from "@mui/x-data-grid";
 import formatDate from "@/utils/date-formatter";
 import status from "@/components/atoms/table/status";
-import Action from "@/components/atoms/table/action";
 import ViewJobButton from "@/components/atoms/button/view";
 import CancelJobButton from "@/components/atoms/button/delete";
 import FlagJobButton from "@/components/atoms/button/flag";
 import EditJobButton from "@/components/atoms/button/edit";
 import GenerateRFQButton from "@/components/atoms/button/job-rfq";
+import qs from "qs";
+import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
+import { useForm } from "react-hook-form";
 
 export default function SalesDashboard() {
   const allData = useRef<any[]>([]);
 
   const [data, setData] = useState<any[]>([]);
+  const [serviceCordinator, setServiceCordinator] = useState<any[]>([]);
   const { user } = useContext(AuthContext);
   const [showModal, setShowModal] = useAtom(modalAtom);
+  const { control } = useForm();
 
   const [filters, setFilters] = useState<FilterType>({
     queriedFrom: () => true,
@@ -69,6 +78,11 @@ export default function SalesDashboard() {
       width: 200,
     },
     {
+      field: "assignedTo",
+      headerName: "Service Coordinator",
+      width: 200,
+    },
+    {
       field: "status",
       headerName: "Status",
       width: 160,
@@ -99,9 +113,6 @@ export default function SalesDashboard() {
               job={data.find((item) => item.id === params.row.id)}
               callback={fetchTableData}
             />
-            <GenerateRFQButton
-              job={data.find((item) => item.id === params.row.id)}
-            />
           </div>
         );
       },
@@ -117,6 +128,7 @@ export default function SalesDashboard() {
       receivedAt: formatDate(item.receivedAt),
       shipName: item.shipName,
       status: item.status,
+      assignedTo: item.assignedTo.fullname,
     };
   });
 
@@ -127,6 +139,14 @@ export default function SalesDashboard() {
     });
     setData(newData);
   }, [filters]);
+
+  useEffect(() => {
+    instance.get("/users").then((res) => {
+      setServiceCordinator(parseAttributes(res.data.data));
+    });
+  }, []);
+
+  const apiquery = qs.stringify({});
 
   const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {

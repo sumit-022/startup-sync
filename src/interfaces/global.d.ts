@@ -35,3 +35,11 @@ interface ContactType {
   mobile: string;
   landline: string;
 }
+
+interface SpareType {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+}

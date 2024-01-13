@@ -10,6 +10,7 @@ const FormInputAutoComplete = ({
   rules,
   required,
   isOptionEqualToValue,
+  className,
 }: {
   title: string;
   label: string;
@@ -33,6 +34,7 @@ const FormInputAutoComplete = ({
       title: string;
     }
   ) => boolean;
+  className?: string;
 }) => {
   return (
     <Controller
@@ -75,6 +77,7 @@ const FormInputAutoComplete = ({
                 variant="outlined"
                 value={value}
                 error={!!error}
+                className={className}
                 required={required}
                 helperText={error ? error.message : null}
               />

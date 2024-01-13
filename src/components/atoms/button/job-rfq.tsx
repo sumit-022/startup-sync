@@ -3,6 +3,7 @@ import React from "react";
 import { MdAdd } from "react-icons/md";
 import { TransitionProps } from "@mui/material/transitions";
 import RFQForm from "@/components/common/joborder/form/job-rfq";
+import { IoCreate } from "react-icons/io5";
 
 interface Props {
   job: JobType;
@@ -33,10 +34,26 @@ const GenerateRFQButton: React.FC<Props> = ({ job }) => {
         fullScreen
         TransitionComponent={Transition}
       >
-        <Box sx={{ height: "100vh", width: "100vw", p: 4 }}>
-          <Typography variant="h5" sx={{ textAlign: "center" }}>
-            Generate RFQ for Job {job.jobCode}
-          </Typography>
+        <Box
+          sx={{
+            width: "100vw",
+            height: "100vh",
+            overflow: "scroll",
+            p: 4,
+            backgroundColor: "",
+          }}
+        >
+          <div className="flex justify-end">
+            <button className="text-2xl" onClick={() => setOpen(false)}>
+              &times;
+            </button>
+          </div>
+          <div className="flex w-full gap-2 underline items-center justify-center">
+            <IoCreate className="text-3xl" />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Generate RFQ for Job {job.jobCode}
+            </Typography>
+          </div>
           <RFQForm job={job} />
         </Box>
       </Dialog>
