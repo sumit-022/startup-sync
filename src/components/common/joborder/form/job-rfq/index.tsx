@@ -9,8 +9,9 @@ import InputGroup from "@/components/atoms/input/input-group";
 import FormInputText from "@/components/atoms/input/text";
 import FormHeading from "@/components/atoms/heading/form-heading";
 import { MdDelete, MdAdd } from "react-icons/md";
+import FormInputSelect from "@/components/atoms/input/select";
 
-const RFQForm = ({ job }: { job: JobType }) => {
+const RFQForm = () => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
 
   type RFQFormType = {
@@ -29,8 +30,8 @@ const RFQForm = ({ job }: { job: JobType }) => {
   const { control, handleSubmit, watch } = useForm<RFQFormType>({
     defaultValues: {
       vendors: [],
-      rfqnumber: `RFQ-${job.jobCode}`,
-      shipName: job.shipName,
+      rfqnumber: "",
+      shipName: "",
       spares: [{ name: "", description: "", quantity: null }],
     },
   });
@@ -41,18 +42,18 @@ const RFQForm = ({ job }: { job: JobType }) => {
   });
   const onSubmit = (data: any) => console.log(data);
 
-  const apiRoute = qs.stringify({
-    filters: {
-      services: {
-        id: {
-          $containsi: job.services.map((service) => service.id),
-        },
-      },
-    },
-  });
+  // const apiRoute = qs.stringify({
+  //   filters: {
+  //     services: {
+  //       id: {
+  //         $containsi: job.services.map((service) => service.id),
+  //       },
+  //     },
+  //   },
+  // });
 
   useEffect(() => {
-    instance.get(`/vendors?${apiRoute}`).then((res) => {
+    instance.get(`/vendors`).then((res) => {
       setVendors(parseAttributes(res.data.data));
     });
   }, []);
@@ -67,8 +68,26 @@ const RFQForm = ({ job }: { job: JobType }) => {
         gap: 2,
       }}
     >
+      <FormInputSelect
+        id="jobCode"
+        options={[
+          {
+            id: "1",
+            name: "1",
+          },
+          {
+            id: "2",
+            name: "2",
+          },
+        ]}
+        control={control}
+        name="joCode"
+        label="Select Job Order Code"
+      />
+
       <FormInputAutoComplete
         control={control}
+        disabled={vendors.length === 0}
         title="vendors"
         label="Vendors"
         options={vendors.map((vendor) => ({

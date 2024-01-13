@@ -11,6 +11,7 @@ const FormInputAutoComplete = ({
   required,
   isOptionEqualToValue,
   className,
+  disabled,
 }: {
   title: string;
   label: string;
@@ -35,6 +36,7 @@ const FormInputAutoComplete = ({
     }
   ) => boolean;
   className?: string;
+  disabled?: boolean;
 }) => {
   return (
     <Controller
@@ -47,6 +49,7 @@ const FormInputAutoComplete = ({
         }
         return (
           <Autocomplete
+            disabled={disabled}
             multiple
             options={options}
             disableCloseOnSelect

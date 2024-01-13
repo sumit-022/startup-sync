@@ -22,7 +22,6 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
   const { setAuthData } = useContext(AuthContext);
   const router = useRouter();
   const { pathname } = router;
-  console.log(pathname);
 
   const trigger = useRef<React.LegacyRef<HTMLButtonElement>>(null);
   const sidebar = useRef<React.LegacyRef<HTMLElement | null>>(null);

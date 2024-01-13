@@ -194,14 +194,6 @@ export const NotificationProvider = ({
   };
 
   const refreshNotificationData = (data: JobType[]) => {
-    console.log({
-      refreshData: data
-        .filter((job) => !!job.notification)
-        .map((job) => ({
-          jobId: job.id.toString(),
-          ...(job.notification as NonNullable<JobType["notification"]>),
-        })),
-    });
     allNotifications.current = data
       .filter((job) => !!job.notification)
       .map((job) => ({

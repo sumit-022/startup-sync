@@ -6,40 +6,21 @@ const FormInputSelect = ({
   id,
   name,
   control,
+  options,
   label,
   className,
   disabled,
-  fetchFunction,
   multiple = false,
 }: {
   id: string;
   name: string;
   control: any;
+  options: { id: any; name: string }[];
   label: string;
   className?: string;
-  fetchFunction: () => Promise<
-    {
-      id: any;
-      name: string;
-    }[]
-  >;
   multiple?: boolean;
   disabled?: boolean;
 }) => {
-  const [options, setOptions] = useState<
-    {
-      id: any;
-      name: string;
-    }[]
-  >([]);
-  useEffect(() => {
-    const fetchOptions = async () => {
-      const fetchedOptions = await fetchFunction();
-      setOptions(fetchedOptions);
-    };
-    fetchOptions();
-  }, [fetchFunction]);
-
   const generateSingleOptions = () => {
     return options.map(
       (

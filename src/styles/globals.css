@@ -28,3 +28,7 @@
 .MuiCheckbox-root {
   width: 50px;
 }
+
+.MuiSpeedDial-fab {
+  background-color: #305dd9;
+}

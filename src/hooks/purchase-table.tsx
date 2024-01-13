@@ -2,17 +2,32 @@ import { useEffect, useState } from "react";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
-import GenerateRFQButton from "@/components/atoms/button/job-rfq";
+import qs from "qs";
 
-export default function usePurchaseTable() {
+export default function usePurchaseTable({
+  status,
+}: {
+  status: string | null;
+}) {
   const [rows, setRows] = useState<JobType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  console.log({ rows });
+  const query = qs.stringify(
+    {
+      filters: {
+        status: {
+          $eq: status,
+        },
+      },
+    },
+    { encodeValuesOnly: true }
+  );
 
   useEffect(() => {
+    const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
+    setLoading(true);
     instance
-      .get("/jobs?populate=*")
+      .get(route)
       .then((res: any) => {
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
@@ -27,7 +42,7 @@ export default function usePurchaseTable() {
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [status]);
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130 },
     { field: "description", headerName: "Job Description", width: 200 },
@@ -36,14 +51,6 @@ export default function usePurchaseTable() {
     { field: "type", headerName: "Type", width: 150 },
     { field: "assignedTo", headerName: "Assigned To", width: 150 },
     { field: "status", headerName: "Status", width: 150 },
-    {
-      field: "action",
-      headerName: "Action",
-      width: 150,
-      renderCell: (params) => (
-        <GenerateRFQButton job={rows.find((row) => row.id === params.id)!} />
-      ),
-    },
   ];
 
   return { columns, rows, loading };

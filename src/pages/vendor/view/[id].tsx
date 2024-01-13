@@ -19,8 +19,6 @@ const VendorDetailsPage = () => {
       instance
         .get(`/vendors/${id}?populate=*`)
         .then((res) => {
-          console.log(parseAttributes(res.data.data));
-
           setData(parseAttributes(res.data.data));
         })
         .catch((err) => {
