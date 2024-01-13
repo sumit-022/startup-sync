@@ -7,17 +7,18 @@ import GenerateRFQButton from "@/components/atoms/button/job-rfq";
 export default function usePurchaseTable() {
   const [rows, setRows] = useState<JobType[]>([]);
   const [loading, setLoading] = useState(true);
+
+  console.log({ rows });
+
   useEffect(() => {
     instance
       .get("/jobs?populate=*")
-      .then((res) => {
-        console.log(parseAttributes(res.data.data));
+      .then((res: any) => {
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(
               Object.entries(el).map(([x, y]: [string, any]) => {
-                if (x == "assignedTo")
-                  return [x, { ...y, assignedTo: y?.assignedTo?.fullname }];
+                if (x == "assignedTo") return [x, y.fullname];
                 return [x, y];
               })
             )
