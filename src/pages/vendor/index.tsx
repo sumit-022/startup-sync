@@ -42,11 +42,19 @@ const VendorPage = () => {
   const searchTimeout = useRef<any>(null);
 
   useEffect(() => {
+    console.log({ search, filters });
     clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
-      getVendors();
+      // Remove page query when searching
+      const { page, ...realQuery } = router.query;
+      router.push({
+        pathname: router.pathname,
+        query: realQuery,
+      });
     }, 1000);
   }, [search, filters]);
+
+  console.log({ page });
 
   const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({
@@ -264,13 +272,9 @@ const VendorPage = () => {
               query: { page: params.page + 1 },
             });
           }}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                page: page - 1,
-                pageSize: 10,
-              },
-            },
+          paginationModel={{
+            page: page - 1,
+            pageSize: 10,
           }}
           columns={columns}
           loading={tableLoading}
