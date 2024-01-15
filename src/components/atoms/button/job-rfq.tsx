@@ -14,13 +14,15 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const GenerateRFQButton = () => {
-  const [open, setOpen] = React.useState(false);
+const RFQDialog = ({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   return (
     <>
-      <IconButton onClick={() => setOpen(true)}>
-        <MdAdd />
-      </IconButton>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -54,4 +56,4 @@ const GenerateRFQButton = () => {
   );
 };
 
-export default GenerateRFQButton;
+export default RFQDialog;

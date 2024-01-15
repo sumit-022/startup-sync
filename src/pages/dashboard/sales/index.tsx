@@ -27,7 +27,6 @@ import ViewJobButton from "@/components/atoms/button/view";
 import CancelJobButton from "@/components/atoms/button/delete";
 import FlagJobButton from "@/components/atoms/button/flag";
 import EditJobButton from "@/components/atoms/button/edit";
-import GenerateRFQButton from "@/components/atoms/button/job-rfq";
 import qs from "qs";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { useForm } from "react-hook-form";

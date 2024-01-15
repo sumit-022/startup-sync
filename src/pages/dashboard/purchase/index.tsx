@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import { SiGoogleforms } from "react-icons/si";
-import GenerateRFQButton from "@/components/atoms/button/job-rfq";
+import RFQDialog from "@/components/atoms/button/job-rfq";
 
 type PurchaseTableFilter = {
   status: string;
@@ -34,8 +34,11 @@ export default function Home() {
       status: newFilter,
     });
   };
+
+  const [RFQOpen, setRFQOpen] = React.useState(false);
+
   const actions = [
-    { icon: <GenerateRFQButton />, name: "Create an RFQ" },
+    { icon: <MdAdd />, name: "Create an RFQ", onClick: () => setRFQOpen(true) },
     { icon: <SiGoogleforms />, name: "Create a PO" },
   ];
 
@@ -69,9 +72,11 @@ export default function Home() {
             key={action.name}
             icon={action.icon}
             tooltipTitle={action.name}
+            onClick={action.onClick}
           />
         ))}
       </SpeedDial>
+      <RFQDialog open={RFQOpen} setOpen={setRFQOpen} />
     </DashboardLayout>
   );
 }
