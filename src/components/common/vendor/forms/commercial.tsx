@@ -6,9 +6,10 @@ import InputGroup from "@/components/atoms/input/input-group";
 import FormInputRadioGroup from "@/components/atoms/input/radio-group";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
-import FormInputCheckboxGroup from "@/components/atoms/input/checkbox-group";
 import FormInputCheckbox from "@/components/atoms/input/checkbox";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
+import FormInputSelect from "@/components/atoms/input/select";
+import currencies from "@/data/currencies.json";
 
 interface CommercialDetailsProperties {
   control: any;
@@ -23,8 +24,6 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
     instance
       .get("/services?pagination[page]=1&pagination[pageSize]=1000")
       .then((res) => {
-        console.log(res.data.data);
-
         setCategories(parseAttributes(res.data.data));
       });
   }, []);
@@ -45,10 +44,15 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
           name="payterms"
           label="Payment Terms"
         />
-        <FormInputText
+        <FormInputSelect
+          id="paymethod"
           control={control}
           name="paymethod"
           label="Primary Currency"
+          options={currencies.map((currency) => ({
+            id: `${currency.name} (${currency.symbol})`,
+            name: `${currency.name} (${currency.symbol})`,
+          }))}
         />
         <FormInputText
           control={control}
