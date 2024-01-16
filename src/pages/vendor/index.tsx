@@ -42,7 +42,6 @@ const VendorPage = () => {
   const searchTimeout = useRef<any>(null);
 
   useEffect(() => {
-    console.log({ search, filters });
     clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       // Remove page query when searching
@@ -52,9 +51,8 @@ const VendorPage = () => {
         query: realQuery,
       });
     }, 1000);
+    if (page === 1) getVendors();
   }, [search, filters]);
-
-  console.log({ page });
 
   const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({

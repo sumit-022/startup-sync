@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FormControl, MenuItem, InputLabel, Select } from "@mui/material";
-import { Controller } from "react-hook-form";
+import { Controller, FieldValues, RegisterOptions } from "react-hook-form";
 
 const FormInputSelect = ({
   id,
@@ -10,7 +10,7 @@ const FormInputSelect = ({
   label,
   className,
   disabled,
-  multiple = false,
+  rules,
 }: {
   id: string;
   name: string;
@@ -20,6 +20,10 @@ const FormInputSelect = ({
   className?: string;
   multiple?: boolean;
   disabled?: boolean;
+  rules?: Omit<
+    RegisterOptions<FieldValues, string>,
+    "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
+  >;
 }) => {
   const generateSingleOptions = () => {
     return options.map(
@@ -43,16 +47,17 @@ const FormInputSelect = ({
       <InputLabel id={id}>{label}</InputLabel>
       <Controller
         name={name}
+        rules={rules}
         control={control}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
           <Select
             label={label}
-            multiple={multiple}
             disabled={disabled}
             value={value}
             onChange={onChange}
             id={id}
             className={className}
+            error={!!error}
           >
             {generateSingleOptions()}
           </Select>

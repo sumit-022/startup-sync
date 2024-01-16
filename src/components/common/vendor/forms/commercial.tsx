@@ -23,6 +23,8 @@ const CommercialDetails: React.FC<CommercialDetailsProperties> = ({
     instance
       .get("/services?pagination[page]=1&pagination[pageSize]=1000")
       .then((res) => {
+        console.log(res.data.data);
+
         setCategories(parseAttributes(res.data.data));
       });
   }, []);

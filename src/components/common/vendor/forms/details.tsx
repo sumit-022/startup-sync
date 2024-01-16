@@ -3,12 +3,28 @@ import { FormControl } from "@mui/material";
 import FormHeading from "@/components/atoms/heading/form-heading";
 import React from "react";
 import InputGroup from "@/components/atoms/input/input-group";
+import axios from "axios";
+import FormInputSelect from "@/components/atoms/input/select";
 
 interface VendorDetailsProperties {
   control: any;
 }
 
 const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
+  const [countries, setCountries] = React.useState([]);
+
+  React.useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all?fields=name").then((res) => {
+      setCountries(
+        res.data.map((country: any) => {
+          return {
+            id: country.name.common,
+            name: country.name.common,
+          };
+        })
+      );
+    });
+  }, []);
   return (
     <FormControl
       fullWidth
@@ -67,12 +83,12 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
         <FormInputText label="City" name="city" control={control} />
         <FormInputText label="Postal Code" name="zip" control={control} />
       </InputGroup>
-      <FormInputText
+      <FormInputSelect
+        id="country"
+        options={countries}
         label="Country"
         name="country"
         control={control}
-        required
-        rules={{ required: "This field is required" }}
       />
     </FormControl>
   );

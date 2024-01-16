@@ -50,6 +50,7 @@ const FormInputAutoComplete = ({
         return (
           <Autocomplete
             disabled={disabled}
+            loading={options.length === 0}
             multiple
             options={options}
             disableCloseOnSelect

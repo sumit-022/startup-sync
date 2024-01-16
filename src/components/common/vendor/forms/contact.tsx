@@ -44,6 +44,12 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
           label="Land Line Number"
           name="saleslandline"
           control={control}
+          rules={{
+            pattern: {
+              value: /^[0-9]*$/i,
+              message: "Only numbers are allowed",
+            },
+          }}
         />
       </InputGroup>
       <FormInputText
@@ -75,6 +81,12 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
           label="Emergency Contact Email"
           name="emergencyemail"
           control={control}
+          rules={{
+            pattern: {
+              value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+              message: "Invalid email address",
+            },
+          }}
         />
         <FormInputText
           label="Emergency Contact Landline"
