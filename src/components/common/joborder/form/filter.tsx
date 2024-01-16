@@ -32,6 +32,19 @@ const FilterForm = ({
     },
   });
 
+  const [engineers, setEngineers] = React.useState([]);
+
+  React.useEffect(() => {
+    instance.get("/users").then((res) => {
+      setEngineers(
+        res.data.map((user: any) => ({
+          id: user.id,
+          name: user.fullname,
+        }))
+      );
+    });
+  }, []);
+
   const onSubmit: SubmitHandler<FilterForm> = (data) => {
     setFilters({
       queriedFrom: ({ receivedAt }) =>
@@ -85,29 +98,20 @@ const FilterForm = ({
       </div>
       <div className="flex flex-col gap-2 w-full">
         <FormInputSelect
-          className="w-full"
           name="type"
-          label="Nature of Job"
+          id="type"
+          label="Job Type"
           control={control}
-          fetchFunction={async () => [
+          options={[
             { id: "SERVICES", name: "Services" },
             { id: "SPARES SUPPLY", name: "Spare Supply" },
           ]}
-          id="status"
         />
         <FormInputSelect
           name="assignedTo"
           label="Service Cordinator"
           control={control}
-          fetchFunction={async () => {
-            const { data } = await instance.get(`/users`);
-            return (
-              data.map((user: any) => ({
-                id: user.id,
-                name: user.fullname,
-              })) || []
-            );
-          }}
+          options={engineers}
           id="engineer"
         />
       </div>
