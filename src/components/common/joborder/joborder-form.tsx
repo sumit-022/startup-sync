@@ -15,6 +15,7 @@ import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
 import parseAttributes from "@/utils/parse-data";
 import { NotificationContext } from "@/context/NotificationContext";
+import { getEngineers } from "@/utils/getEngineers";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -37,9 +38,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       title: string;
     }[]
   >([]);
+  const [engineers, setEngineers] = React.useState([]);
   const [modal, setModal] = React.useState(false);
   const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState(false);
+  const [companies, setCompanies] = React.useState([]);
 
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
@@ -56,6 +59,20 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       const parsedData = parseAttributes(data);
       setServices(parsedData);
     });
+  }, []);
+
+  useEffect(() => {
+    getEngineers().then((data) => {
+      setEngineers(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    instance
+      .get("/companies?pagination[page]=1&pagination[pageSize]=1000")
+      .then((res) => {
+        setCompanies(parseAttributes(res.data.data));
+      });
   }, []);
 
   const onSubmit = (data: any) => {
@@ -148,15 +165,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             name="company"
             label="COMPANY NAME"
             control={control}
-            fetchFunction={async () => {
-              const { data } = await instance.get(`/companies`);
-              return (
-                data.data.map((company: any) => ({
-                  id: company.id,
-                  name: company.attributes.name,
-                })) || []
-              );
-            }}
+            options={companies.map((company: any) => ({
+              id: company.id,
+              name: company.attributes.name,
+            }))}
           />
           <AddCompany />
         </div>
@@ -165,15 +177,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name="assignedTo"
           label="SERVICE COORDINATOR"
           control={control}
-          fetchFunction={async () => {
-            const { data } = await instance.get(`/users`);
-            return (
-              data.map((user: any) => ({
-                id: user.id,
-                name: user.fullname,
-              })) || []
-            );
-          }}
+          options={engineers.map((engineer: any) => ({
+            id: engineer.id,
+            name: engineer.attributes.name,
+          }))}
           disabled
         />
       </InputGroup>
@@ -208,7 +215,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name="type"
           label="NATURE OF JOB"
           control={control}
-          fetchFunction={async () => [
+          options={[
             { id: "SPARES SUPPLY", name: "Spare Supply" },
             { id: "SERVICES", name: "Services" },
           ]}
@@ -221,15 +228,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             name="agentId"
             label="AGENT"
             control={control}
-            fetchFunction={async () => {
-              const { data } = await instance.get(`/agents`);
-              return (
-                data.data.map((company: any) => ({
-                  id: company.id,
-                  name: company.attributes.name,
-                })) || []
-              );
-            }}
+            options={[]}
           />
           <AddAgent />
         </div>
