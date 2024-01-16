@@ -17,6 +17,7 @@ import EditVendor from "@/components/atoms/button/edit-vendor";
 import { useSearchParams } from "next/navigation";
 import Search from "@/components/common/joborder/joborder-search";
 import qs from "qs";
+import { Box } from "@mui/material";
 
 const VendorPage = () => {
   const router = useRouter();
@@ -259,7 +260,7 @@ const VendorPage = () => {
           }}
         />
       </div>
-      <div className="mt-4">
+      <Box sx={{ height: 520, width: "100%" }}>
         <DataGrid
           rows={rows}
           rowHeight={120}
@@ -285,7 +286,7 @@ const VendorPage = () => {
           }}
           paginationMode="server"
         />
-      </div>
+      </Box>
     </DashboardLayout>
   );
 };
