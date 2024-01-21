@@ -15,9 +15,11 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const RFQDialog = ({
+  job,
   open,
   setOpen,
 }: {
+  job: JobType;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -25,31 +27,32 @@ const RFQDialog = ({
     <>
       <Dialog
         open={open}
-        onClose={() => setOpen(false)}
         fullScreen
+        sx={{
+          "& .MuiDialog-paper": {
+            display: "flex",
+            justifyContent: "center",
+            p: 4,
+          },
+        }}
+        onClose={() => setOpen(false)}
         TransitionComponent={Transition}
       >
         <Box
           sx={{
-            width: "100vw",
-            height: "100vh",
-            overflow: "scroll",
-            p: 4,
             backgroundColor: "",
+            flexDirection: "column",
+            gap: 2,
+            zIndex: 10,
+            overflow: "auto",
           }}
         >
-          <div className="flex justify-end">
-            <button className="text-2xl" onClick={() => setOpen(false)}>
+          <div className="absolute top-2 right-4">
+            <button className="text-3xl" onClick={() => setOpen(false)}>
               &times;
             </button>
           </div>
-          <div className="flex w-full gap-2 underline items-center justify-center">
-            <IoCreate className="text-3xl" />
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Generate RFQ for Job
-            </Typography>
-          </div>
-          <RFQForm />
+          <RFQForm job={job} />
         </Box>
       </Dialog>
     </>

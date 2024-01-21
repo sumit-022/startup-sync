@@ -173,7 +173,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                                       href={`${menu.slug}${submenu.slug}`}
                                       className={({ isActive }) =>
                                         "group relative flex items-center gap-1.5 whitespace-nowrap rounded-md px-4 py-2 text-base text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-light-bright-blue hover:text-primary-white " +
-                                        (isActive
+                                        (pathname.includes(
+                                          `${menu.slug}${submenu.slug}`
+                                        )
                                           ? "bg-primary-bright-blue text-white"
                                           : "")
                                       }

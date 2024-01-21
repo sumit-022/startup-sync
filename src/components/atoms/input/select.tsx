@@ -8,6 +8,7 @@ const FormInputSelect = ({
   control,
   options,
   label,
+  fullWidth,
   className,
   disabled,
   rules,
@@ -18,6 +19,7 @@ const FormInputSelect = ({
   options: { id: any; name: string }[];
   label: string;
   className?: string;
+  fullWidth?: boolean;
   multiple?: boolean;
   disabled?: boolean;
   rules?: Omit<
@@ -43,7 +45,7 @@ const FormInputSelect = ({
     );
   };
   return (
-    <FormControl className="myclass w-full">
+    <FormControl>
       <InputLabel id={id}>{label}</InputLabel>
       <Controller
         name={name}
@@ -53,6 +55,7 @@ const FormInputSelect = ({
           <Select
             label={label}
             disabled={disabled}
+            fullWidth={fullWidth}
             value={value}
             onChange={onChange}
             id={id}

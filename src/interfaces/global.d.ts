@@ -36,10 +36,16 @@ interface ContactType {
   landline: string;
 }
 
+interface RFQFormType {
+  jobId: number;
+  description: string;
+  vendors: VendorFormType[];
+  shipName: string;
+  spareDetails: SpareType[];
+}
+
 interface SpareType {
-  id: number;
   name: string;
   description: string;
-  price: number;
-  quantity: number;
+  quantity: number | null;
 }

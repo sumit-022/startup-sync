@@ -139,9 +139,6 @@ const VendorPage = () => {
       field: "categories",
       headerName: "Categories",
       width: 200,
-      editable: true,
-      sortable: false,
-      filterable: true,
       renderCell: (params) => {
         return (
           <div className="flex flex-wrap gap-2 overflow-y-scroll max-h-20">

@@ -3,91 +3,91 @@ import { Button, FormControl, IconButton, Typography } from "@mui/material";
 import { useForm, useFieldArray } from "react-hook-form";
 import React, { useEffect } from "react";
 import instance from "@/config/axios.config";
-import qs from "qs";
 import parseAttributes from "@/utils/parse-data";
 import InputGroup from "@/components/atoms/input/input-group";
 import FormInputText from "@/components/atoms/input/text";
 import FormHeading from "@/components/atoms/heading/form-heading";
 import { MdDelete, MdAdd } from "react-icons/md";
-import FormInputSelect from "@/components/atoms/input/select";
+import logo from "@/assets/image/logo.jpg";
+import Image from "next/image";
+import createRfqPdf from "@/utils/create-rfq-pdf";
+import qs from "qs";
+import { toast } from "react-toastify";
 
-const RFQForm = () => {
+const RFQForm = ({ job }: { job: JobType }) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
-
-  type RFQFormType = {
-    vendors: VendorFormType[];
-    rfqnumber: string;
-    shipName: string;
-    spares: SpareType[];
-  };
-
-  type SpareType = {
-    name: string;
-    description: string;
-    quantity: number | null;
-  };
 
   const { control, handleSubmit, watch } = useForm<RFQFormType>({
     defaultValues: {
+      jobId: job.id,
+      description: job.description,
       vendors: [],
-      rfqnumber: "",
-      shipName: "",
-      spares: [{ name: "", description: "", quantity: null }],
+      shipName: job.shipName,
+      spareDetails: [{ name: "", description: "", quantity: null }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    name: "spares",
-    control,
+  const apiRoute = qs.stringify({
+    filters: {
+      services: {
+        id: {
+          $containsi: job.services.map((service) => service.id),
+        },
+      },
+    },
   });
-  const onSubmit = (data: any) => console.log(data);
-
-  // const apiRoute = qs.stringify({
-  //   filters: {
-  //     services: {
-  //       id: {
-  //         $containsi: job.services.map((service) => service.id),
-  //       },
-  //     },
-  //   },
-  // });
 
   useEffect(() => {
-    instance.get(`/vendors`).then((res) => {
-      setVendors(parseAttributes(res.data.data));
-    });
+    instance
+      .get(`/vendors?${apiRoute}&pagination[page]=1&pagination[pageSize]=1000`)
+      .then((res) => {
+        setVendors(parseAttributes(res.data.data));
+      });
   }, []);
+
+  const { fields, append, remove } = useFieldArray({
+    name: "spareDetails",
+    control,
+  });
+  const onSubmit = (data: any) => {
+    console.log(data);
+
+    const pdf = createRfqPdf(data);
+    const form = new FormData();
+    form.append("jobId", data.jobId);
+    form.append("description", data.description);
+    form.append("shipName", data.shipName);
+    form.append("vendors", JSON.stringify(data.vendors));
+    form.append("spareDetails", JSON.stringify(data.spareDetails));
+    if (pdf) form.append("attachment", pdf, "rfq.pdf");
+
+    instance.post("/job/send-rfq", form).then((res) => {
+      toast.success("RFQ Sent");
+    });
+  };
 
   return (
     <FormControl
       fullWidth
       sx={{
-        mt: 4,
         display: "flex",
-        flexDirection: "column",
+        justifyContent: "center",
         gap: 2,
       }}
     >
-      <FormInputSelect
-        id="jobCode"
-        options={[
-          {
-            id: "1",
-            name: "1",
-          },
-          {
-            id: "2",
-            name: "2",
-          },
-        ]}
-        control={control}
-        name="joCode"
-        label="Select Job Order Code"
-      />
-
+      <div className="flex justify-between items-center border-b-2 pb-2">
+        <Image src={logo} alt="logo" width={100} height={100} />
+        <Typography variant="h5" sx={{ color: "#1bb1d8" }}>
+          Vendor Requisition Form
+          <small className="block text-sm">Shinpo Engineering PTE. LTD.</small>
+          <small className="block text-sm">
+            1 Tuas South Avenue 6 , #05-20 ,S-637021
+          </small>
+        </Typography>
+      </div>
       <FormInputAutoComplete
         control={control}
-        disabled={vendors.length === 0}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         title="vendors"
         label="Vendors"
         options={vendors.map((vendor) => ({
@@ -95,20 +95,13 @@ const RFQForm = () => {
           title: vendor.name,
         }))}
       />
-      <InputGroup inputs={2}>
-        <FormInputText
-          control={control}
-          name="rfqnumber"
-          disabled
-          label="RFQ Number"
-        />
-        <FormInputText
-          control={control}
-          name="shipName"
-          disabled
-          label="Ship Name"
-        />
-      </InputGroup>
+      <FormInputText control={control} name="description" label="Description" />
+      <FormInputText
+        control={control}
+        name="shipName"
+        disabled
+        label="Ship Name"
+      />
       <Typography
         variant="h6"
         sx={{ mt: 2, textTransform: "uppercase", fontWeight: 700 }}
@@ -122,18 +115,18 @@ const RFQForm = () => {
             <InputGroup inputs={3} key={item.id}>
               <FormInputText
                 control={control}
-                name={`spares.${index}.name`}
+                name={`spareDetails.${index}.name`}
                 label="Name"
               />
               <FormInputText
                 control={control}
                 type="number"
-                name={`spares.${index}.quantity`}
+                name={`spareDetails.${index}.quantity`}
                 label="Quantity"
               />
               <FormInputText
                 control={control}
-                name={`spares.${index}.description`}
+                name={`spareDetails.${index}.description`}
                 label="Description"
               />
             </InputGroup>
@@ -161,7 +154,7 @@ const RFQForm = () => {
         variant="contained"
         className="mt-2 bg-blue-500 hover:bg-blue-600"
         onClick={handleSubmit(onSubmit)}
-        disabled={watch("spares").length === 0}
+        disabled={watch("spareDetails").length === 0}
       >
         Send RFQ to Vendors
       </Button>

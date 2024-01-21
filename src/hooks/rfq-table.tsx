@@ -3,13 +3,10 @@ import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
-import IconButton from "@/components/atoms/button/icon-button";
 
-export default function usePurchaseTable({
-  status,
+export default function useQueryTable({
   renderActions,
 }: {
-  status: string | null;
   renderActions?: (params: any) => React.ReactNode;
 }) {
   const [rows, setRows] = useState<JobType[]>([]);
@@ -18,7 +15,7 @@ export default function usePurchaseTable({
     {
       filters: {
         status: {
-          $eq: status,
+          $eq: "QUERYRECEIVED",
         },
       },
     },
@@ -26,10 +23,9 @@ export default function usePurchaseTable({
   );
 
   useEffect(() => {
-    const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
     instance
-      .get(route)
+      .get(`/jobs?${query}&populate=*`)
       .then((res: any) => {
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
@@ -44,7 +40,7 @@ export default function usePurchaseTable({
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, [status]);
+  }, []);
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130 },
     { field: "description", headerName: "Job Description", width: 200 },
@@ -56,7 +52,7 @@ export default function usePurchaseTable({
     {
       field: "Action",
       headerName: "Action",
-      width: 200,
+      width: 150,
       renderCell: (params) => (
         <div className="flex justify-center">
           {renderActions && renderActions(params)}

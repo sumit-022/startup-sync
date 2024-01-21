@@ -167,7 +167,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             control={control}
             options={companies.map((company: any) => ({
               id: company.id,
-              name: company.attributes.name,
+              name: company.name,
             }))}
           />
           <AddCompany />

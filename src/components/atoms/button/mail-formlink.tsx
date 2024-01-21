@@ -4,23 +4,24 @@ import { Modal, Box, FormControl } from "@mui/material";
 import FormInputText from "../input/text";
 import { useForm } from "react-hook-form";
 import { IoMdMail } from "react-icons/io";
-import { sendMail } from "@/utils/mail";
 import instance from "@/config/axios.config";
+import { toast } from "react-toastify";
 
 const MailFormLink = () => {
   const { control, handleSubmit, trigger } = useForm();
   const [modalOpen, setModalOpen] = useState(false);
   const onSubmit = async (data: any) => {
-    const response = await instance.post("/vendors/form/generate-vendor-id");
-    sendMail({
-      recipient: data.email,
-      subject: "Vendor Registration Link",
-      content: `Dear Sir/Mam,\n I hope this email finds you well. \n\n To streamline our supplier selection process and maintain up-to-date records, we have recently implemented a Supplier Registration Portal on our website. We kindly invite you to register your company's details on our portal using the following link.\nClick this link to register as a vendor: ${
-        process.env.NEXT_PUBLIC_BASE_FRONTEND_URL || window.location.origin
-      }/vendor/form/${
-        response.data
-      } \n\n Please ensure to complete all the required fields accurately, as this will enable us to review and evaluate your company as a potential partner for future collaboration. \n\nPlease note that registering on our Supplier Registration Portal will ensure that your company is included in our database for consideration as relevant projects or partnership opportunities arise.\n\nWe believe that establishing a strong network of trusted suppliers is essential for our mutual growth and success. We highly value the professional relationships we build and look forward to the possibility of collaborating with your esteemed company.\n\nIf you have any questions or encounter any issues during the registration process, please feel free to contact us.`,
-    });
+    instance
+      .post("/vendors/form/generate-vendor-id", data)
+      .then((res) => {
+        toast.success("Invitation link sent");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+      })
+      .finally(() => {
+        setModalOpen(false);
+      });
   };
 
   return (
