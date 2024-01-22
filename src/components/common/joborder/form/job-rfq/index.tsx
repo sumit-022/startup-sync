@@ -21,23 +21,10 @@ import Image from "next/image";
 import createRfqPdf from "@/utils/create-rfq-pdf";
 import qs from "qs";
 import { toast } from "react-toastify";
-import SpareCard from "@/components/atoms/card/spare-card";
-import Button from "@/components/atoms/button";
+import InputGroup from "@/components/atoms/input/input-group";
 
 const RFQForm = ({ job }: { job: JobType }) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
-  const [addSpareModal, setAddSpareModal] = React.useState(false);
-  const [spare, setSpare] = useState<{
-    title: string;
-    description: string;
-    quantity: number;
-    attachment: File | null;
-  }>({
-    title: "",
-    description: "",
-    quantity: 0,
-    attachment: null,
-  });
   const [loading, setLoading] = React.useState(false);
 
   const { control, handleSubmit, watch } = useForm<RFQFormType>({
@@ -46,7 +33,7 @@ const RFQForm = ({ job }: { job: JobType }) => {
       description: job.description,
       vendors: [],
       shipName: job.shipName,
-      spareDetails: [],
+      spareDetails: [{ title: "", quantity: null, description: "" }],
     },
   });
 
@@ -143,21 +130,48 @@ const RFQForm = ({ job }: { job: JobType }) => {
           label="Ship Name"
         />
         <FormHeading heading="Item Details" />
-        {fields.map((field, index) => (
-          <div key={index} className="flex gap-2 items-center">
-            <SpareCard {...field} />
-            <IconButton onClick={() => remove(index)} color="error">
-              <MdDelete />
-            </IconButton>
-          </div>
+        {fields.map((item, index) => (
+          <>
+            <FormHeading heading={`Spare ${index + 1}`} />
+            <div className="grid grid-cols-[1fr,auto,auto]">
+              <InputGroup inputs={3} key={item.id}>
+                <FormInputText
+                  control={control}
+                  name={`spareDetails.${index}.name`}
+                  label="Name"
+                />
+                <FormInputText
+                  control={control}
+                  type="number"
+                  name={`spareDetails.${index}.quantity`}
+                  label="Quantity"
+                />
+                <FormInputText
+                  control={control}
+                  name={`spareDetails.${index}.description`}
+                  label="Description"
+                />
+              </InputGroup>
+              <IconButton
+                disableRipple
+                onClick={() => remove(index)}
+                color="error"
+                disabled={fields.length === 1}
+              >
+                <MdDelete />
+              </IconButton>
+              <IconButton
+                disableRipple
+                onClick={() =>
+                  append({ title: "", quantity: null, description: "" })
+                }
+                color="primary"
+              >
+                <MdAdd />
+              </IconButton>
+            </div>
+          </>
         ))}
-        <Button
-          onClick={() => setAddSpareModal(true)}
-          className="flex gap-2 items-center w-max ml-auto mr-auto bg-blue-500 hover:bg-blue-700 text-white"
-        >
-          <MdAdd />
-          Add Item
-        </Button>
         <LoadingButton
           variant="contained"
           disabled={fields.length == 0}
@@ -168,110 +182,6 @@ const RFQForm = ({ job }: { job: JobType }) => {
         >
           Send RFQ to Vendors
         </LoadingButton>
-        <Modal open={addSpareModal} onClose={() => setAddSpareModal(false)}>
-          <Box
-            sx={{
-              position: "absolute",
-              display: "flex",
-              overflow: "scroll",
-              height: "80%",
-              borderRadius: 2,
-              flexDirection: "column",
-              gap: 2,
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%,-50%)",
-              width: "80%",
-              bgcolor: "background.paper",
-              boxShadow: 24,
-              p: 4,
-            }}
-          >
-            <Typography variant="h6" component="h2" align="center">
-              Add Spare
-            </Typography>
-            <TextField
-              fullWidth
-              label="Item Name"
-              variant="outlined"
-              value={spare.title}
-              onChange={(e) => {
-                setSpare({ ...spare, title: e.target.value });
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Description"
-              variant="outlined"
-              value={spare.description}
-              onChange={(e) => {
-                setSpare({ ...spare, description: e.target.value });
-              }}
-            />
-            <TextField
-              type="number"
-              fullWidth
-              label="Quantity"
-              variant="outlined"
-              value={spare.quantity}
-              onChange={(e) => {
-                setSpare({ ...spare, quantity: parseInt(e.target.value) });
-              }}
-            />
-            <label htmlFor="upload">
-              <Box
-                sx={{
-                  display: "flex",
-                  cursor: "pointer",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: 200,
-                  border: "3px dotted #ccc",
-                }}
-              >
-                <IconButton className="hover:bg-transparent">
-                  <IoMdCloudUpload />
-                </IconButton>
-                <Typography variant="body2" component="p">
-                  Upload Attachment
-                </Typography>
-              </Box>
-            </label>
-            <input
-              id="upload"
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const reqFile = e.target.files?.[0];
-                if (!reqFile) return;
-                if (reqFile.type.indexOf("image") == -1) {
-                  toast.error("Only images are allowed");
-                  return;
-                }
-
-                setSpare({ ...spare, attachment: reqFile });
-              }}
-            />
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white p-[6px] rounded-md"
-              onClick={() => {
-                append({
-                  ...spare,
-                });
-                setSpare({
-                  title: "",
-                  description: "",
-                  quantity: 0,
-                  attachment: null,
-                });
-                setAddSpareModal(false);
-              }}
-            >
-              Add Spare
-            </button>
-          </Box>
-        </Modal>
       </FormControl>
     </>
   );

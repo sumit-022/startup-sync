@@ -48,5 +48,4 @@ interface SpareType {
   title: string;
   description: string;
   quantity: number | null;
-  attachment: File | null;
 }
