@@ -83,7 +83,7 @@ export default function Home() {
           onChange={handleFilter}
         >
           <ToggleButton value="QUERYRECEIVED">Query</ToggleButton>
-          <ToggleButton value="QUOTERECEIVED">RFQ Sent</ToggleButton>
+          <ToggleButton value="RFQSENT">RFQ Sent</ToggleButton>
         </ToggleButtonGroup>
         <DataGrid
           rows={rows}

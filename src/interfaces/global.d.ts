@@ -45,7 +45,8 @@ interface RFQFormType {
 }
 
 interface SpareType {
-  name: string;
+  title: string;
   description: string;
   quantity: number | null;
+  attachment: File | null;
 }

@@ -5,7 +5,7 @@ import { TableConfig, CellConfig } from "jspdf";
 type RFQPdfData = {
   shipName: string;
   spareDetails: {
-    name: string;
+    title: string;
     quantity: string;
     description: string;
   }[];
@@ -20,7 +20,7 @@ const createRfqPdf = (data: RFQPdfData) => {
   const doc = new jsPDF();
   var header: CellConfig[] = [
     {
-      name: "Spare Name",
+      name: "Item Name",
       prompt: "Spare Name",
       width: 100,
       align: "center",
@@ -43,7 +43,7 @@ const createRfqPdf = (data: RFQPdfData) => {
   ];
 
   const tableData = data.spareDetails.map((spare) => ({
-    "Spare Name": spare.name,
+    "Spare Name": spare.title,
     Quantity: spare.quantity,
     Description: spare.description,
   }));
@@ -77,7 +77,7 @@ const createRfqPdf = (data: RFQPdfData) => {
   doc.setFontSize(12);
   doc.setTextColor("#000");
   doc.setFont("helvetica", "normal");
-  doc.text(`Vessel Name : ${myData.shipName}`, 15, 75);
+  doc.text(`Vessel Name : ${data.shipName}`, 15, 75);
   doc.text(`RFQ Number : ${myData.rfqnumber}`, 15, 80);
   doc.text(`Date : ${today.toDateString()}`, 150, 75);
 

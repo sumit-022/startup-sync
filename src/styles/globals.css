@@ -32,3 +32,9 @@
 .MuiSpeedDial-fab {
   background-color: #305dd9;
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
