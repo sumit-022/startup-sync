@@ -4,9 +4,11 @@ import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
 
-export default function useQueryTable({
+export default function useSalesTable({
+  status,
   renderActions,
 }: {
+  status: string | null;
   renderActions?: (params: any) => React.ReactNode;
 }) {
   const [rows, setRows] = useState<JobType[]>([]);
@@ -15,7 +17,7 @@ export default function useQueryTable({
     {
       filters: {
         status: {
-          $eq: "QUERYRECEIVED",
+          $eq: status,
         },
       },
     },
@@ -23,9 +25,10 @@ export default function useQueryTable({
   );
 
   useEffect(() => {
+    const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
     instance
-      .get(`/jobs?${query}&populate=*`)
+      .get(route)
       .then((res: any) => {
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
@@ -40,7 +43,7 @@ export default function useQueryTable({
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [status]);
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130 },
     { field: "description", headerName: "Job Description", width: 200 },
@@ -48,11 +51,10 @@ export default function useQueryTable({
     { field: "receivedAt", headerName: "Received Date", width: 150 },
     { field: "type", headerName: "Type", width: 150 },
     { field: "assignedTo", headerName: "Assigned To", width: 150 },
-    { field: "status", headerName: "Status", width: 150 },
     {
       field: "Action",
       headerName: "Action",
-      width: 150,
+      width: 80,
       renderCell: (params) => (
         <div className="flex justify-center">
           {renderActions && renderActions(params)}

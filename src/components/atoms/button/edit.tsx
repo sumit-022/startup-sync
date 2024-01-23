@@ -28,30 +28,6 @@ const EditJobButton: React.FC<EditJobButtonProperties> = ({
       >
         <MdEdit className={className} />
       </button>
-      <Modal open={showModal} onClose={() => setShowModal(false)}>
-        <Box
-          sx={{
-            backgroundColor: "white",
-            height: "80vh",
-            overflowY: "scroll",
-            position: "absolute",
-            transform: "translate(-50%, -50%)",
-            top: "50%",
-            left: "50%",
-            width: "80%",
-            borderRadius: "10px",
-            p: 4,
-          }}
-        >
-          <JobOrderForm
-            mode="edit"
-            authData={null}
-            data={job}
-            callback={callback}
-            setShowModal={setShowModal}
-          />
-        </Box>
-      </Modal>
     </>
   );
 };

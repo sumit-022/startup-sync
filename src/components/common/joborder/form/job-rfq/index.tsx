@@ -60,9 +60,9 @@ const RFQForm = ({ job }: { job: JobType }) => {
     control,
   });
 
-  console.log(fields);
-
   const onSubmit = (data: any) => {
+    console.log(data);
+
     setLoading(true);
     const pdf = createRfqPdf(data);
     const form = new FormData();
@@ -137,7 +137,7 @@ const RFQForm = ({ job }: { job: JobType }) => {
               <InputGroup inputs={3} key={item.id}>
                 <FormInputText
                   control={control}
-                  name={`spareDetails.${index}.name`}
+                  name={`spareDetails.${index}.title`}
                   label="Name"
                 />
                 <FormInputText

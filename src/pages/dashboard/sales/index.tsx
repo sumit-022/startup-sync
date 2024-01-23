@@ -2,42 +2,40 @@ import DashboardLayout from "@/components/layout";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { MdAdd, MdRemoveRedEye } from "react-icons/md";
 import { CgMediaLive } from "react-icons/cg";
-import { BiHistory } from "react-icons/bi";
+import { BiHistory, BiPencil } from "react-icons/bi";
 import { TiCancel } from "react-icons/ti";
 import Button from "@/components/atoms/button";
 import Filters from "@/components/common/joborder/joborder-sort";
-import Modal from "@/components/atoms/modal";
-import { modalAtom } from "@/atoms/modal.atom";
-import { useAtom } from "jotai";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import Search from "../../../components/common/joborder/joborder-search";
 import Tabs from "@/components/common/joborder/joborder-filters";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
-import {
-  DataGrid,
-  GridColDef,
-  GridFilterItem,
-  GridFilterOperator,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import formatDate from "@/utils/date-formatter";
-import status from "@/components/atoms/table/status";
-import ViewJobButton from "@/components/atoms/button/view";
 import CancelJobButton from "@/components/atoms/button/delete";
+
 import FlagJobButton from "@/components/atoms/button/flag";
-import EditJobButton from "@/components/atoms/button/edit";
 import qs from "qs";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { useForm } from "react-hook-form";
+import useSalesTable from "@/hooks/sales-table";
+import { Box, Modal } from "@mui/material";
+import { IoMdEye } from "react-icons/io";
+import LongMenu from "@/components/atoms/dropdown/menu";
+import JobOrderView from "@/components/common/joborder/joborder-view";
 
 export default function SalesDashboard() {
   const allData = useRef<any[]>([]);
 
   const [data, setData] = useState<any[]>([]);
+  const [modal, setModal] = useState<
+    "create" | "edit" | "view" | "flag" | null
+  >(null);
+  const [job, setJob] = useState<JobType | null>();
   const [serviceCordinator, setServiceCordinator] = useState<any[]>([]);
   const { user } = useContext(AuthContext);
-  const [showModal, setShowModal] = useAtom(modalAtom);
   const { control } = useForm();
 
   const [filters, setFilters] = useState<FilterType>({
@@ -50,85 +48,32 @@ export default function SalesDashboard() {
     status: () => true,
   });
 
-  const columns: GridColDef[] = [
+  const actions = [
     {
-      field: "jobCode",
-      headerName: "Job Code",
-      width: 130,
-    },
-    {
-      field: "description",
-      headerName: "Job Description",
-      width: 200,
-    },
-    {
-      field: "quotedAt",
-      headerName: "Quoted Date",
-      width: 150,
-    },
-    {
-      field: "receivedAt",
-      headerName: "Received Date",
-      width: 150,
-    },
-    {
-      field: "shipName",
-      headerName: "Ship Name",
-      width: 200,
-    },
-    {
-      field: "assignedTo",
-      headerName: "Service Coordinator",
-      width: 200,
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 160,
-      renderCell: (params) => {
-        return status(params.value);
+      icon: <IoMdEye />,
+      name: "View",
+      onClick: (params: any) => {
+        setJob(rows.find((item) => item.id === params.id));
+        setModal("view");
       },
     },
     {
-      field: "action",
-      headerName: "Action",
-      headerAlign: "center",
-      align: "center",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="flex gap-2">
-            <FlagJobButton
-              job={data.find((item) => item.id === params.row.id)}
-            />
-            <ViewJobButton
-              job={data.find((item) => item.id === params.row.id)}
-            />
-            <EditJobButton
-              job={data.find((item) => item.id === params.row.id)}
-              callback={fetchTableData}
-            />
-            <CancelJobButton
-              job={data.find((item) => item.id === params.row.id)}
-              callback={fetchTableData}
-            />
-          </div>
-        );
+      icon: <BiPencil />,
+      name: "Edit",
+      onClick: (params: any) => {
+        setJob(rows.find((item) => item.id === params.id));
+        setModal("edit");
       },
     },
   ];
 
-  const rows = data.map((item) => {
-    return {
-      id: item.id,
-      jobCode: item.jobCode,
-      description: item.description,
-      quotedAt: formatDate(item.quotedAt),
-      receivedAt: formatDate(item.receivedAt),
-      shipName: item.shipName,
-      status: item.status,
-      assignedTo: item.assignedTo.fullname,
-    };
+  const renderActions = (params: any) => {
+    return <LongMenu options={actions} params={params} />;
+  };
+
+  const { rows, columns, loading } = useSalesTable({
+    status: "QUERYRECEIVED",
+    renderActions,
   });
 
   useEffect(() => {
@@ -177,7 +122,6 @@ export default function SalesDashboard() {
   };
 
   const downloadTable = async () => {
-    // Convert the table data to csv and download it
     const csvdata = convertToCSV(data);
     const blob = new Blob([csvdata], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
@@ -196,7 +140,7 @@ export default function SalesDashboard() {
         <Button
           icon={<MdAdd />}
           onClick={() => {
-            setShowModal(true);
+            setModal("create");
           }}
         >
           Add
@@ -251,24 +195,49 @@ export default function SalesDashboard() {
             });
           }}
         />
+      </div>
+      <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}
-          checkboxSelection
+          loading={loading}
           disableRowSelectionOnClick
         />
-      </div>
-      <Modal
-        active={showModal}
-        setActive={setShowModal}
-        className="h-5/6 w-3/4 overflow-scroll"
-      >
-        <JobOrderForm
-          mode="create"
-          authData={user}
-          setShowModal={setShowModal}
-          callback={fetchTableData}
-        />
+      </Box>
+      <Modal open={Boolean(modal)} onClose={() => setModal(null)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            height: "80%",
+            overflow: "scroll",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          {modal === "create" && (
+            <JobOrderForm
+              callback={fetchTableData}
+              authData={user}
+              mode="create"
+              onClose={() => setModal(null)}
+            />
+          )}
+          {modal === "edit" && (
+            <JobOrderForm
+              callback={fetchTableData}
+              authData={user}
+              mode="edit"
+              onClose={() => setModal(null)}
+              data={job}
+            />
+          )}
+          {modal === "view" && <JobOrderView data={job} />}
+        </Box>
       </Modal>
     </DashboardLayout>
   );

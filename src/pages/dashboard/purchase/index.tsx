@@ -33,7 +33,7 @@ export default function Home() {
       : [
           {
             icon: <MdAdd />,
-            name: "Create an RFQ",
+            name: "Update Quotes",
             onClick: (params: any) => {
               setRFQOpen(true);
               const job = rows.find((el) => el.id == params.row.id);

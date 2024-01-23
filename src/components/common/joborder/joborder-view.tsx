@@ -5,7 +5,7 @@ import { CiBarcode } from "react-icons/ci";
 import formatDate from "@/utils/date-formatter";
 
 interface JobOrderViewProperties {
-  data?: JobType;
+  data?: JobType | null;
 }
 
 const JobOrderView: React.FC<JobOrderViewProperties> = ({ data }) => {

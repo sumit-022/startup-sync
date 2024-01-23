@@ -43,7 +43,7 @@ const createRfqPdf = (data: RFQPdfData) => {
   ];
 
   const tableData = data.spareDetails.map((spare) => ({
-    "Spare Name": spare.title,
+    "Item Name": spare.title,
     Quantity: spare.quantity,
     Description: spare.description,
   }));
@@ -51,6 +51,9 @@ const createRfqPdf = (data: RFQPdfData) => {
     autoSize: false,
     printHeaders: true,
   };
+
+  console.log({ tableData, header, config });
+
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.text("SHINPO ENGINEERING PTE LTD", 15, 15);
