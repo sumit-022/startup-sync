@@ -13,12 +13,7 @@ import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
 import { DataGrid } from "@mui/x-data-grid";
-import formatDate from "@/utils/date-formatter";
-import CancelJobButton from "@/components/atoms/button/delete";
-
-import FlagJobButton from "@/components/atoms/button/flag";
 import qs from "qs";
-import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { useForm } from "react-hook-form";
 import useSalesTable from "@/hooks/sales-table";
 import { Box, Modal } from "@mui/material";
@@ -38,22 +33,12 @@ export default function SalesDashboard() {
   const { user } = useContext(AuthContext);
   const { control } = useForm();
 
-  const [filters, setFilters] = useState<FilterType>({
-    queriedFrom: () => true,
-    queriedUpto: () => true,
-    quotedFrom: () => true,
-    quotedUpto: () => true,
-    type: () => true,
-    assignedTo: () => true,
-    status: () => true,
-  });
-
   const actions = [
     {
       icon: <IoMdEye />,
       name: "View",
       onClick: (params: any) => {
-        setJob(rows.find((item) => item.id === params.id));
+        setJob(data.find((item) => item.id === params.id));
         setModal("view");
       },
     },
@@ -61,7 +46,7 @@ export default function SalesDashboard() {
       icon: <BiPencil />,
       name: "Edit",
       onClick: (params: any) => {
-        setJob(rows.find((item) => item.id === params.id));
+        setJob(data.find((item) => item.id === params.id));
         setModal("edit");
       },
     },
@@ -71,18 +56,15 @@ export default function SalesDashboard() {
     return <LongMenu options={actions} params={params} />;
   };
 
-  const { rows, columns, loading } = useSalesTable({
+  const {
+    rows,
+    columns,
+    loading,
+    data: realData,
+  } = useSalesTable({
     status: "QUERYRECEIVED",
     renderActions,
   });
-
-  useEffect(() => {
-    let newData = [...allData.current];
-    Object.values(filters).forEach((filterFunc) => {
-      newData = newData.filter(filterFunc);
-    });
-    setData(newData);
-  }, [filters]);
 
   useEffect(() => {
     instance.get("/users").then((res) => {
@@ -103,37 +85,6 @@ export default function SalesDashboard() {
     fetchTableData();
   }, []);
 
-  const convertToCSV = (objArray: any) => {
-    const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
-    let str = "";
-
-    for (let i = 0; i < array.length; i++) {
-      let line = "";
-      for (let index in array[i]) {
-        if (line != "") line += ",";
-
-        line += array[i][index];
-      }
-
-      str += line + "\r\n";
-    }
-
-    return str;
-  };
-
-  const downloadTable = async () => {
-    const csvdata = convertToCSV(data);
-    const blob = new Blob([csvdata], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.setAttribute("hidden", "");
-    a.setAttribute("href", url);
-    a.setAttribute("download", "joborder.csv");
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   return (
     <DashboardLayout header sidebar>
       <div className="flex gap-4">
@@ -145,29 +96,8 @@ export default function SalesDashboard() {
         >
           Add
         </Button>
-        <Button
-          icon={<CgMediaLive />}
-          onClick={() => {
-            setFilters({
-              ...filters,
-              status: (item) =>
-                item.status !== "JOBCANCELLED" ??
-                item.status !== "JOBCOMPLETED",
-            });
-          }}
-        >
-          Live Jobs
-        </Button>
-        <Button
-          icon={<TiCancel />}
-          className="bg-red-600"
-          onClick={() => {
-            setFilters({
-              ...filters,
-              status: (item) => item.status === "JOBCANCELLED",
-            });
-          }}
-        >
+        <Button icon={<CgMediaLive />}>Live Jobs</Button>
+        <Button icon={<TiCancel />} className="bg-red-600">
           Cancelled Jobs
         </Button>
         <Button icon={<BiHistory />} className="bg-green-600">
@@ -175,26 +105,7 @@ export default function SalesDashboard() {
         </Button>
       </div>
       <div className="my-4 flex flex-col gap-3">
-        <Search
-          placeholder="Enter Job Code to search.."
-          onChange={(event) => {
-            const newData = allData.current.filter((item) => {
-              return item.jobCode.includes(event.target.value);
-            });
-            setData(newData);
-          }}
-        />
-        <Tabs
-          data={data}
-          callback={(status: JobType["status"][]) => {
-            console.log(status);
-            setFilters({
-              ...filters,
-              status: (item) =>
-                status.length > 0 ? status.includes(item.status) : true,
-            });
-          }}
-        />
+        <Search placeholder="Enter Job Code to search.." />
       </div>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid

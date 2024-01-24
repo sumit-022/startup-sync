@@ -13,7 +13,7 @@ const InputGroup: React.FC<InputGroupProperties> = ({
   inputs,
 }) => {
   return (
-    <div className={clsx(`grid gap-4 grid-cols-${inputs}`, className)}>
+    <div className={clsx(`grid grid-cols-${inputs} gap-4`, className)}>
       {children}
     </div>
   );

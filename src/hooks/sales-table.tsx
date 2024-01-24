@@ -12,6 +12,7 @@ export default function useSalesTable({
   renderActions?: (params: any) => React.ReactNode;
 }) {
   const [rows, setRows] = useState<JobType[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const query = qs.stringify(
     {
@@ -30,6 +31,7 @@ export default function useSalesTable({
     instance
       .get(route)
       .then((res: any) => {
+        setData(res.data.data);
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(
@@ -63,5 +65,5 @@ export default function useSalesTable({
     },
   ];
 
-  return { columns, rows, loading };
+  return { columns, rows, loading, data };
 }

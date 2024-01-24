@@ -40,6 +40,7 @@ const FormInputText = ({
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextField
           label={label}
+          fullWidth
           name={name}
           variant="outlined"
           multiline={multiline}

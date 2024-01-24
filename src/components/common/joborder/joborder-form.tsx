@@ -1,7 +1,18 @@
 import AddCompany from "./joborder-addcompany";
 import AddAgent from "./joborder-addagent";
 import instance from "@/config/axios.config";
-import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  FormControl,
+  TextField,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import Modal from "@/components/atoms/modal";
 import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
@@ -39,29 +50,22 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     }[]
   >([]);
   const [engineers, setEngineers] = React.useState([]);
-  const [modal, setModal] = React.useState(false);
+  const [modal, setModal] = React.useState<"confirmation" | "upload" | null>(
+    null
+  );
   const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState(false);
   const [companies, setCompanies] = React.useState([]);
 
-  console.log(data.assignedTo);
-
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
       ...data,
-      assignedTo: {
-        id: data.assignedTo.id,
-        name: data.assignedTo.fullname,
-      },
-      company: data.company.id,
+      company: data?.company?.id,
+      assignedTo: data?.assignedTo?.id,
     }) || {
-      assignedTo: {
-        id: authData?.id,
-        name: authData?.fullname,
-      },
+      assignedTo: authData?.id,
     },
   });
-  console.log({ authData });
 
   useEffect(() => {
     getServices().then((data) => {
@@ -191,7 +195,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name: engineer.fullname,
         }))}
       />
-      <InputGroup>
+      <div className="flex gap-4">
         {mode === "edit" && (
           <FormInputText name="poNumber" label="PO NUMBER" control={control} />
         )}
@@ -201,8 +205,8 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           control={control}
           className={clsx(mode === "create" && "col-span-2")}
         />
-        <FormInputDate name="vesselEta" label="VESSEL ETA" control={control} />
-      </InputGroup>
+      </div>
+      <FormInputDate name="vesselETA" label="VESSEL ETA" control={control} />
       <FormInputAutoComplete
         title="services"
         label="SERVICES"
@@ -229,7 +233,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         />
       </InputGroup>
       {mode === "edit" && (
-        <div className="flex gap-1">
+        <div className="grid grid-cols-[1fr,auto]">
           <FormInputSelect
             id="agent"
             name="agentId"
@@ -253,6 +257,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             type="button"
             variant="contained"
             className="bg-primary-bright-blue"
+            onClick={() => setModal("confirmation")}
           >
             Mark Job as Completed
           </Button>
@@ -273,6 +278,31 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           Create Job
         </Button>
       )}
+      <Dialog
+        open={Boolean(modal)}
+        maxWidth="xs"
+        onClose={() => setModal(null)}
+        aria-labelledby="job-completed-dialog-title"
+      >
+        <DialogTitle id="job-completed-dialog-title">
+          {modal === "upload" ? "Upload Service Report" : "Confirmation"}
+        </DialogTitle>
+        <DialogContent>
+          {modal === "confirmation" && (
+            <DialogContentText>
+              Do you have a service report for this job which you want to
+              upload?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        {modal === "upload" && <TextField type="file" sx={{ p: 2 }} />}
+        <DialogActions>
+          <Button onClick={() => setModal(null)}>No</Button>
+          <Button onClick={() => setModal("upload")} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </form>
   );
 };

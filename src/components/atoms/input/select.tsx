@@ -51,20 +51,22 @@ const FormInputSelect = ({
         name={name}
         rules={rules}
         control={control}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <Select
-            label={label}
-            disabled={disabled}
-            fullWidth={fullWidth}
-            value={value}
-            onChange={onChange}
-            id={id}
-            className={className}
-            error={!!error}
-          >
-            {generateSingleOptions()}
-          </Select>
-        )}
+        render={({ field: { onChange, value }, fieldState: { error } }) => {
+          return (
+            <Select
+              label={label}
+              disabled={disabled}
+              fullWidth={fullWidth}
+              value={value}
+              onChange={onChange}
+              id={id}
+              className={className}
+              error={!!error}
+            >
+              {generateSingleOptions()}
+            </Select>
+          );
+        }}
       />
     </FormControl>
   );
