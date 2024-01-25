@@ -8,30 +8,78 @@ import Button from "@/components/atoms/button";
 import Filters from "@/components/common/joborder/joborder-sort";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import Search from "../../../components/common/joborder/joborder-search";
-import Tabs from "@/components/common/joborder/joborder-filters";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
 import { DataGrid } from "@mui/x-data-grid";
-import qs from "qs";
 import { useForm } from "react-hook-form";
 import useSalesTable from "@/hooks/sales-table";
-import { Box, Modal } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Fab,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
 
 export default function SalesDashboard() {
-  const allData = useRef<any[]>([]);
-
   const [data, setData] = useState<any[]>([]);
   const [modal, setModal] = useState<
     "create" | "edit" | "view" | "flag" | null
   >(null);
   const [job, setJob] = useState<JobType | null>();
-  const [serviceCordinator, setServiceCordinator] = useState<any[]>([]);
+  const [maintab, setMainTab] = useState("live");
+  const [subtab, setSubTab] = useState("");
   const { user } = useContext(AuthContext);
-  const { control } = useForm();
+  const [filters, setFilters] = useState<{
+    status: JobStatus[] | JobStatus;
+    search: string;
+  }>({
+    status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
+    search: "",
+  });
+
+  useEffect(() => {
+    if (maintab === "live") {
+      setFilters((f) => ({
+        ...f,
+        status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
+      }));
+    } else if (maintab === "cancelled") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "JOBCANCELLED",
+      }));
+    } else if (maintab === "history") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "JOBCOMPLETED",
+      }));
+    } else if (subtab === "queryreceived") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "QUERYRECEIVED",
+      }));
+    } else if (subtab === "quotedtoclient") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "QUOTEDTOCLIENT",
+      }));
+    } else if (subtab === "orderconfirmed") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "ORDERCONFIRMED",
+      }));
+    } else if (subtab === "jobcompleted") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "JOBCOMPLETED",
+      }));
+    }
+  }, [maintab, subtab]);
 
   const actions = [
     {
@@ -51,6 +99,39 @@ export default function SalesDashboard() {
       },
     },
   ];
+  const mainTabs = [
+    {
+      name: "Live Jobs",
+      value: "live",
+    },
+    {
+      name: "Cancelled Jobs",
+      value: "cancelled",
+    },
+    {
+      name: "Job History",
+      value: "history",
+    },
+  ];
+
+  const subTabs = [
+    {
+      name: "Query",
+      value: "queryreceived",
+    },
+    {
+      name: "Quoted",
+      value: "quotedtoclient",
+    },
+    {
+      name: "Order Confirmed",
+      value: "orderconfirmed",
+    },
+    {
+      name: "Job Completed",
+      value: "jobcompleted",
+    },
+  ];
 
   const renderActions = (params: any) => {
     return <LongMenu options={actions} params={params} />;
@@ -60,23 +141,16 @@ export default function SalesDashboard() {
     rows,
     columns,
     loading,
+    refresh,
     data: realData,
   } = useSalesTable({
-    status: "QUERYRECEIVED",
+    status: filters.status,
+    search: filters.search,
     renderActions,
   });
 
-  useEffect(() => {
-    instance.get("/users").then((res) => {
-      setServiceCordinator(parseAttributes(res.data.data));
-    });
-  }, []);
-
-  const apiquery = qs.stringify({});
-
   const fetchTableData = () => {
     instance.get("/jobs?populate=*").then((res) => {
-      allData.current = parseAttributes(res.data);
       setData(parseAttributes(res.data).sort((a: any, b: any) => a.id - b.id));
     });
   };
@@ -87,25 +161,52 @@ export default function SalesDashboard() {
 
   return (
     <DashboardLayout header sidebar>
-      <div className="flex gap-4">
-        <Button
-          icon={<MdAdd />}
-          onClick={() => {
-            setModal("create");
-          }}
-        >
-          Add
-        </Button>
-        <Button icon={<CgMediaLive />}>Live Jobs</Button>
-        <Button icon={<TiCancel />} className="bg-red-600">
-          Cancelled Jobs
-        </Button>
-        <Button icon={<BiHistory />} className="bg-green-600">
-          History
-        </Button>
-      </div>
+      <Fab
+        variant="extended"
+        className="bg-blue-600 text-white"
+        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        color="primary"
+        onClick={() => {
+          setModal("create");
+        }}
+      >
+        <MdAdd className="mr-2" />
+        Add Job
+      </Fab>
+
+      <ToggleButtonGroup
+        color="primary"
+        value={maintab}
+        exclusive
+        onChange={(e, value) => {
+          if (value) setMainTab(value);
+        }}
+      >
+        {mainTabs.map((tab) => (
+          <ToggleButton value={tab.value} key={tab.value}>
+            {tab.name}
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
+
       <div className="my-4 flex flex-col gap-3">
         <Search placeholder="Enter Job Code to search.." />
+        {maintab === "live" && (
+          <ToggleButtonGroup
+            color="primary"
+            value={subtab}
+            exclusive
+            onChange={(e, value) => {
+              setSubTab(value);
+            }}
+          >
+            {subTabs.map((tab) => (
+              <ToggleButton value={tab.value} key={tab.value}>
+                {tab.name}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        )}
       </div>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
@@ -132,7 +233,7 @@ export default function SalesDashboard() {
         >
           {modal === "create" && (
             <JobOrderForm
-              callback={fetchTableData}
+              callback={refresh}
               authData={user}
               mode="create"
               onClose={() => setModal(null)}

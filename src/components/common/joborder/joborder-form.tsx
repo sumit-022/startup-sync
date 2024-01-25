@@ -102,6 +102,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             theme: "colored",
             pauseOnHover: true,
           });
+          callback();
         })
         .finally(() => {
           callback();
@@ -214,13 +215,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         control={control}
       />
       <InputGroup inputs={mode === "edit" ? 2 : 1}>
-        {mode === "edit" && (
-          <FormInputText
-            name="description"
-            label="DESCRIPTION"
-            control={control}
-          />
-        )}
+        <FormInputText
+          name="description"
+          label="DESCRIPTION"
+          control={control}
+        />
         <FormInputSelect
           id="natureOfJob"
           name="type"

@@ -6,26 +6,34 @@ import qs from "qs";
 
 export default function useSalesTable({
   status,
+  search,
   renderActions,
 }: {
-  status: string | null;
+  status: JobStatus[] | JobStatus;
+  search: string;
   renderActions?: (params: any) => React.ReactNode;
 }) {
   const [rows, setRows] = useState<JobType[]>([]);
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
   const query = qs.stringify(
     {
       filters: {
-        status: {
-          $eq: status,
-        },
+        status:
+          typeof status === "string" ? { $eq: status } : { $contains: status },
       },
     },
     { encodeValuesOnly: true }
   );
 
+  console.log({ query });
+
   useEffect(() => {
+    refresh();
+  }, [status, search]);
+
+  const refresh = () => {
     const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
     instance
@@ -45,7 +53,8 @@ export default function useSalesTable({
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, [status]);
+  };
+
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130 },
     { field: "description", headerName: "Job Description", width: 200 },
@@ -65,5 +74,5 @@ export default function useSalesTable({
     },
   ];
 
-  return { columns, rows, loading, data };
+  return { columns, rows, loading, data, refresh };
 }
