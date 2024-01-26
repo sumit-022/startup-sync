@@ -13,3 +13,14 @@ interface JobFormType {
   type: string;
   description: string;
 }
+
+interface FilterType {
+  queriedFrom: Date | string | null;
+  queriedUpto: Date | string | null;
+  quotedFrom: Date | string | null;
+  quotedUpto: Date | string | null;
+  assignedTo: JobType["assignedTo"] | null;
+  search: string;
+  status: JobStatus[] | JobStatus;
+  type: JobType["type"] | null;
+}

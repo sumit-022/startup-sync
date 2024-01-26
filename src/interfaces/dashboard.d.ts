@@ -53,16 +53,6 @@ declare interface TableHeader {
   show: boolean;
 }
 
-declare interface FilterType {
-  queriedFrom: (val: JobType) => boolean;
-  queriedUpto: (val: JobType) => boolean;
-  quotedFrom: (val: JobType) => boolean;
-  quotedUpto: (val: JobType) => boolean;
-  type: (val: JobType) => boolean;
-  assignedTo: (val: JobType) => boolean;
-  status?: (val: JobType) => boolean;
-}
-
 declare interface ActionModalType {
   view: {
     show: boolean;

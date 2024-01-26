@@ -5,12 +5,10 @@ import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
 
 export default function useSalesTable({
-  status,
-  search,
+  filters,
   renderActions,
 }: {
-  status: JobStatus[] | JobStatus;
-  search: string;
+  filters: FilterType;
   renderActions?: (params: any) => React.ReactNode;
 }) {
   const [rows, setRows] = useState<JobType[]>([]);
@@ -21,25 +19,28 @@ export default function useSalesTable({
     {
       filters: {
         status:
-          typeof status === "string" ? { $eq: status } : { $contains: status },
+          typeof filters.status === "string"
+            ? { $eq: filters.status }
+            : { $contains: filters.status },
+      },
+      quotedAt: {
+        $gte: filters.queriedFrom,
+        $lte: filters.queriedUpto,
       },
     },
     { encodeValuesOnly: true }
   );
 
-  console.log({ query });
-
   useEffect(() => {
     refresh();
-  }, [status, search]);
+  }, [filters]);
 
   const refresh = () => {
-    const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
     instance
-      .get(route)
+      .get(`/jobs?${query}&populate=*`)
       .then((res: any) => {
-        setData(res.data.data);
+        setData(parseAttributes(res.data.data));
         setRows(
           parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(

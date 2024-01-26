@@ -7,21 +7,12 @@ import FormInputDate from "@/components/atoms/input/date";
 import FormInputSelect from "@/components/atoms/input/select";
 import { FormControl, IconButton } from "@mui/material";
 
-type FilterForm = {
-  queriedFrom: Date | null;
-  queriedUpto: Date | null;
-  quotedFrom: Date | null;
-  quotedUpto: Date | null;
-  type: JobType["type"] | null;
-  assignedTo: number | null;
-};
-
-const FilterForm = ({
-  setFilters,
-}: {
+interface Props {
   setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
-}) => {
-  const { handleSubmit, control, reset } = useForm<FilterForm>({
+}
+
+const FilterForm: React.FC<Props> = ({ setFilters }) => {
+  const { handleSubmit, control, reset } = useForm<FilterType>({
     defaultValues: {
       queriedFrom: null,
       queriedUpto: null,
@@ -45,29 +36,8 @@ const FilterForm = ({
     });
   }, []);
 
-  const onSubmit: SubmitHandler<FilterForm> = (data) => {
-    setFilters({
-      queriedFrom: ({ receivedAt }) =>
-        !data.queriedFrom ||
-        (!!receivedAt && new Date(receivedAt) >= data.queriedFrom),
-      queriedUpto: ({ receivedAt }) =>
-        !data.queriedUpto ||
-        (!!receivedAt && new Date(receivedAt) <= data.queriedUpto),
-      quotedFrom: ({ quotedAt }) =>
-        !data.quotedFrom ||
-        (!!quotedAt && new Date(quotedAt) >= data.quotedFrom),
-      quotedUpto: ({ quotedAt }) =>
-        !data.quotedUpto || !quotedAt || new Date(quotedAt) <= data.quotedUpto,
-      type: ({ type }) => {
-        return !data.type || (!!type && type === data.type);
-      },
-      assignedTo: ({ assignedTo }) => {
-        return (
-          !data.assignedTo ||
-          (!!assignedTo && assignedTo.id === data.assignedTo)
-        );
-      },
-    });
+  const onSubmit: SubmitHandler<FilterType> = (data) => {
+    setFilters(data);
   };
 
   return (

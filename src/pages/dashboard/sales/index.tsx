@@ -1,18 +1,13 @@
 import DashboardLayout from "@/components/layout";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { MdAdd, MdRemoveRedEye } from "react-icons/md";
-import { CgMediaLive } from "react-icons/cg";
-import { BiHistory, BiPencil } from "react-icons/bi";
-import { TiCancel } from "react-icons/ti";
-import Button from "@/components/atoms/button";
+import React, { useContext, useEffect, useState } from "react";
+import { mainTabs, subTabs } from "@/data/sales";
+import { MdAdd } from "react-icons/md";
+import { BiPencil } from "react-icons/bi";
 import Filters from "@/components/common/joborder/joborder-sort";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import Search from "../../../components/common/joborder/joborder-search";
-import instance from "@/config/axios.config";
-import parseAttributes from "@/utils/parse-data";
 import AuthContext from "@/context/AuthContext";
 import { DataGrid } from "@mui/x-data-grid";
-import { useForm } from "react-hook-form";
 import useSalesTable from "@/hooks/sales-table";
 import {
   Box,
@@ -26,7 +21,6 @@ import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
 
 export default function SalesDashboard() {
-  const [data, setData] = useState<any[]>([]);
   const [modal, setModal] = useState<
     "create" | "edit" | "view" | "flag" | null
   >(null);
@@ -34,12 +28,15 @@ export default function SalesDashboard() {
   const [maintab, setMainTab] = useState("live");
   const [subtab, setSubTab] = useState("");
   const { user } = useContext(AuthContext);
-  const [filters, setFilters] = useState<{
-    status: JobStatus[] | JobStatus;
-    search: string;
-  }>({
+  const [filters, setFilters] = useState<FilterType>({
+    queriedFrom: null,
     status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
     search: "",
+    queriedUpto: null,
+    quotedFrom: null,
+    quotedUpto: null,
+    type: null,
+    assignedTo: null,
   });
 
   useEffect(() => {
@@ -58,7 +55,11 @@ export default function SalesDashboard() {
         ...filters,
         status: "JOBCOMPLETED",
       }));
-    } else if (subtab === "queryreceived") {
+    }
+  }, [maintab]);
+
+  useEffect(() => {
+    if (subtab === "queryreceived") {
       setFilters((filters) => ({
         ...filters,
         status: "QUERYRECEIVED",
@@ -79,14 +80,14 @@ export default function SalesDashboard() {
         status: "JOBCOMPLETED",
       }));
     }
-  }, [maintab, subtab]);
+  }, [subtab]);
 
   const actions = [
     {
       icon: <IoMdEye />,
       name: "View",
       onClick: (params: any) => {
-        setJob(data.find((item) => item.id === params.id));
+        setJob(realData.find((item) => item.id === params.id));
         setModal("view");
       },
     },
@@ -94,42 +95,9 @@ export default function SalesDashboard() {
       icon: <BiPencil />,
       name: "Edit",
       onClick: (params: any) => {
-        setJob(data.find((item) => item.id === params.id));
+        setJob(realData.find((item) => item.id === params.id));
         setModal("edit");
       },
-    },
-  ];
-  const mainTabs = [
-    {
-      name: "Live Jobs",
-      value: "live",
-    },
-    {
-      name: "Cancelled Jobs",
-      value: "cancelled",
-    },
-    {
-      name: "Job History",
-      value: "history",
-    },
-  ];
-
-  const subTabs = [
-    {
-      name: "Query",
-      value: "queryreceived",
-    },
-    {
-      name: "Quoted",
-      value: "quotedtoclient",
-    },
-    {
-      name: "Order Confirmed",
-      value: "orderconfirmed",
-    },
-    {
-      name: "Job Completed",
-      value: "jobcompleted",
     },
   ];
 
@@ -144,20 +112,9 @@ export default function SalesDashboard() {
     refresh,
     data: realData,
   } = useSalesTable({
-    status: filters.status,
-    search: filters.search,
+    filters,
     renderActions,
   });
-
-  const fetchTableData = () => {
-    instance.get("/jobs?populate=*").then((res) => {
-      setData(parseAttributes(res.data).sort((a: any, b: any) => a.id - b.id));
-    });
-  };
-
-  useEffect(() => {
-    fetchTableData();
-  }, []);
 
   return (
     <DashboardLayout header sidebar>
@@ -173,7 +130,6 @@ export default function SalesDashboard() {
         <MdAdd className="mr-2" />
         Add Job
       </Fab>
-
       <ToggleButtonGroup
         color="primary"
         value={maintab}
@@ -188,7 +144,6 @@ export default function SalesDashboard() {
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
-
       <div className="my-4 flex flex-col gap-3">
         <Search placeholder="Enter Job Code to search.." />
         {maintab === "live" && (
@@ -207,6 +162,9 @@ export default function SalesDashboard() {
             ))}
           </ToggleButtonGroup>
         )}
+      </div>
+      <div className="mb-4">
+        <Filters setFilters={setFilters} />
       </div>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
@@ -241,7 +199,7 @@ export default function SalesDashboard() {
           )}
           {modal === "edit" && (
             <JobOrderForm
-              callback={fetchTableData}
+              callback={refresh}
               authData={user}
               mode="edit"
               onClose={() => setModal(null)}
