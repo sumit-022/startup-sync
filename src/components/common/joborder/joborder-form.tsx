@@ -16,7 +16,7 @@ import {
 import Modal from "@/components/atoms/modal";
 import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import getServices from "@/utils/getServices";
 import FormInputText from "@/components/atoms/input/text";
@@ -27,6 +27,7 @@ import { toast } from "react-toastify";
 import parseAttributes from "@/utils/parse-data";
 import { NotificationContext } from "@/context/NotificationContext";
 import { getEngineers } from "@/utils/getEngineers";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -54,8 +55,29 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     null
   );
   const [option, setOption] = React.useState<string | null>(null);
-  const [upload, setUpload] = React.useState(false);
+  const [upload, setUpload] = React.useState<File | null>(null);
   const [companies, setCompanies] = React.useState([]);
+  const [uploadLoader, setUplaodLoader] = useState(false);
+
+  const handleUpload = async () => {
+    setUplaodLoader(true);
+
+    if (!upload) return;
+
+    // delete the old file if it exists
+    if (data.serviceReport?.id)
+      await instance.delete(`/upload/files/${data.serviceReport.id}`);
+
+    const f = new FormData();
+    f.append("files", upload);
+    f.append("refId", data.id);
+    f.append("ref", "api::job.job");
+    f.append("field", "serviceReport");
+
+    await instance.post("/upload", f);
+
+    setUplaodLoader(false);
+  };
 
   const { handleSubmit, control } = useForm<JobFormType>({
     defaultValues: (data && {
@@ -90,11 +112,13 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      instance
-        .post("/jobs", {
+      Promise.all([
+        handleUpload(),
+        instance.post("/jobs", {
           services: data.services.map((service: any) => service.id),
           ...data,
-        })
+        }),
+      ])
         .then((res) => {
           toast.success("Job Created Successfully", {
             position: "top-right",
@@ -109,13 +133,13 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           onClose && onClose();
         });
     } else if (mode === "edit") {
-      instance
-        .put(`/jobs/${data.id}`, {
-          data: {
-            services: data.services.map((service: any) => service.id),
-            ...data,
-          },
-        })
+      Promise.all([
+        handleUpload(),
+        instance.post("/jobs", {
+          services: data.services.map((service: any) => service.id),
+          ...data,
+        }),
+      ])
         .then((res) => {
           toast.success("Job Updated Successfully", {
             position: "top-right",
@@ -294,7 +318,15 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             </DialogContentText>
           )}
         </DialogContent>
-        {modal === "upload" && <TextField type="file" sx={{ p: 2 }} />}
+        {modal === "upload" && (
+          <TextField
+            type="file"
+            sx={{ p: 2 }}
+            onChange={(e) =>
+              setUpload((e.target as HTMLInputElement).files?.[0] ?? null)
+            }
+          />
+        )}
         {modal === "confirmation" ? (
           <DialogActions>
             <Button onClick={() => setModal("upload")}>Yes</Button>
@@ -303,7 +335,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         ) : (
           <DialogActions>
             <Button onClick={() => setModal(null)}>Cancel</Button>
-            <Button onClick={() => setModal(null)}>Upload</Button>
+            <LoadingButton>Upload</LoadingButton>
           </DialogActions>
         )}
       </Dialog>
