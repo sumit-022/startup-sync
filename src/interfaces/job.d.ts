@@ -12,6 +12,7 @@ interface JobFormType {
   services: { id: number; title: string }[];
   type: string;
   description: string;
+  serviceReport: File | null;
 }
 
 interface FilterType {

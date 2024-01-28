@@ -12,10 +12,11 @@ import useSalesTable from "@/hooks/sales-table";
 import {
   Box,
   Modal,
-  Fab,
   ToggleButtonGroup,
   ToggleButton,
+  IconButton,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
@@ -110,42 +111,50 @@ export default function SalesDashboard() {
     columns,
     loading,
     refresh,
+    page,
     data: realData,
   } = useSalesTable({
     filters,
     renderActions,
   });
 
+  const router = useRouter();
+
   return (
     <DashboardLayout header sidebar>
-      <Fab
-        variant="extended"
-        className="bg-blue-600 text-white"
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
-        color="primary"
-        onClick={() => {
-          setModal("create");
-        }}
-      >
-        <MdAdd className="mr-2" />
-        Add Job
-      </Fab>
-      <ToggleButtonGroup
-        color="primary"
-        value={maintab}
-        exclusive
-        onChange={(e, value) => {
-          if (value) setMainTab(value);
-        }}
-      >
-        {mainTabs.map((tab) => (
-          <ToggleButton value={tab.value} key={tab.value}>
-            {tab.name}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
+      <div className="flex gap-4">
+        <IconButton
+          onClick={() => {
+            setModal("create");
+          }}
+        >
+          <MdAdd />
+        </IconButton>
+        <ToggleButtonGroup
+          color="primary"
+          value={maintab}
+          exclusive
+          onChange={(e, value) => {
+            if (value) setMainTab(value);
+          }}
+        >
+          {mainTabs.map((tab) => (
+            <ToggleButton value={tab.value} key={tab.value}>
+              {tab.name}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
       <div className="my-4 flex flex-col gap-3">
-        <Search placeholder="Enter Job Code to search.." />
+        <Search
+          placeholder="Enter Job Code to search.."
+          onChange={(e) =>
+            setFilters((filters) => ({
+              ...filters,
+              search: e.target.value,
+            }))
+          }
+        />
         {maintab === "live" && (
           <ToggleButtonGroup
             color="primary"
@@ -168,10 +177,21 @@ export default function SalesDashboard() {
       </div>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={rows}
+          rows={rows.data}
+          rowCount={rows.total}
           columns={columns}
           loading={loading}
           disableRowSelectionOnClick
+          paginationModel={{
+            page: page - 1,
+            pageSize: 10,
+          }}
+          onPaginationModelChange={(params) => {
+            router.push({
+              pathname: router.pathname,
+              query: { page: params.page + 1 },
+            });
+          }}
         />
       </Box>
       <Modal open={Boolean(modal)} onClose={() => setModal(null)}>

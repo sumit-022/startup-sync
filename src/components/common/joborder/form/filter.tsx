@@ -37,7 +37,7 @@ const FilterForm: React.FC<Props> = ({ setFilters }) => {
   }, []);
 
   const onSubmit: SubmitHandler<FilterType> = (data) => {
-    setFilters(data);
+    setFilters((filters) => ({ ...filters, ...data }));
   };
 
   return (

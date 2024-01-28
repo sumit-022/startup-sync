@@ -295,12 +295,17 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           )}
         </DialogContent>
         {modal === "upload" && <TextField type="file" sx={{ p: 2 }} />}
-        <DialogActions>
-          <Button onClick={() => setModal(null)}>No</Button>
-          <Button onClick={() => setModal("upload")} autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
+        {modal === "confirmation" ? (
+          <DialogActions>
+            <Button onClick={() => setModal("upload")}>Yes</Button>
+            <Button onClick={() => setModal(null)}>No</Button>
+          </DialogActions>
+        ) : (
+          <DialogActions>
+            <Button onClick={() => setModal(null)}>Cancel</Button>
+            <Button onClick={() => setModal(null)}>Upload</Button>
+          </DialogActions>
+        )}
       </Dialog>
     </form>
   );

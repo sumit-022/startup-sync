@@ -45,7 +45,6 @@ const VendorPage = () => {
   useEffect(() => {
     clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
-      // Remove page query when searching
       const { page, ...realQuery } = router.query;
       router.push({
         pathname: router.pathname,
