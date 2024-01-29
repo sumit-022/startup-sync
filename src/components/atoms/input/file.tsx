@@ -30,7 +30,7 @@ const FormInputFile = ({
           <div className="absolute bg-white bg-opacity-50 h-full w-full flex items-center justify-center">
             <ClipLoader color="#017EFA" loading={loading} size={50} />
           </div>
-        ) : !(file && fileData) ? (
+        ) : !file && !fileData ? (
           <>
             <IoMdCloudUpload className="text-3xl" />
             <p className="text-sm">{label}</p>
@@ -45,12 +45,15 @@ const FormInputFile = ({
         ) : (
           <>
             <FaFilePdf className="text-3xl text-[#ff0000]" />
-            <p className="text-sm">{fileData.name}</p>
+            <p className="text-sm">{(file ? file : fileData).name}</p>
             <div className="flex mt-2 gap-4 items-center">
               <Button
                 variant="contained"
                 color="primary"
                 className="bg-primary-bright-blue"
+                onClick={() => {
+                  window.open(fileData.url, "_blank");
+                }}
               >
                 View
               </Button>

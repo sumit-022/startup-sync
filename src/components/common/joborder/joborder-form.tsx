@@ -59,7 +59,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const [uploadLoader, setUploadLoader] = useState(false);
   const [uploadedData, setUploadedData] = useState<
     Record<string, any> | undefined
-  >(data?.serviceReport);
+  >(data.serviceReport);
 
   const handleUploadDelete = async () => {
     setUploadLoader(true);
@@ -83,6 +83,8 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           pauseOnHover: true,
         });
         setUploadLoader(false);
+        setUploadedData(undefined);
+        setUpload(null);
         callback && callback();
       })
       .catch(() => {
