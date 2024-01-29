@@ -27,6 +27,10 @@ const subTabs = [
     value: "orderconfirmed",
   },
   {
+    name: "POD Awaited",
+    value: "podawaited",
+  },
+  {
     name: "Job Completed",
     value: "jobcompleted",
   },

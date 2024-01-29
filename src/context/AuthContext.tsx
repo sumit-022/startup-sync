@@ -26,7 +26,6 @@ function useAuth() {
         })
         .then((res) => {
           if (res.data) {
-            console.log(res.data);
             setAuthData({
               fullname: res.data.fullname,
               email: res.data.email,

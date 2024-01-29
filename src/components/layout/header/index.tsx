@@ -7,6 +7,7 @@ import NotificationIcon from "../../../assets/svg/icon/notification.svg";
 import logo from "@/assets/image/logo.jpg";
 import Link from "next/link";
 import { NotificationContext } from "@/context/NotificationContext";
+import Dropdown from "@/components/atoms/dropdown";
 interface DashboardHeaderProperties {
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,14 +51,13 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
         </div>
 
         <div className="flex items-center gap-3 text-primary-cool-grey sm:gap-4 md:gap-6 lg:gap-8">
-          <Image
-            className="cursor-pointer"
-            src={NotificationIcon}
-            alt=""
-            onClick={() => {
-              console.log(n.getAllNotifications());
+          <Dropdown activeCondition={false}>
+            {(handleClick, open) => {
+              return (
+                <Image src={NotificationIcon} alt="" onClick={handleClick} />
+              );
             }}
-          />
+          </Dropdown>
           <div className="flex cursor-pointer flex-row gap-2 hover:text-black">
             <Image src={HelpIcon} alt="" />
             <h3>Help</h3>

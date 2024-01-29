@@ -2,18 +2,14 @@ import AddCompany from "./joborder-addcompany";
 import AddAgent from "./joborder-addagent";
 import instance from "@/config/axios.config";
 import {
-  Autocomplete,
   Button,
-  FormControl,
   TextField,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContentText,
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import Modal from "@/components/atoms/modal";
 import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
 import React, { useContext, useEffect, useState } from "react";
@@ -25,9 +21,10 @@ import FormInputSelect from "@/components/atoms/input/select";
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import { toast } from "react-toastify";
 import parseAttributes from "@/utils/parse-data";
-import { NotificationContext } from "@/context/NotificationContext";
 import { getEngineers } from "@/utils/getEngineers";
 import LoadingButton from "@mui/lab/LoadingButton";
+import getCompanies from "@/utils/getCompanies";
+import FormInputFile from "@/components/atoms/input/file";
 
 interface JobOrderFormProperties {
   mode: "edit" | "create";
@@ -51,35 +48,102 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     }[]
   >([]);
   const [engineers, setEngineers] = React.useState([]);
-  const [modal, setModal] = React.useState<"confirmation" | "upload" | null>(
+  const [modal, setModal] = React.useState<"confirmation" | "cancel" | null>(
     null
   );
-  const [option, setOption] = React.useState<string | null>(null);
   const [upload, setUpload] = React.useState<File | null>(null);
   const [companies, setCompanies] = React.useState([]);
-  const [uploadLoader, setUplaodLoader] = useState(false);
+  const [loading, setLoading] = useState<"create" | "edit" | "cancel" | null>(
+    null
+  );
+  const [uploadLoader, setUploadLoader] = useState(false);
+  const [uploadedData, setUploadedData] = useState<
+    Record<string, any> | undefined
+  >(data?.serviceReport);
 
-  const handleUpload = async () => {
-    setUplaodLoader(true);
+  const handleUploadDelete = async () => {
+    setUploadLoader(true);
+    if (!uploadedData) {
+      toast.error("No file to delete", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setUploadLoader(false);
+      return null;
+    }
+    instance
+      .delete(`/upload/files/${uploadedData.id}`)
+      .then(() => {
+        toast.success("Upload Deleted Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setUploadLoader(false);
+        callback && callback();
+      })
+      .catch(() => {
+        toast.error("Upload Deletion Failed", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setUploadLoader(false);
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      });
+  };
 
-    if (!upload) return;
-
-    // delete the old file if it exists
-    if (data.serviceReport?.id)
-      await instance.delete(`/upload/files/${data.serviceReport.id}`);
+  const handleUpload = async (upload: File | null) => {
+    setUploadLoader(true);
+    if (!upload) {
+      toast.error("No file selected", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setUploadLoader(false);
+      return null;
+    }
 
     const f = new FormData();
     f.append("files", upload);
     f.append("refId", data.id);
     f.append("ref", "api::job.job");
     f.append("field", "serviceReport");
-
-    await instance.post("/upload", f);
-
-    setUplaodLoader(false);
+    try {
+      const data = await instance.post("/upload", f);
+      toast.success("Upload Successful", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setUploadLoader(false);
+      callback && callback();
+      return data.data[0];
+    } catch (err) {
+      toast.error("Upload Failed", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setUploadLoader(false);
+      setModal(null);
+      onClose && onClose();
+      callback && callback();
+      return null;
+    }
   };
 
-  const { handleSubmit, control } = useForm<JobFormType>({
+  const { handleSubmit, control, trigger } = useForm<JobFormType>({
     defaultValues: (data && {
       ...data,
       company: data?.company?.id,
@@ -103,43 +167,51 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   }, []);
 
   useEffect(() => {
-    instance
-      .get("/companies?pagination[page]=1&pagination[pageSize]=1000")
-      .then((res) => {
-        setCompanies(parseAttributes(res.data.data));
-      });
+    getCompanies().then((data: any) => {
+      const parsedData = parseAttributes(data);
+      setCompanies(parsedData);
+    });
   }, []);
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      Promise.all([
-        handleUpload(),
-        instance.post("/jobs", {
-          services: data.services.map((service: any) => service.id),
-          ...data,
-        }),
-      ])
-        .then((res) => {
-          toast.success("Job Created Successfully", {
-            position: "top-right",
-            autoClose: 3000,
-            theme: "colored",
-            pauseOnHover: true,
+      setLoading("create");
+      trigger().then((res) => {
+        setLoading("create");
+        if (!res) return;
+        instance
+          .post("/jobs", {
+            services: data.services.map((service: any) => service.id),
+            ...data,
+          })
+          .then((res) => {
+            toast.success("Job Created Successfully", {
+              position: "top-right",
+              autoClose: 3000,
+              theme: "colored",
+              pauseOnHover: true,
+            });
+            callback();
+          })
+          .finally(() => {
+            setLoading(null);
+            callback();
+            onClose && onClose();
           });
-          callback();
-        })
-        .finally(() => {
-          callback();
-          onClose && onClose();
-        });
+      });
     } else if (mode === "edit") {
-      Promise.all([
-        handleUpload(),
-        instance.post("/jobs", {
-          services: data.services.map((service: any) => service.id),
-          ...data,
-        }),
-      ])
+      setLoading("edit");
+      let jobstatus = "QUERYRECEIVED";
+      if (data.quotedAt) jobstatus = "QUOTEDTOCLIENT";
+      if (data.poNumber) jobstatus = "ORDERCONFIRMED";
+      instance
+        .put(`/jobs/${data.id}`, {
+          data: {
+            ...data,
+            services: data.services.map((service: any) => service.id),
+            status: jobstatus,
+          },
+        })
         .then((res) => {
           toast.success("Job Updated Successfully", {
             position: "top-right",
@@ -160,8 +232,44 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         .finally(() => {
           callback && callback();
           onClose && onClose();
+          setLoading(null);
         });
     }
+  };
+
+  const handleCancel = (id: number) => () => {
+    setLoading("cancel");
+    instance
+      .put(`/jobs/${id}`, {
+        data: {
+          status: "JOBCANCELLED",
+        },
+      })
+      .then(() => {
+        toast.success("Job Cancelled Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .catch(() => {
+        toast.error("Job Cancellation Failed", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .finally(() => {
+        setLoading(null);
+      });
   };
 
   return (
@@ -185,6 +293,12 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name="receivedAt"
           label="QUERY RECIEVED ON"
           control={control}
+          rules={{
+            required: {
+              value: true,
+              message: "Please select a date",
+            },
+          }}
         />
         {mode === "edit" && (
           <FormInputDate
@@ -219,6 +333,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           id: engineer.id,
           name: engineer.fullname,
         }))}
+        disabled
       />
       <div className="flex gap-4">
         {mode === "edit" && (
@@ -228,7 +343,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name="targetPort"
           label="TARGET PORT"
           control={control}
-          className={clsx(mode === "create" && "col-span-2")}
         />
       </div>
       <FormInputDate name="vesselETA" label="VESSEL ETA" control={control} />
@@ -237,6 +351,12 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         label="SERVICES"
         options={services}
         control={control}
+        rules={{
+          required: {
+            value: true,
+            message: "Please select at least one service",
+          },
+        }}
       />
       <InputGroup inputs={mode === "edit" ? 2 : 1}>
         <FormInputText
@@ -267,15 +387,40 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           <AddAgent />
         </div>
       )}
+      {mode === "edit" && (
+        <FormInputFile
+          label="Upload Service Report Here"
+          onChange={async (e) => {
+            if (!e.target.files) return;
+            if (e.target.files[0].type !== "application/pdf") {
+              toast.error("Please upload a PDF file", {
+                position: "top-right",
+                autoClose: 3000,
+                theme: "colored",
+                pauseOnHover: true,
+              });
+              return;
+            }
+            setUpload(e.target.files[0]);
+            const uploadedData = await handleUpload(e.target.files[0]);
+            if (uploadedData) setUploadedData(uploadedData);
+          }}
+          fileData={uploadedData}
+          handleRemove={() => handleUploadDelete()}
+          loading={uploadLoader}
+          file={upload}
+        />
+      )}
       {mode === "edit" ? (
         <div className="flex gap-4 mt-4">
-          <Button
+          <LoadingButton
+            loading={loading === "edit"}
             type="submit"
             variant="contained"
             className="bg-green-600 hover:bg-green-700/90"
           >
             Update Job
-          </Button>
+          </LoadingButton>
           <Button
             type="button"
             variant="contained"
@@ -288,18 +433,20 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             type="button"
             variant="contained"
             className="bg-red-600 hover:bg-red-700/90"
+            onClick={() => setModal("cancel")}
           >
             Cancel Job
           </Button>
         </div>
       ) : (
-        <Button
+        <LoadingButton
+          loading={loading === "create"}
           type="submit"
           variant="contained"
           className="bg-green-600 hover:bg-green-700/90"
         >
           Create Job
-        </Button>
+        </LoadingButton>
       )}
       <Dialog
         open={Boolean(modal)}
@@ -308,36 +455,36 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         aria-labelledby="job-completed-dialog-title"
       >
         <DialogTitle id="job-completed-dialog-title">
-          {modal === "upload" ? "Upload Service Report" : "Confirmation"}
+          {modal === "confirmation"
+            ? "Mark Job as Completed"
+            : "Cancel Job Confirmation"}
         </DialogTitle>
         <DialogContent>
-          {modal === "confirmation" && (
+          {!upload && modal === "confirmation" && (
             <DialogContentText>
-              Do you have a service report for this job which you want to
-              upload?
+              Are you sure you want to mark this job as completed without
+              uploading a service report?
+            </DialogContentText>
+          )}
+          {modal === "cancel" && (
+            <DialogContentText>
+              Are you sure you want to cancel this job?
             </DialogContentText>
           )}
         </DialogContent>
-        {modal === "upload" && (
-          <TextField
-            type="file"
-            sx={{ p: 2 }}
-            onChange={(e) =>
-              setUpload((e.target as HTMLInputElement).files?.[0] ?? null)
+        <DialogActions>
+          <Button onClick={() => setModal(null)}>Cancel</Button>
+          <Button
+            onClick={
+              modal === "confirmation"
+                ? handleSubmit(onSubmit)
+                : data && handleCancel(data.id)
             }
-          />
-        )}
-        {modal === "confirmation" ? (
-          <DialogActions>
-            <Button onClick={() => setModal("upload")}>Yes</Button>
-            <Button onClick={() => setModal(null)}>No</Button>
-          </DialogActions>
-        ) : (
-          <DialogActions>
-            <Button onClick={() => setModal(null)}>Cancel</Button>
-            <LoadingButton>Upload</LoadingButton>
-          </DialogActions>
-        )}
+            autoFocus
+          >
+            Confirm
+          </Button>
+        </DialogActions>
       </Dialog>
     </form>
   );

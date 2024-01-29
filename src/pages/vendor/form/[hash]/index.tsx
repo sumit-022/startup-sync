@@ -47,8 +47,6 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
   });
 
   const onSubmit = (data: any) => {
-    console.log({ data });
-
     setLoading(true);
     instance
       .put(`/vendors/form/${hash}`, {

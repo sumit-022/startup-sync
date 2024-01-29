@@ -27,6 +27,7 @@ export default function useSalesTable({
 
   const query = qs.stringify(
     {
+      sort: ["jobCode:desc"],
       filters: {
         status:
           typeof filters.status === "string"
@@ -78,7 +79,6 @@ export default function useSalesTable({
       .get(`/jobs?${query}&populate=*`)
       .then((res: any) => {
         setData(parseAttributes(res.data.data));
-        console.log(res.data);
         setRows({
           data: parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(
@@ -96,16 +96,22 @@ export default function useSalesTable({
   };
 
   const columns: GridColDef[] = [
-    { field: "jobCode", headerName: "Job Code", width: 130 },
-    { field: "description", headerName: "Job Description", width: 200 },
-    { field: "quotedAt", headerName: "Quoted Date", width: 150 },
-    { field: "receivedAt", headerName: "Received Date", width: 150 },
-    { field: "type", headerName: "Type", width: 150 },
-    { field: "assignedTo", headerName: "Assigned To", width: 150 },
+    { field: "jobCode", headerName: "Job Code", width: 130, flex: 0.3 },
+    {
+      field: "description",
+      headerName: "Job Description",
+      width: 200,
+      flex: 0.5,
+    },
+    { field: "quotedAt", headerName: "Quoted Date", width: 150, flex: 0.4 },
+    { field: "receivedAt", headerName: "Received Date", width: 150, flex: 0.4 },
+    { field: "type", headerName: "Type", width: 150, flex: 0.4 },
+    { field: "assignedTo", headerName: "Assigned To", width: 150, flex: 0.4 },
     {
       field: "Action",
       headerName: "Action",
       width: 80,
+      flex: 0.2,
       renderCell: (params) => (
         <div className="flex justify-center">
           {renderActions && renderActions(params)}

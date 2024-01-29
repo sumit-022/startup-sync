@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
+import FlagForm from "@/components/common/joborder/form/flag";
 
 export default function SalesDashboard() {
   const [modal, setModal] = useState<
@@ -60,7 +61,12 @@ export default function SalesDashboard() {
   }, [maintab]);
 
   useEffect(() => {
-    if (subtab === "queryreceived") {
+    if (subtab === null) {
+      setFilters((filters) => ({
+        ...filters,
+        status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
+      }));
+    } else if (subtab === "queryreceived") {
       setFilters((filters) => ({
         ...filters,
         status: "QUERYRECEIVED",
@@ -80,29 +86,45 @@ export default function SalesDashboard() {
         ...filters,
         status: "JOBCOMPLETED",
       }));
+    } else if (subtab === "podawaited") {
+      setFilters((filters) => ({
+        ...filters,
+        status: "PODAWAITED",
+      }));
     }
   }, [subtab]);
 
-  const actions = [
-    {
-      icon: <IoMdEye />,
-      name: "View",
-      onClick: (params: any) => {
-        setJob(realData.find((item) => item.id === params.id));
-        setModal("view");
-      },
-    },
-    {
-      icon: <BiPencil />,
-      name: "Edit",
-      onClick: (params: any) => {
-        setJob(realData.find((item) => item.id === params.id));
-        setModal("edit");
-      },
-    },
-  ];
-
   const renderActions = (params: any) => {
+    const actions = [
+      {
+        icon: <IoMdEye />,
+        name: "View",
+        onClick: (params: any) => {
+          setJob(realData.find((item) => item.id === params.id));
+          setModal("view");
+        },
+      },
+      {
+        icon: <BiPencil />,
+        name: "Edit",
+        onClick: (params: any) => {
+          setJob(realData.find((item) => item.id === params.id));
+          setModal("edit");
+        },
+      },
+    ];
+    if (
+      params.row.status === "ORDERCONFIRMED" ||
+      params.row.status === "QUOTEDTOCLIENT"
+    )
+      actions.push({
+        icon: <BiPencil />,
+        name: "Flag",
+        onClick: (params: any) => {
+          setJob(realData.find((item) => item.id === params.id));
+          setModal("flag");
+        },
+      });
     return <LongMenu options={actions} params={params} />;
   };
 
@@ -175,25 +197,26 @@ export default function SalesDashboard() {
       <div className="mb-4">
         <Filters setFilters={setFilters} />
       </div>
-      <Box sx={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={rows.data}
-          rowCount={rows.total}
-          columns={columns}
-          loading={loading}
-          disableRowSelectionOnClick
-          paginationModel={{
-            page: page - 1,
-            pageSize: 10,
-          }}
-          onPaginationModelChange={(params) => {
-            router.push({
-              pathname: router.pathname,
-              query: { page: params.page + 1 },
-            });
-          }}
-        />
-      </Box>
+      <DataGrid
+        rows={rows.data}
+        rowCount={rows.total}
+        columns={columns}
+        loading={loading}
+        disableRowSelectionOnClick
+        paginationModel={{
+          page: page - 1,
+          pageSize: 10,
+        }}
+        pageSizeOptions={[10]}
+        onPaginationModelChange={(params) => {
+          router.push({
+            pathname: router.pathname,
+            query: { page: params.page + 1 },
+          });
+        }}
+        pagination
+        paginationMode="server"
+      />
       <Modal open={Boolean(modal)} onClose={() => setModal(null)}>
         <Box
           sx={{
@@ -217,7 +240,7 @@ export default function SalesDashboard() {
               onClose={() => setModal(null)}
             />
           )}
-          {modal === "edit" && (
+          {modal === "edit" && job && (
             <JobOrderForm
               callback={refresh}
               authData={user}
@@ -226,7 +249,8 @@ export default function SalesDashboard() {
               data={job}
             />
           )}
-          {modal === "view" && <JobOrderView data={job} />}
+          {modal === "view" && job && <JobOrderView data={job} />}
+          {modal === "flag" && job && <FlagForm job={job} />}
         </Box>
       </Modal>
     </DashboardLayout>
