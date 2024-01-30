@@ -59,7 +59,9 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const [uploadLoader, setUploadLoader] = useState(false);
   const [uploadedData, setUploadedData] = useState<
     Record<string, any> | undefined
-  >(data.serviceReport);
+  >(data?.serviceReport);
+
+  console.log({ data });
 
   const handleUploadDelete = async () => {
     setUploadLoader(true);
@@ -168,11 +170,15 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     });
   }, []);
 
-  useEffect(() => {
+  const fetchCompanies = async () => {
     getCompanies().then((data: any) => {
       const parsedData = parseAttributes(data);
       setCompanies(parsedData);
     });
+  };
+
+  useEffect(() => {
+    fetchCompanies();
   }, []);
 
   const onSubmit = (data: any) => {
@@ -185,6 +191,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           .post("/jobs", {
             services: data.services.map((service: any) => service.id),
             ...data,
+            jobCompleted: false,
           })
           .then((res) => {
             toast.success("Job Created Successfully", {
@@ -204,14 +211,18 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     } else if (mode === "edit") {
       setLoading("edit");
       let jobstatus = "QUERYRECEIVED";
+      let jobCompleted = false;
       if (data.quotedAt) jobstatus = "QUOTEDTOCLIENT";
       if (data.poNumber) jobstatus = "ORDERCONFIRMED";
+      if (data.invoiceDate) jobCompleted = true;
+      if (data.serviceReport) jobstatus = "JOBCOMPLETED";
       instance
         .put(`/jobs/${data.id}`, {
           data: {
             ...data,
             services: data.services.map((service: any) => service.id),
             status: jobstatus,
+            jobCompleted,
           },
         })
         .then((res) => {
@@ -237,6 +248,76 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           setLoading(null);
         });
     }
+  };
+
+  const handlePOD = () => {
+    setLoading("edit");
+    instance
+      .put(`/jobs/${data.id}`, {
+        data: {
+          status: "PODAWAITED",
+        },
+      })
+      .then(() => {
+        toast.success("Job Updated Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .catch(() => {
+        toast.error("Job Update Failed", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .finally(() => {
+        setLoading(null);
+      });
+  };
+
+  const handleJobComplete = () => {
+    setLoading("edit");
+    instance
+      .put(`/jobs/${data.id}`, {
+        data: {
+          status: "JOBCOMPLETED",
+        },
+      })
+      .then(() => {
+        toast.success("Job Updated Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .catch(() => {
+        toast.error("Job Update Failed", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      })
+      .finally(() => {
+        setLoading(null);
+      });
   };
 
   const handleCancel = (id: number) => () => {
@@ -311,7 +392,17 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         )}
       </InputGroup>
       <InputGroup inputs={2}>
-        <FormInputText name="shipName" label="SHIP NAME" control={control} />
+        <FormInputText
+          name="shipName"
+          label="SHIP NAME"
+          control={control}
+          rules={{
+            required: {
+              value: true,
+              message: "Please enter a ship name",
+            },
+          }}
+        />
         <div className="grid grid-cols-[1fr,auto]">
           <FormInputSelect
             id="company"
@@ -322,8 +413,14 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
               id: company.id,
               name: company.name,
             }))}
+            rules={{
+              required: {
+                value: true,
+                message: "Please select a company",
+              },
+            }}
           />
-          <AddCompany />
+          <AddCompany callback={fetchCompanies} />
         </div>
       </InputGroup>
       <FormInputSelect
@@ -413,6 +510,13 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           file={upload}
         />
       )}
+      {data?.status === "JOBCOMPLETED" && mode === "edit" && (
+        <FormInputDate
+          name="invoiceDate"
+          label="INVOICE DATE"
+          control={control}
+        />
+      )}
       {mode === "edit" ? (
         <div className="flex gap-4 mt-4">
           <LoadingButton
@@ -423,14 +527,16 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           >
             Update Job
           </LoadingButton>
-          <Button
-            type="button"
-            variant="contained"
-            className="bg-primary-bright-blue"
-            onClick={() => setModal("confirmation")}
-          >
-            Mark Job as Completed
-          </Button>
+          {data?.status !== "JOBCOMPLETED" && (
+            <Button
+              type="button"
+              variant="contained"
+              className="bg-primary-bright-blue"
+              onClick={() => setModal("confirmation")}
+            >
+              Mark Job as Completed
+            </Button>
+          )}
           <Button
             type="button"
             variant="contained"
@@ -462,10 +568,15 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             : "Cancel Job Confirmation"}
         </DialogTitle>
         <DialogContent>
-          {!upload && modal === "confirmation" && (
+          {!uploadedData && modal === "confirmation" && (
             <DialogContentText>
               Are you sure you want to mark this job as completed without
               uploading a service report?
+            </DialogContentText>
+          )}
+          {uploadedData && modal === "confirmation" && (
+            <DialogContentText>
+              Are you sure you want to mark this job as completed?
             </DialogContentText>
           )}
           {modal === "cancel" && (
@@ -479,7 +590,9 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           <Button
             onClick={
               modal === "confirmation"
-                ? handleSubmit(onSubmit)
+                ? uploadedData
+                  ? handleJobComplete
+                  : handlePOD
                 : data && handleCancel(data.id)
             }
             autoFocus

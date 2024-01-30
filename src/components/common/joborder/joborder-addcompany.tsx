@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { FormControl, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import CompanyForm from "./form/company";
 
-const AddCompany = () => {
+interface Props {
+  callback: () => void;
+}
+
+const AddCompany = ({ callback }: Props) => {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -19,7 +21,7 @@ const AddCompany = () => {
         <IoIosAddCircleOutline />
       </IconButton>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <CompanyForm />
+        <CompanyForm callback={callback} onClose={() => setOpen(false)} />
       </Modal>
     </>
   );

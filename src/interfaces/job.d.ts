@@ -22,6 +22,7 @@ interface FilterType {
   quotedUpto: Date | string | null;
   assignedTo: JobType["assignedTo"] | null;
   search: string;
-  status: JobStatus[] | JobStatus;
+  status: JobStatus[] | JobStatus | null;
   type: JobType["type"] | null;
+  jobCompleted: boolean;
 }

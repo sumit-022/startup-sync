@@ -39,6 +39,7 @@ export default function SalesDashboard() {
     quotedUpto: null,
     type: null,
     assignedTo: null,
+    jobCompleted: false,
   });
 
   useEffect(() => {
@@ -46,15 +47,18 @@ export default function SalesDashboard() {
       setFilters((f) => ({
         ...f,
         status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
+        jobCompleted: false,
       }));
     } else if (maintab === "cancelled") {
       setFilters((filters) => ({
         ...filters,
         status: "JOBCANCELLED",
+        jobCompleted: false,
       }));
     } else if (maintab === "history") {
       setFilters((filters) => ({
         ...filters,
+        jobCompleted: true,
         status: "JOBCOMPLETED",
       }));
     }
@@ -70,26 +74,31 @@ export default function SalesDashboard() {
       setFilters((filters) => ({
         ...filters,
         status: "QUERYRECEIVED",
+        jobCompleted: false,
       }));
     } else if (subtab === "quotedtoclient") {
       setFilters((filters) => ({
         ...filters,
         status: "QUOTEDTOCLIENT",
+        jobCompleted: false,
       }));
     } else if (subtab === "orderconfirmed") {
       setFilters((filters) => ({
         ...filters,
         status: "ORDERCONFIRMED",
+        jobCompleted: false,
       }));
     } else if (subtab === "jobcompleted") {
       setFilters((filters) => ({
         ...filters,
         status: "JOBCOMPLETED",
+        jobCompleted: false,
       }));
     } else if (subtab === "podawaited") {
       setFilters((filters) => ({
         ...filters,
         status: "PODAWAITED",
+        jobCompleted: false,
       }));
     }
   }, [subtab]);

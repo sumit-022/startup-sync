@@ -1,12 +1,19 @@
 import FormInputText from "@/components/atoms/input/text";
+import instance from "@/config/axios.config";
 import { Box, FormControl, Typography, Button } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
-const CompanyForm = () => {
-  const { handleSubmit, control } = useForm({
+interface CompanyFormProps {
+  callback: () => void;
+  onClose: () => void;
+}
+
+const CompanyForm = ({ callback, onClose }: CompanyFormProps) => {
+  const { handleSubmit, control, trigger } = useForm({
     defaultValues: {
-      companyName: "",
+      name: "",
       address: "",
       city: "",
       state: "",
@@ -15,7 +22,32 @@ const CompanyForm = () => {
   });
 
   const onSubmit = (data: any) => {
-    console.log(data);
+    trigger().then((res) => {
+      instance
+        .post("/companies", {
+          data,
+        })
+        .then((res) => {
+          toast.success("Company Added Successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            pauseOnHover: true,
+          });
+        })
+        .catch((err) => {
+          toast.error("Error Adding Company", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            pauseOnHover: true,
+          });
+        })
+        .finally(() => {
+          callback();
+          onClose();
+        });
+    });
   };
   return (
     <Box
@@ -45,9 +77,16 @@ const CompanyForm = () => {
           Add Company
         </Typography>
         <FormInputText
-          name="companyName"
+          name="name"
           label="Company Name"
           control={control}
+          required
+          rules={{
+            required: {
+              value: true,
+              message: "Company Name is required",
+            },
+          }}
         />
         <FormInputText name="address" label="Address" control={control} />
         <FormInputText name="city" label="City" control={control} />

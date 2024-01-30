@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FormControl, MenuItem, InputLabel, Select } from "@mui/material";
+import {
+  FormControl,
+  MenuItem,
+  InputLabel,
+  Select,
+  FormHelperText,
+} from "@mui/material";
 import { Controller, FieldValues, RegisterOptions } from "react-hook-form";
 
 const FormInputSelect = ({
@@ -53,18 +59,21 @@ const FormInputSelect = ({
         control={control}
         render={({ field: { onChange, value }, fieldState: { error } }) => {
           return (
-            <Select
-              label={label}
-              disabled={disabled}
-              fullWidth={fullWidth}
-              value={value}
-              onChange={onChange}
-              id={id}
-              className={className}
-              error={!!error}
-            >
-              {generateSingleOptions()}
-            </Select>
+            <>
+              <Select
+                label={label}
+                disabled={disabled}
+                fullWidth={fullWidth}
+                value={value}
+                onChange={onChange}
+                id={id}
+                className={className}
+                error={!!error}
+              >
+                {generateSingleOptions()}
+              </Select>
+              <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+            </>
           );
         }}
       />

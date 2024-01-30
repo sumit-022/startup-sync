@@ -58,6 +58,11 @@ export default function useSalesTable({
               },
             }
           : {}),
+        ...(filters.jobCompleted
+          ? { jobCompleted: filters.jobCompleted }
+          : {
+              jobCompleted: false,
+            }),
       },
       pagination: {
         page,
