@@ -486,30 +486,33 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           <AddAgent />
         </div>
       )}
-      {mode === "edit" && (
-        <FormInputFile
-          label="Upload Service Report Here"
-          onChange={async (e) => {
-            if (!e.target.files) return;
-            if (e.target.files[0].type !== "application/pdf") {
-              toast.error("Please upload a PDF file", {
-                position: "top-right",
-                autoClose: 3000,
-                theme: "colored",
-                pauseOnHover: true,
-              });
-              return;
-            }
-            setUpload(e.target.files[0]);
-            const uploadedData = await handleUpload(e.target.files[0]);
-            if (uploadedData) setUploadedData(uploadedData);
-          }}
-          fileData={uploadedData}
-          handleRemove={() => handleUploadDelete()}
-          loading={uploadLoader}
-          file={upload}
-        />
-      )}
+      {mode === "edit" &&
+        (data?.status === "PODAWAITED" ||
+          data?.status === "ORDERCONFIRMED" ||
+          data?.status === "JOBCOMPLETED") && (
+          <FormInputFile
+            label="Upload Service Report Here"
+            onChange={async (e) => {
+              if (!e.target.files) return;
+              if (e.target.files[0].type !== "application/pdf") {
+                toast.error("Please upload a PDF file", {
+                  position: "top-right",
+                  autoClose: 3000,
+                  theme: "colored",
+                  pauseOnHover: true,
+                });
+                return;
+              }
+              setUpload(e.target.files[0]);
+              const uploadedData = await handleUpload(e.target.files[0]);
+              if (uploadedData) setUploadedData(uploadedData);
+            }}
+            fileData={uploadedData}
+            handleRemove={() => handleUploadDelete()}
+            loading={uploadLoader}
+            file={upload}
+          />
+        )}
       {data?.status === "JOBCOMPLETED" && mode === "edit" && (
         <FormInputDate
           name="invoiceDate"
@@ -519,22 +522,27 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       )}
       {mode === "edit" ? (
         <div className="flex gap-4 mt-4">
-          <LoadingButton
-            loading={loading === "edit"}
-            type="submit"
-            variant="contained"
-            className="bg-green-600 hover:bg-green-700/90"
-          >
-            Update Job
-          </LoadingButton>
-          {data?.status !== "JOBCOMPLETED" && (
+          {data?.status !== "PODAWAITED" && (
+            <LoadingButton
+              loading={loading === "edit"}
+              type="submit"
+              variant="contained"
+              className="bg-green-600 hover:bg-green-700/90"
+            >
+              Update Job
+            </LoadingButton>
+          )}
+          {(data?.status === "ORDERCONFIRMED" ||
+            data?.status === "PODAWAITED") && (
             <Button
               type="button"
               variant="contained"
               className="bg-primary-bright-blue"
               onClick={() => setModal("confirmation")}
             >
-              Mark Job as Completed
+              {data?.status === "ORDERCONFIRMED"
+                ? "Mark as Completed"
+                : "Update Job"}
             </Button>
           )}
           <Button

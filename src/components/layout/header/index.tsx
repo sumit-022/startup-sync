@@ -54,7 +54,38 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
           <Dropdown activeCondition={false}>
             {(handleClick, open) => {
               return (
-                <Image src={NotificationIcon} alt="" onClick={handleClick} />
+                <div className="relative">
+                  <Image
+                    src={NotificationIcon}
+                    alt=""
+                    onClick={handleClick}
+                    className="cursor-pointer"
+                  />
+                  <div
+                    className={`${
+                      open ? "block" : "hidden"
+                    } absolute top-10 left-1/2 -translate-x-1/2 min-w-max bg-white rounded-md shadow-lg z-10`}
+                  >
+                    <div className="flex flex-col gap-2 p-4">
+                      {n.activeNotifications.length > 0 ? (
+                        n.activeNotifications.map((notification, index) => (
+                          <div key={index} className="flex flex-col gap-2">
+                            <p className="text-sm text-primary-cool-grey">
+                              {notification.body}
+                            </p>
+                            <p className="text-xs text-primary-cool-grey">
+                              {notification.timestamp}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-primary-cool-grey">
+                          No notifications
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               );
             }}
           </Dropdown>
