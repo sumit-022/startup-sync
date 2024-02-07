@@ -1,5 +1,6 @@
 interface VendorFormType {
   id: number;
+  address: string;
   name: any;
   email: any;
   description: any;
@@ -22,6 +23,7 @@ interface VendorFormType {
 
 interface VendorType {
   id: number;
+  address: string;
   name: string;
   email: string;
   description: string;

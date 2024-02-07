@@ -8,7 +8,7 @@ interface Props {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label?: string;
   loading?: boolean;
-  file: File | null;
+  file?: File | null;
   handleRemove: () => void;
   fileData: any;
 }
@@ -21,8 +21,6 @@ const FormInputFile = ({
   file,
   handleRemove,
 }: Props) => {
-  console.log({ file, fileData });
-
   return (
     <label className="flex flex-col gap-2" htmlFor="upload">
       <div className="border-2 border-gray-400 cursor-pointer h-36 w-full border-dotted flex flex-col items-center justify-center">
@@ -61,7 +59,10 @@ const FormInputFile = ({
                 variant="contained"
                 color="error"
                 className="bg-red-500"
-                onClick={handleRemove}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleRemove();
+                }}
               >
                 Remove
               </Button>

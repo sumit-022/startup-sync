@@ -44,10 +44,9 @@ const RFQDialog = ({
             flexDirection: "column",
             gap: 2,
             zIndex: 10,
-            overflow: "auto",
           }}
         >
-          <div className="absolute top-2 right-4">
+          <div className="absolute top-2 right-1">
             <button className="text-3xl" onClick={() => setOpen(false)}>
               &times;
             </button>

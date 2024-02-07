@@ -37,9 +37,15 @@ interface ContactType {
 }
 
 interface RFQFormType {
-  jobId: number;
+  jobId: string;
   description: string;
-  vendors: VendorFormType[];
+  vendors: {
+    id: number;
+    name: any;
+    email: any;
+    address: string;
+    attachment: File | Blob | null;
+  }[];
   shipName: string;
   spareDetails: SpareType[];
 }
@@ -47,5 +53,6 @@ interface RFQFormType {
 interface SpareType {
   title: string;
   description: string;
-  quantity: number | null;
+  quantity: string;
+  attachments?: FileList | null;
 }

@@ -1,6 +1,7 @@
 import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import {
   Box,
+  Button,
   FormControl,
   IconButton,
   Modal,
@@ -22,18 +23,28 @@ import createRfqPdf from "@/utils/create-rfq-pdf";
 import qs from "qs";
 import { toast } from "react-toastify";
 import InputGroup from "@/components/atoms/input/input-group";
+import SpareCard from "@/components/atoms/card/spare-card";
+import FormInputFile from "@/components/atoms/input/file";
+import MultiFileInput from "@/components/atoms/input/multiple-file";
 
 const RFQForm = ({ job }: { job: JobType }) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [spareDetails, setSpareDetails] = React.useState<SpareType>({
+    title: "",
+    description: "",
+    quantity: "",
+    attachments: null,
+  });
 
   const { control, handleSubmit, watch } = useForm<RFQFormType>({
     defaultValues: {
-      jobId: job.id,
+      jobId: job.id as string,
       description: job.description,
       vendors: [],
       shipName: job.shipName,
-      spareDetails: [{ title: "", quantity: null, description: "" }],
+      spareDetails: [],
     },
   });
 
@@ -60,18 +71,53 @@ const RFQForm = ({ job }: { job: JobType }) => {
     control,
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: RFQFormType) => {
     console.log(data);
 
     setLoading(true);
-    const pdf = createRfqPdf(data);
+    for (let i = 0; i < data.vendors.length; i++) {
+      data.vendors[i].attachment = createRfqPdf({
+        shipName: data.shipName,
+        spareDetails: data.spareDetails,
+        vendor: data.vendors[i],
+      });
+    }
     const form = new FormData();
     form.append("jobId", data.jobId);
     form.append("description", data.description);
     form.append("shipName", data.shipName);
-    form.append("vendors", JSON.stringify(data.vendors));
-    form.append("spareDetails", JSON.stringify(data.spareDetails));
-    if (pdf) form.append("attachment", pdf, "rfq.pdf");
+    form.append(
+      "vendors",
+      JSON.stringify(
+        data.vendors.map(({ attachment, ...vendor }: any) => ({
+          ...vendor,
+          ...(attachment ? { attachment: "rfq.pdf" } : {}),
+        }))
+      )
+    );
+    data.vendors.forEach(({ attachment }) => {
+      if (attachment) {
+        form.append("vendorAttachments", attachment, "rfq.pdf");
+      }
+    });
+    form.append(
+      "spareDetails",
+      JSON.stringify(
+        data.spareDetails.map(({ attachments, ...spare }) => ({
+          attachments: attachments
+            ? Array.from(attachments).map((attachment) => attachment.name)
+            : undefined,
+          ...spare,
+        }))
+      )
+    );
+    data.spareDetails.forEach(({ attachments }) => {
+      if (attachments) {
+        Array.from(attachments).forEach((attachment) => {
+          form.append("spareAttachments", attachment, attachment.name);
+        });
+      }
+    });
 
     instance
       .post("/job/send-rfq", form)
@@ -84,6 +130,14 @@ const RFQForm = ({ job }: { job: JobType }) => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    setSpareDetails((prev) => ({
+      ...prev,
+      attachments: e.target.files,
+    }));
   };
 
   return (
@@ -104,7 +158,7 @@ const RFQForm = ({ job }: { job: JobType }) => {
               Shinpo Engineering PTE. LTD.
             </small>
             <small className="block text-sm">
-              1 Tuas South Avenue 6 , #05-20 ,S-637021
+              1 Tuas South Avenue 6, #05-20, S-637021
             </small>
           </Typography>
         </div>
@@ -130,48 +184,23 @@ const RFQForm = ({ job }: { job: JobType }) => {
           label="Ship Name"
         />
         <FormHeading heading="Item Details" />
-        {fields.map((item, index) => (
-          <>
-            <FormHeading heading={`Spare ${index + 1}`} />
-            <div className="grid grid-cols-[1fr,auto,auto]">
-              <InputGroup inputs={3} key={item.id}>
-                <FormInputText
-                  control={control}
-                  name={`spareDetails.${index}.title`}
-                  label="Name"
-                />
-                <FormInputText
-                  control={control}
-                  type="number"
-                  name={`spareDetails.${index}.quantity`}
-                  label="Quantity"
-                />
-                <FormInputText
-                  control={control}
-                  name={`spareDetails.${index}.description`}
-                  label="Description"
-                />
-              </InputGroup>
-              <IconButton
-                disableRipple
-                onClick={() => remove(index)}
-                color="error"
-                disabled={fields.length === 1}
-              >
-                <MdDelete />
-              </IconButton>
-              <IconButton
-                disableRipple
-                onClick={() =>
-                  append({ title: "", quantity: null, description: "" })
-                }
-                color="primary"
-              >
-                <MdAdd />
-              </IconButton>
-            </div>
-          </>
-        ))}
+        {fields.length == 0 ? (
+          <Button onClick={() => setOpen(true)}>
+            <IoMdCloudUpload />
+            Add Item
+          </Button>
+        ) : (
+          fields.map((field, index) => (
+            <SpareCard
+              key={index}
+              description={field.description}
+              quantity={field.quantity}
+              title={field.title}
+              onSpareDelete={() => remove(index)}
+              onSpareAdd={() => setOpen(true)}
+            />
+          ))
+        )}
         <LoadingButton
           variant="contained"
           disabled={fields.length == 0}
@@ -183,6 +212,87 @@ const RFQForm = ({ job }: { job: JobType }) => {
           Send RFQ to Vendors
         </LoadingButton>
       </FormControl>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            width: 500,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h5" align="center">
+            Add Spare
+          </Typography>
+          <TextField
+            name="spareDetails.title"
+            label="Title"
+            onChange={(e) => {
+              setSpareDetails((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }));
+            }}
+          />
+          <TextField
+            name="spareDetails.description"
+            label="Description"
+            onChange={(e) => {
+              setSpareDetails((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }));
+            }}
+          />
+          <TextField
+            type="number"
+            name="spareDetails.quantity"
+            label="Quantity"
+            onChange={(e) => {
+              setSpareDetails((prev) => ({
+                ...prev,
+                quantity: e.target.value,
+              }));
+            }}
+          />
+          <MultiFileInput
+            label="Attachment"
+            loading={loading}
+            onChange={handleChange}
+            files={spareDetails.attachments}
+            handleFilesDelete={() => {
+              setSpareDetails((prev) => ({
+                ...prev,
+                attachments: null,
+              }));
+            }}
+          />
+          <Button
+            onClick={() => {
+              setOpen(false);
+              console.log(spareDetails);
+              append(spareDetails);
+              setSpareDetails({
+                title: "",
+                description: "",
+                quantity: "",
+                attachments: null,
+              });
+            }}
+          >
+            <MdAdd />
+            Add
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 };

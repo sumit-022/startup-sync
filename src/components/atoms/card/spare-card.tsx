@@ -1,18 +1,44 @@
+import { IconButton } from "@mui/material";
 import React from "react";
 import { FaBoxOpen } from "react-icons/fa";
+import { MdDelete, MdAdd } from "react-icons/md";
 
-const SpareCard: React.FC<SpareType> = (props) => {
+interface SpareCardProps {
+  title?: string;
+  description?: string;
+  quantity?: number | string | null;
+  onSpareDelete: () => void;
+  onSpareAdd: () => void;
+}
+
+const SpareCard: React.FC<SpareCardProps> = (props) => {
   return (
     <div className="rounded-md w-full shadow-md p-4 bg-[#e66c21] flex items-center justify-between">
       <div className="flex items-center">
         <FaBoxOpen className="text-4xl text-white" />
-        <div className="ml-4">
+        <div className="flex flex-col ml-4">
           <h3 className="text-white text-xl">{props.title}</h3>
-          <p className="text-white text-sm">{props.description}</p>
+          <p className="text-white text-sm line-clamp-2">{props.description}</p>
+          <p className="text-gray-200 mt-1 text-sm">
+            Quantity: {props.quantity}
+          </p>
         </div>
       </div>
-      <div className="flex items-center flex-col">
-        <p className="text-white">{props.quantity} Unit</p>
+      <div className="flex gap-1">
+        <IconButton
+          className="text-white"
+          size="small"
+          onClick={props.onSpareDelete}
+        >
+          <MdDelete />
+        </IconButton>
+        <IconButton
+          className="text-white"
+          size="small"
+          onClick={props.onSpareAdd}
+        >
+          <MdAdd />
+        </IconButton>
       </div>
     </div>
   );

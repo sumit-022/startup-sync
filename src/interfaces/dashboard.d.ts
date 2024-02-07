@@ -10,7 +10,7 @@ declare interface SidebarMenu {
 }
 
 declare interface JobType {
-  id: number;
+  id: number | string;
   jobCode: string;
   receivedAt: string | undefined;
   quotedAt: string | undefined;

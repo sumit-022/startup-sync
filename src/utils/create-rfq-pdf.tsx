@@ -2,16 +2,25 @@ import jsPDF, { TableCellData } from "jspdf";
 import logo from "@/assets/image/logo.jpg";
 import { TableConfig, CellConfig } from "jspdf";
 
-type RFQPdfData = {
+type RFQPdfType = {
   shipName: string;
   spareDetails: {
     title: string;
-    quantity: string;
     description: string;
+    quantity: string;
   }[];
+  vendor: {
+    id: number;
+    address: string;
+    name: string;
+    email: string;
+    attachment: File | Blob | null;
+  };
 };
 
-const createRfqPdf = (data: RFQPdfData) => {
+const createRfqPdf = (data: RFQPdfType) => {
+  console.log({ data });
+
   const myData = {
     shipName: "SINGAPORE CARGO",
     rfqnumber: "RFQ-0001",
@@ -79,9 +88,11 @@ const createRfqPdf = (data: RFQPdfData) => {
 
   doc.setFontSize(12);
   doc.setTextColor("#000");
+  doc.setFont("helvetica", "bold");
+  doc.text(`${data.vendor.name}`, 15, 70);
   doc.setFont("helvetica", "normal");
-  doc.text(`Vessel Name : ${data.shipName}`, 15, 75);
-  doc.text(`RFQ Number : ${myData.rfqnumber}`, 15, 80);
+  doc.setFontSize(10);
+  doc.text(`${data.vendor.address}`, 15, 80);
   doc.text(`Date : ${today.toDateString()}`, 150, 75);
 
   doc.table(15, 90, tableData, header, config);

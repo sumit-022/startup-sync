@@ -16,6 +16,7 @@ export default function usePurchaseTable({
   const [loading, setLoading] = useState(false);
   const query = qs.stringify(
     {
+      sort: "jobCode:desc",
       filters: {
         status: {
           $eq: status,
