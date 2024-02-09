@@ -42,6 +42,8 @@ export default function SalesDashboard() {
     jobCompleted: false,
   });
 
+  console.log("status", filters.status);
+
   useEffect(() => {
     if (maintab === "live") {
       setFilters((f) => ({
@@ -208,6 +210,10 @@ export default function SalesDashboard() {
       </div>
       <DataGrid
         rows={rows.data}
+        columnVisibilityModel={{
+          quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
+          targetPort: false,
+        }}
         rowCount={rows.total}
         columns={columns}
         loading={loading}

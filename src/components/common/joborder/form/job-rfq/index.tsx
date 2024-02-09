@@ -72,16 +72,17 @@ const RFQForm = ({ job }: { job: JobType }) => {
   });
 
   const onSubmit = (data: RFQFormType) => {
-    console.log(data);
-
     setLoading(true);
+    console.log({ data });
     for (let i = 0; i < data.vendors.length; i++) {
+      const vendor = vendors.find((vendor) => vendor.id == data.vendors[i].id);
+      if (!vendor) continue;
       data.vendors[i].attachment = createRfqPdf({
-        shipName: data.shipName,
-        spareDetails: data.spareDetails,
-        vendor: data.vendors[i],
+        ...data,
+        vendor,
       });
     }
+
     const form = new FormData();
     form.append("jobId", data.jobId);
     form.append("description", data.description);
@@ -89,15 +90,15 @@ const RFQForm = ({ job }: { job: JobType }) => {
     form.append(
       "vendors",
       JSON.stringify(
-        data.vendors.map(({ attachment, ...vendor }: any) => ({
+        data.vendors.map(({ attachment, ...vendor }) => ({
           ...vendor,
-          ...(attachment ? { attachment: "rfq.pdf" } : {}),
+          ...(attachment ? { attachment: `${vendor.id}.pdf` } : {}),
         }))
       )
     );
-    data.vendors.forEach(({ attachment }) => {
+    data.vendors.forEach(({ attachment, id }) => {
       if (attachment) {
-        form.append("vendorAttachments", attachment, "rfq.pdf");
+        form.append("vendorAttachments", attachment, `${id}.pdf`);
       }
     });
     form.append(

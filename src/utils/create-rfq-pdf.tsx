@@ -9,13 +9,7 @@ type RFQPdfType = {
     description: string;
     quantity: string;
   }[];
-  vendor: {
-    id: number;
-    address: string;
-    name: string;
-    email: string;
-    attachment: File | Blob | null;
-  };
+  vendor: VendorType;
 };
 
 const createRfqPdf = (data: RFQPdfType) => {
@@ -61,8 +55,6 @@ const createRfqPdf = (data: RFQPdfType) => {
     printHeaders: true,
   };
 
-  console.log({ tableData, header, config });
-
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.text("SHINPO ENGINEERING PTE LTD", 15, 15);
@@ -97,7 +89,7 @@ const createRfqPdf = (data: RFQPdfType) => {
 
   doc.table(15, 90, tableData, header, config);
 
-  //return pdf;
+  // return doc.save("rfq.pdf");
   return doc.output("blob");
 };
 

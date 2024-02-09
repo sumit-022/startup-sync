@@ -4,7 +4,7 @@ import { decrypt } from "@/utils/crypt";
 import { GetServerSideProps } from "next";
 import Header from "@/components/layout/header/rfq";
 import parseAttributes from "@/utils/parse-data";
-import { TextField } from "@mui/material";
+import { Button, InputAdornment, InputLabel, TextField } from "@mui/material";
 
 type PageProps = {
   rfqs: any[];
@@ -12,6 +12,17 @@ type PageProps = {
 };
 
 export default function RfqHash(props: PageProps) {
+  console.log(props);
+
+  const [taxes, setTaxes] = React.useState<
+    {
+      name: string;
+      value: number;
+    }[]
+  >([]);
+
+  const [total, setTotal] = React.useState<number>(0);
+
   return (
     <div className="grid grid-rows-[1fr,auto]">
       <Header />
@@ -50,24 +61,276 @@ export default function RfqHash(props: PageProps) {
               <th className="py-4 font-bold">No.</th>
               <th className="py-4 font-bold">Item Name</th>
               <th className="py-4 font-bold">Description</th>
+              <th className="py-4 font-bold">Attachments</th>
               <th className="py-4 font-bold">Quantity</th>
               <th className="py-4 font-bold">Unit Price</th>
             </tr>
           </thead>
           <tbody className="border-b-2 text-center border-gray-200">
             {props.rfqs.map((rfq, index) => (
-              <tr key={rfq.id}>
+              <tr
+                key={rfq.id}
+                className={index == props.rfqs.length - 1 ? "border-b-2" : ""}
+              >
                 <td className="py-4 w-[5%]">{index + 1}</td>
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
-                <td className="py-4 w-[50%]"></td>
+                <td className="py-4 w-[50%]">{rfq.spare.description}</td>
+                <td className="py-4 w-[15%]">
+                  <Button>Download Attatchments</Button>
+                </td>
                 <td className="py-4">{rfq.spare.quantity}</td>
                 <td className="py-4 w-[10%]">
-                  <TextField variant="outlined" size="small" type="number" />
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        color: "gray",
+                      },
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">SGD</InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      const newRfqs = [...props.rfqs];
+                      newRfqs[index].spare.unitPrice = value;
+                      setTotal(
+                        newRfqs.reduce(
+                          (acc, rfq) =>
+                            acc + rfq.spare.unitPrice * rfq.spare.quantity,
+                          0
+                        )
+                      );
+                    }}
+                  />
                 </td>
               </tr>
             ))}
+            {taxes.length == 0 ? (
+              <tr>
+                <td colSpan={6} className="text-gray-500 py-4">
+                  <Button onClick={() => setTaxes([{ name: "", value: 0 }])}>
+                    Add Tax
+                  </Button>
+                </td>
+              </tr>
+            ) : (
+              taxes.map((tax, index) => (
+                <tr key={index}>
+                  <td className="py-4" colSpan={3}>
+                    <Button
+                      onClick={() => {
+                        const newTaxes = [...taxes];
+                        console.log({ newTaxes, index });
+                        newTaxes.splice(index, 1);
+                        setTaxes(newTaxes);
+                        console.log(taxes);
+                        const totalTaxes = taxes.reduce(
+                          (acc, tax) => acc + tax.value,
+                          0
+                        );
+                        setTotal(
+                          props.rfqs.reduce(
+                            (acc, rfq) =>
+                              acc + rfq.spare.unitPrice * rfq.spare.quantity,
+                            0
+                          ) +
+                            (props.rfqs.reduce(
+                              (acc, rfq) =>
+                                acc + rfq.spare.unitPrice * rfq.spare.quantity,
+                              0
+                            ) *
+                              totalTaxes) /
+                              100
+                        );
+                      }}
+                    >
+                      Remove Tax
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        setTaxes([...taxes, { name: "", value: 0 }])
+                      }
+                    >
+                      Add Tax
+                    </Button>
+                  </td>
+                  <td className="py-4" colSpan={2}>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          color: "gray",
+                        },
+                      }}
+                      className="w-full"
+                      placeholder="Tax Name"
+                    />
+                  </td>
+                  <td className="py-4">
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          color: "gray",
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">%</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        const newTaxes = [...taxes];
+                        newTaxes[index].value = value;
+                        setTaxes(newTaxes);
+                        const totalTaxes = taxes.reduce(
+                          (acc, tax) => acc + tax.value,
+                          0
+                        );
+                        setTotal(
+                          props.rfqs.reduce(
+                            (acc, rfq) =>
+                              acc + rfq.spare.unitPrice * rfq.spare.quantity,
+                            0
+                          ) +
+                            (props.rfqs.reduce(
+                              (acc, rfq) =>
+                                acc + rfq.spare.unitPrice * rfq.spare.quantity,
+                              0
+                            ) *
+                              totalTaxes) /
+                              100
+                        );
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))
+            )}
+            <tr className="border-t-2">
+              <td colSpan={5} className="py-4 text-right font-bold">
+                <span className="mr-2">Total</span>
+              </td>
+              <td className="py-4">
+                <TextField
+                  variant="outlined"
+                  value={total}
+                  size="small"
+                  type="number"
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      color: "gray",
+                    },
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">SGD</InputAdornment>
+                    ),
+                  }}
+                />
+              </td>
+            </tr>
           </tbody>
         </table>
+        <div className="grid grid-cols-[auto,1fr] gap-4 max-w-md mt-8">
+          <InputLabel className="text-gray-500">Your Reference:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            size="small"
+            type="number"
+            className="flex-1"
+          />
+          <InputLabel className="text-gray-500">Discount:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            InputProps={{
+              endAdornment: "%",
+            }}
+            size="small"
+            type="number"
+            className="flex-1"
+          />
+          <InputLabel className="text-gray-500">Delivery Charge:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">SGD</InputAdornment>
+              ),
+            }}
+            size="small"
+            type="number"
+            className="flex-1"
+          />
+          <InputLabel className="text-gray-500">Delivery Time:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            InputProps={{
+              endAdornment: "Days",
+            }}
+            size="small"
+            type="number"
+            className="flex-1"
+          />
+          <InputLabel className="text-gray-500">Remarks:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            size="small"
+            type="text"
+            className="col-span-2"
+          />
+          <InputLabel className="text-gray-500">EX STOCK PLACE:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            size="small"
+            type="text"
+            className="col-span-2"
+          />
+        </div>
+        <div className="flex justify-end mt-8">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            Submit Quotation
+          </button>
+        </div>
       </main>
     </div>
   );
@@ -115,7 +378,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     const rfqs = parseAttributes(
       (
         await instance.get(
-          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&populate=spare`
+          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&populate=*`
         )
       ).data
     );
