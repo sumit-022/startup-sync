@@ -279,7 +279,6 @@ const RFQForm = ({ job }: { job: JobType }) => {
           <Button
             onClick={() => {
               setOpen(false);
-              console.log(spareDetails);
               append(spareDetails);
               setSpareDetails({
                 title: "",

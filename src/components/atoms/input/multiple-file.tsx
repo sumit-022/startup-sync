@@ -39,7 +39,7 @@ const MultiFileInput = ({
           </div>
         ) : (
           <div
-            className={`grid grid-cols-${files.length} w-full p-3 rounded-md gap-3 relative`}
+            className={`grid grid-cols-2 w-full p-3 rounded-md gap-3 relative`}
           >
             <div className="absolute w-full h-full bg-black bg-opacity-20 z-10 rounded-md flex items-center justify-center">
               <IconButton

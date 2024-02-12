@@ -23,6 +23,10 @@ export default function RfqHash(props: PageProps) {
 
   const [total, setTotal] = React.useState<number>(0);
 
+  const downloadAttachments = (attachments: any[]) => () => {
+    console.log(attachments);
+  };
+
   return (
     <div className="grid grid-rows-[1fr,auto]">
       <Header />
@@ -76,7 +80,9 @@ export default function RfqHash(props: PageProps) {
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
                 <td className="py-4 w-[50%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
-                  <Button>Download Attatchments</Button>
+                  <Button onClick={downloadAttachments(rfq.spare.attachments)}>
+                    Download Attatchments
+                  </Button>
                 </td>
                 <td className="py-4">{rfq.spare.quantity}</td>
                 <td className="py-4 w-[10%]">
@@ -378,7 +384,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     const rfqs = parseAttributes(
       (
         await instance.get(
-          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&populate=*`
+          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&populate=spare.attachments`
         )
       ).data
     );
