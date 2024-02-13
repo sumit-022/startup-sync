@@ -319,7 +319,7 @@ export default function RfqHash(props: PageProps) {
             type="text"
             className="col-span-2"
           />
-          <InputLabel className="text-gray-500">EX STOCK PLACE:</InputLabel>
+          <InputLabel className="text-gray-500">Connect Port:</InputLabel>
           <TextField
             variant="outlined"
             sx={{
@@ -328,6 +328,21 @@ export default function RfqHash(props: PageProps) {
               },
             }}
             size="small"
+            type="text"
+            className="col-span-2"
+          />
+          <InputLabel className="text-gray-500">Lead Time:</InputLabel>
+          <TextField
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-root": {
+                color: "gray",
+              },
+            }}
+            size="small"
+            InputProps={{
+              endAdornment: "Days",
+            }}
             type="text"
             className="col-span-2"
           />

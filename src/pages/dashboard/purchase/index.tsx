@@ -84,6 +84,7 @@ export default function Home() {
         >
           <ToggleButton value="QUERYRECEIVED">Query</ToggleButton>
           <ToggleButton value="RFQSENT">RFQ Sent</ToggleButton>
+          <ToggleButton value="POISSUED">PO Issued</ToggleButton>
         </ToggleButtonGroup>
         <DataGrid
           rows={rows}

@@ -42,8 +42,6 @@ export default function SalesDashboard() {
     jobCompleted: false,
   });
 
-  console.log("status", filters.status);
-
   useEffect(() => {
     if (maintab === "live") {
       setFilters((f) => ({

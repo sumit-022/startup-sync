@@ -25,10 +25,10 @@ export default function QuoteCompareTable<
     [x in S[number]]: string;
   } & { name: string })[];
   companies: ({
-    [s in (typeof spares)[number]["name"]]: { [x in C[number]]: string } & {
+    [s in (typeof spares)[number]["name"]]: ({ [x in C[number]]: string } & {
       selected: boolean;
       total: number;
-    };
+    });
   } & {
     name: string;
   })[];

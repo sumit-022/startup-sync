@@ -53,9 +53,20 @@ export default function useSalesTable({
           : {}),
         ...(filters.search
           ? {
-              jobCode: {
-                $contains: filters.search,
-              },
+              $or: [
+                { jobCode: { $contains: filters.search } },
+                { description: { $contains: filters.search } },
+                { shipName: { $contains: filters.search } },
+                { targetPort: { $contains: filters.search } },
+                { type: { $contains: filters.search } },
+                {
+                  company: {
+                    name: {
+                      $contains: filters.search,
+                    },
+                  },
+                },
+              ],
             }
           : {}),
         ...(filters.jobCompleted

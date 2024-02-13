@@ -24,6 +24,7 @@ const LoginForm = () => {
         router.push("/");
       })
       .catch((err) => {
+        console.log(err);
         toast.error(err.response.data.error.message);
       });
   };
