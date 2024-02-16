@@ -29,13 +29,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     "Remark",
   ] as const;
 
-  const spares = rfqs.map((rfq) => ({
-    name: rfq.spare.title,
-    "Supply Qty": "3",
-    "Order Qty": rfq.spare.quantity,
-  }));
-
-  const { companies } = rfqs.reduce(
+  const { companies, spares } = rfqs.reduce(
     (acc, cur) => {
       const vendor = cur.vendor;
       const spare = cur.spare;
@@ -52,10 +46,18 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
           unit: cur.unitPrice,
         };
       }
+      if (!acc.spares.find((s: any) => s.name === spare.title)) {
+        acc.spares.push({
+          name: spare.title,
+          "Supply Qty": "3",
+          "Order Qty": spare.quantity,
+        });
+      }
       return acc;
     },
     {
       companies: [],
+      spares: [],
     }
   );
 
@@ -71,6 +73,9 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     };
     return acc;
   }, {});
+
+  console.log({ companies, spares });
+
   return (
     <DashboardLayout header sidebar>
       <Typography
@@ -111,7 +116,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     };
   const rfqs = parseAttributes(
     await instance.get(
-      `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&populate[0]=spare.attachments&populate[1]=vendor&populate[2]=quantity`
+      `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[filled]=true&populate[0]=spare.attachments&populate[1]=vendor&populate[2]=quantity`
     )
   );
   if (rfqs.length === 0)
