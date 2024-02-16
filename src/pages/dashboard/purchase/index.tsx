@@ -7,12 +7,14 @@ import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
 import Button from "@/components/atoms/button";
+import { useRouter } from "next/router";
 
 type PurchaseTableFilter = {
   status: string;
 };
 
 export default function Home() {
+  const router = useRouter();
   const [filters, setFilters] = React.useState<PurchaseTableFilter>({
     status: "QUERYRECEIVED",
   });
@@ -24,7 +26,7 @@ export default function Home() {
             name: "Create an RFQ",
             onClick: (params: any) => {
               setRFQOpen(true);
-              const job = rows.find((el) => el.id == params.row.id);
+              const job = rows.data.find((el) => el.id == params.row.id);
               job && setJob(job);
             },
             className: "bg-green-500 hover:bg-green-600",
@@ -35,9 +37,11 @@ export default function Home() {
             icon: <MdAdd />,
             name: "Update Quotes",
             onClick: (params: any) => {
-              setRFQOpen(true);
-              const job = rows.find((el) => el.id == params.row.id);
-              job && setJob(job);
+              const job = rows.data.find((el) => el.id == params.row.id);
+              job &&
+                router.push(
+                  `/dashboard/purchase/quotes/update/RFQ-${job.jobCode}`
+                );
             },
             className: "bg-green-500 hover:bg-green-600",
           },
@@ -54,7 +58,7 @@ export default function Home() {
       </Button>
     ));
   };
-  const { columns, rows, loading } = usePurchaseTable({
+  const { columns, rows, loading, page } = usePurchaseTable({
     renderActions,
     status: filters.status,
   });
@@ -87,11 +91,25 @@ export default function Home() {
           <ToggleButton value="POISSUED">PO Issued</ToggleButton>
         </ToggleButtonGroup>
         <DataGrid
-          rows={rows}
+          rows={rows.data}
+          rowCount={rows.total}
           scrollbarSize={20}
           columns={columns}
           loading={loading}
           disableRowSelectionOnClick
+          paginationModel={{
+            page: page - 1,
+            pageSize: 10,
+          }}
+          pageSizeOptions={[10]}
+          onPaginationModelChange={(params) => {
+            router.push({
+              pathname: router.pathname,
+              query: { page: params.page + 1 },
+            });
+          }}
+          pagination
+          paginationMode="server"
         />
       </Box>
       {job && <RFQDialog open={RFQOpen} setOpen={setRFQOpen} job={job} />}

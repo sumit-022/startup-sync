@@ -4,6 +4,7 @@ import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
 import IconButton from "@/components/atoms/button/icon-button";
+import { useSearchParams } from "next/navigation";
 
 export default function usePurchaseTable({
   status,
@@ -12,8 +13,16 @@ export default function usePurchaseTable({
   status: string | null;
   renderActions?: (params: any) => React.ReactNode;
 }) {
-  const [rows, setRows] = useState<JobType[]>([]);
+  const [rows, setRows] = useState<{
+    total: number;
+    data: JobType[];
+  }>({
+    total: 0,
+    data: [],
+  });
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
   const query = qs.stringify(
     {
       sort: "jobCode:desc",
@@ -21,6 +30,10 @@ export default function usePurchaseTable({
         status: {
           $eq: status,
         },
+      },
+      pagination: {
+        page,
+        pageSize: 10,
       },
     },
     { encodeValuesOnly: true }
@@ -32,20 +45,23 @@ export default function usePurchaseTable({
     instance
       .get(route)
       .then((res: any) => {
-        setRows(
-          parseAttributes(res.data.data).map((el: any) =>
+        console.log(res);
+
+        setRows({
+          total: res.data.meta.pagination.total,
+          data: parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(
               Object.entries(el).map(([x, y]: [string, any]) => {
                 if (x == "assignedTo") return [x, y.fullname];
                 return [x, y];
               })
             )
-          )
-        );
+          ),
+        });
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, [status]);
+  }, [status, page]);
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130 },
     { field: "description", headerName: "Job Description", width: 200 },
@@ -66,5 +82,5 @@ export default function usePurchaseTable({
     },
   ];
 
-  return { columns, rows, loading };
+  return { columns, rows, loading, page };
 }

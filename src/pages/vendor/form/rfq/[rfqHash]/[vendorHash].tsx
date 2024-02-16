@@ -5,15 +5,50 @@ import { GetServerSideProps } from "next";
 import Header from "@/components/layout/header/rfq";
 import parseAttributes from "@/utils/parse-data";
 import { Button, InputAdornment, InputLabel, TextField } from "@mui/material";
+import { useForm } from "react-hook-form";
+import Head from "next/head";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 type PageProps = {
   rfqs: any[];
   job: JobType;
 };
 
-export default function RfqHash(props: PageProps) {
-  console.log(props);
+type RFQReplyFormType = {
+  rfqs: {
+    id: number;
+    amount: number;
+    unitPrice: number;
+    quantity: {
+      value: number;
+      unit?: string;
+    };
+  }[];
+  common: {
+    total: number;
+    selected: boolean;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: any;
+    discount: number;
+    delivery: any;
+    deliveryTime: any;
+    connectDate: any;
+    connectPort: any;
+    remark: any;
+  };
+};
 
+export default function RfqHash(props: PageProps) {
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RFQReplyFormType>({
+    defaultValues: {},
+  });
   const [taxes, setTaxes] = React.useState<
     {
       name: string;
@@ -22,13 +57,36 @@ export default function RfqHash(props: PageProps) {
   >([]);
 
   const [total, setTotal] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const downloadAttachments = (attachments: any[]) => () => {
     console.log(attachments);
   };
 
+  const onSubmit = (data: RFQReplyFormType) => {
+    console.log({ data });
+
+    setLoading(true);
+    for (let i = 0; i < data.rfqs.length; i++) {
+      instance.put(`/rfqs/${props.rfqs[i].id}`, {
+        data: {
+          unitPrice: data.rfqs[i].unitPrice,
+          quantity: data.rfqs[i].quantity,
+          remark: data.common.remark,
+          discount: data.common.discount,
+          delivery: data.common.delivery,
+          connectPort: data.common.connectPort,
+        },
+      });
+    }
+  };
+
   return (
     <div className="grid grid-rows-[1fr,auto]">
+      <Head>
+        <title>Vendor Requisition Form</title>
+        <meta name="description" content="Vendor Requisition Form" />
+      </Head>
       <Header />
       <main className="p-8">
         <p className="text-gray-500 text-lg">
@@ -66,7 +124,8 @@ export default function RfqHash(props: PageProps) {
               <th className="py-4 font-bold">Item Name</th>
               <th className="py-4 font-bold">Description</th>
               <th className="py-4 font-bold">Attachments</th>
-              <th className="py-4 font-bold">Quantity</th>
+              <th className="py-4 font-bold">Ordered Quantity</th>
+              <th className="py-4 font-bold">Supplied Quantity</th>
               <th className="py-4 font-bold">Unit Price</th>
             </tr>
           </thead>
@@ -78,13 +137,25 @@ export default function RfqHash(props: PageProps) {
               >
                 <td className="py-4 w-[5%]">{index + 1}</td>
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
-                <td className="py-4 w-[50%]">{rfq.spare.description}</td>
+                <td className="py-4 w-[30%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
                   <Button onClick={downloadAttachments(rfq.spare.attachments)}>
                     Download Attatchments
                   </Button>
                 </td>
-                <td className="py-4">{rfq.spare.quantity}</td>
+                <td className="py-4 w-[8%]">{rfq.spare.quantity}</td>
+                <td className="py-4 w-[8%]">
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        color: "gray",
+                      },
+                    }}
+                    {...register(`rfqs.${index}.quantity.value`)}
+                  />
+                </td>
                 <td className="py-4 w-[10%]">
                   <TextField
                     variant="outlined"
@@ -100,25 +171,16 @@ export default function RfqHash(props: PageProps) {
                         <InputAdornment position="start">SGD</InputAdornment>
                       ),
                     }}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      const newRfqs = [...props.rfqs];
-                      newRfqs[index].spare.unitPrice = value;
-                      setTotal(
-                        newRfqs.reduce(
-                          (acc, rfq) =>
-                            acc + rfq.spare.unitPrice * rfq.spare.quantity,
-                          0
-                        )
-                      );
-                    }}
+                    {...register(`rfqs.${index}.unitPrice`, {
+                      valueAsNumber: true,
+                    })}
                   />
                 </td>
               </tr>
             ))}
             {taxes.length == 0 ? (
               <tr>
-                <td colSpan={6} className="text-gray-500 py-4">
+                <td colSpan={7} className="text-gray-500 py-4">
                   <Button onClick={() => setTaxes([{ name: "", value: 0 }])}>
                     Add Tax
                   </Button>
@@ -127,7 +189,7 @@ export default function RfqHash(props: PageProps) {
             ) : (
               taxes.map((tax, index) => (
                 <tr key={index}>
-                  <td className="py-4" colSpan={3}>
+                  <td className="py-4" colSpan={4}>
                     <Button
                       onClick={() => {
                         const newTaxes = [...taxes];
@@ -223,7 +285,7 @@ export default function RfqHash(props: PageProps) {
               ))
             )}
             <tr className="border-t-2">
-              <td colSpan={5} className="py-4 text-right font-bold">
+              <td colSpan={6} className="py-4 text-right font-bold">
                 <span className="mr-2">Total</span>
               </td>
               <td className="py-4">
@@ -257,7 +319,6 @@ export default function RfqHash(props: PageProps) {
               },
             }}
             size="small"
-            type="number"
             className="flex-1"
           />
           <InputLabel className="text-gray-500">Discount:</InputLabel>
@@ -274,6 +335,7 @@ export default function RfqHash(props: PageProps) {
             size="small"
             type="number"
             className="flex-1"
+            {...register("common.discount")}
           />
           <InputLabel className="text-gray-500">Delivery Charge:</InputLabel>
           <TextField
@@ -291,6 +353,7 @@ export default function RfqHash(props: PageProps) {
             size="small"
             type="number"
             className="flex-1"
+            {...register("common.delivery")}
           />
           <InputLabel className="text-gray-500">Delivery Time:</InputLabel>
           <TextField
@@ -306,8 +369,9 @@ export default function RfqHash(props: PageProps) {
             size="small"
             type="number"
             className="flex-1"
+            {...register("common.deliveryTime")}
           />
-          <InputLabel className="text-gray-500">Remarks:</InputLabel>
+          <InputLabel className="text-gray-500">Connect Date:</InputLabel>
           <TextField
             variant="outlined"
             sx={{
@@ -315,9 +379,12 @@ export default function RfqHash(props: PageProps) {
                 color: "gray",
               },
             }}
+            InputProps={{
+              endAdornment: "Days",
+            }}
             size="small"
-            type="text"
-            className="col-span-2"
+            type="number"
+            className="flex-1"
           />
           <InputLabel className="text-gray-500">Connect Port:</InputLabel>
           <TextField
@@ -328,29 +395,31 @@ export default function RfqHash(props: PageProps) {
               },
             }}
             size="small"
-            type="text"
-            className="col-span-2"
+            className="flex-1"
+            {...register("common.connectPort")}
           />
-          <InputLabel className="text-gray-500">Lead Time:</InputLabel>
+          <InputLabel className="text-gray-500">Remarks:</InputLabel>
           <TextField
             variant="outlined"
+            multiline
+            rows={4}
             sx={{
               "& .MuiInputBase-root": {
                 color: "gray",
               },
             }}
             size="small"
-            InputProps={{
-              endAdornment: "Days",
-            }}
-            type="text"
-            className="col-span-2"
+            className="flex-1"
+            {...register("common.remark")}
           />
         </div>
         <div className="flex justify-end mt-8">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <LoadingButton
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            onClick={handleSubmit(onSubmit)}
+          >
             Submit Quotation
-          </button>
+          </LoadingButton>
         </div>
       </main>
     </div>
