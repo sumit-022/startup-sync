@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import instance from "@/config/axios.config";
 import { decrypt } from "@/utils/crypt";
 import { GetServerSideProps } from "next";
@@ -53,6 +53,7 @@ export default function RfqHash(props: PageProps) {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RFQReplyFormType>({
     defaultValues: {
@@ -72,9 +73,8 @@ export default function RfqHash(props: PageProps) {
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.quantity.value);
-  const discount = watch("common.discount");
-  const delivery = watch("common.delivery");
-  const amount = watch("common.amount");
+  const discount = watch("common.discount", 0);
+  const delivery = watch("common.delivery", 0);
 
   const total = unitPrices.reduce((acc, cur, index) => {
     if (cur && quantities[index]) {
@@ -82,6 +82,11 @@ export default function RfqHash(props: PageProps) {
     }
     return acc;
   }, 0);
+
+  useEffect(() => {
+    console.log({ total, discount, delivery });
+    setValue("common.amount", total - (total * discount) / 100 + delivery);
+  }, [total, discount, delivery]);
 
   const downloadAttachments = (attachments: any[]) => () => {
     console.log(attachments);
@@ -213,7 +218,9 @@ export default function RfqHash(props: PageProps) {
                       ),
                     }}
                     {...register(`rfqs.${index}.unitPrice`, {
-                      valueAsNumber: true,
+                      setValueAs: (value) => {
+                        return parseFloat(value || "0.0");
+                      },
                       required: "This field is required",
                     })}
                     error={errors.rfqs?.[index]?.unitPrice ? true : false}
@@ -270,7 +277,11 @@ export default function RfqHash(props: PageProps) {
             }}
             size="small"
             className="flex-1"
-            {...register("common.discount")}
+            {...register("common.discount", {
+              setValueAs: (value) => {
+                return parseFloat(value || "0.0");
+              },
+            })}
           />
           <InputLabel className="text-gray-500">Delivery Charge:</InputLabel>
           <TextField
@@ -287,7 +298,11 @@ export default function RfqHash(props: PageProps) {
             }}
             size="small"
             className="flex-1"
-            {...register("common.delivery")}
+            {...register("common.delivery", {
+              setValueAs: (value) => {
+                return parseInt(value || "0");
+              },
+            })}
           />
           <InputLabel className="text-gray-500">Amount Payable:</InputLabel>
           <TextField
@@ -305,9 +320,10 @@ export default function RfqHash(props: PageProps) {
             size="small"
             className="flex-1"
             disabled
-            value={+total - (+total * +discount) / 100 + +delivery || 0}
             {...register("common.amount", {
-              valueAsNumber: true,
+              setValueAs: (value) => {
+                return parseFloat(value || "0.0");
+              },
             })}
           />
           <InputLabel className="text-gray-500">Delivery Time:</InputLabel>
