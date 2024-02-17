@@ -49,7 +49,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
       if (!acc.spares.find((s: any) => s.name === spare.title)) {
         acc.spares.push({
           name: spare.title,
-          "Supply Qty": "3",
+          "Supply Qty": cur.quantity.value,
           "Order Qty": spare.quantity,
         });
       }
@@ -65,7 +65,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     const vendor = cur.vendor;
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
-      "Amount Payable": cur.total,
+      "Amount Payable": cur.amount,
       "Connect Date": cur.connectDate,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
