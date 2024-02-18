@@ -72,7 +72,7 @@ export default function RfqHash(props: PageProps) {
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
-  const quantities = watch("rfqs", []).map((rfq) => rfq.quantity.value);
+  const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
   const discount = watch("common.discount", 0);
   const delivery = watch("common.delivery", 0);
 
@@ -84,7 +84,6 @@ export default function RfqHash(props: PageProps) {
   }, 0);
 
   useEffect(() => {
-    console.log({ total, discount, delivery });
     setValue("common.amount", total - (total * discount) / 100 + delivery);
   }, [total, discount, delivery]);
 

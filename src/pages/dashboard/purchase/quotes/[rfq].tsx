@@ -1,11 +1,12 @@
 import { Mutable } from "@/utils/type-utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import parseAttributes from "@/utils/parse-data";
 import instance from "@/config/axios.config";
 import dynamic from "next/dynamic";
 import DashboardLayout from "@/components/layout";
 import { Button, Typography } from "@mui/material";
+import createPO from "@/utils/create-po";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -16,8 +17,6 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs }: PageProps) {
-  console.log({ rfqs });
-
   const spareCols = ["Supply Qty", "Order Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -37,7 +36,12 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
       if (!company) {
         acc.companies.push({
           name: vendor.name,
-          [spare.title]: { ...spare, total: cur.total, unit: cur.unitPrice },
+          [spare.title]: {
+            ...spare,
+            total: cur.total,
+            unit: cur.unitPrice,
+            selected: false,
+          },
         });
       } else {
         company[spare.title] = {
@@ -61,6 +65,9 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     }
   );
 
+  const [selectedCompanies, setSelectedCompanies] = useState<any[]>(companies);
+  console.log({ renderedCompanies: companies });
+
   const aggregate = rfqs.reduce((acc, cur) => {
     const vendor = cur.vendor;
     acc[vendor.name] = {
@@ -73,8 +80,6 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     };
     return acc;
   }, {});
-
-  console.log({ companies, spares });
 
   return (
     <DashboardLayout header sidebar>
@@ -93,12 +98,16 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
         companyCols={companyCols as Mutable<typeof companyCols>}
         aggregateCols={aggregateCols as Mutable<typeof aggregateCols>}
         //@ts-ignore
-        companies={companies}
+        companies={selectedCompanies}
         aggregate={aggregate}
         spares={spares}
+        onChange={(companies) => {
+          console.log({ companies });
+          setSelectedCompanies(companies);
+        }}
       />
       <div className="flex justify-end mt-6">
-        <Button variant="contained" color="primary" className="bg-blue-500">
+        <Button variant="contained" color="primary" className="bg-blue-500" onClick={createPO}>
           Generate Purchase Order
         </Button>
       </div>
