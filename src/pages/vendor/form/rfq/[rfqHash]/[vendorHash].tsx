@@ -41,7 +41,7 @@ type RFQReplyFormType = {
     delivery: number;
     amount: number;
     deliveryTime: any;
-    connectDate: any;
+    connectTime: any;
     connectPort: any;
     remark: any;
   };
@@ -105,6 +105,7 @@ export default function RfqHash(props: PageProps) {
             discount: data.common.discount,
             delivery: data.common.delivery,
             connectPort: data.common.connectPort,
+            connectTime: data.common.connectTime,
             total: data.rfqs[i].unitPrice * data.rfqs[i].quantity.value,
             amount: data.common.amount,
             filled: true,
@@ -361,6 +362,13 @@ export default function RfqHash(props: PageProps) {
             }}
             size="small"
             className="flex-1"
+            {...register("common.connectTime", {
+              required: "This field is required",
+              pattern: {
+                value: /^[0-9]*$/,
+                message: "Only numbers are allowed",
+              },
+            })}
           />
           <InputLabel className="text-gray-500">Connect Port:</InputLabel>
           <TextField
@@ -453,6 +461,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
         )
       ).data
     );
+
+    console.log(JSON.stringify(rfqs));
 
     if (!rfqs || rfqs.length === 0) {
       return {

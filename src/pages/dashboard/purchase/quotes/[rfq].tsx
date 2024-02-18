@@ -73,7 +73,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
       "Amount Payable": cur.amount,
-      "Connect Date": cur.connectDate,
+      "Connect Date": cur.connectTime,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
       Remark: cur.remark,
@@ -107,7 +107,12 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
         }}
       />
       <div className="flex justify-end mt-6">
-        <Button variant="contained" color="primary" className="bg-blue-500" onClick={createPO}>
+        <Button
+          variant="contained"
+          color="primary"
+          className="bg-blue-500"
+          onClick={createPO}
+        >
           Generate Purchase Order
         </Button>
       </div>

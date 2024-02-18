@@ -124,6 +124,7 @@ const RFQForm = ({ job }: { job: JobType }) => {
       .post("/job/send-rfq", form)
       .then((res) => {
         toast.success("RFQ Sent");
+        console.log({ res });
       })
       .catch((err) => {
         toast.error("Something went wrong");
