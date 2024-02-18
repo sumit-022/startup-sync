@@ -17,7 +17,7 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs }: PageProps) {
-  const spareCols = ["Supply Qty", "Order Qty"] as const;
+  const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
     "Discount",
@@ -28,7 +28,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     "Remark",
   ] as const;
 
-  const { companies, spares } = rfqs.reduce(
+  const { companies: initCompanies, spares: initSpares } = rfqs.reduce(
     (acc, cur) => {
       const vendor = cur.vendor;
       const spare = cur.spare;
@@ -46,7 +46,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: cur.total,
+          total: cur.unitPrice * spare.orderQty,
           unit: cur.unitPrice,
         };
       }
@@ -54,7 +54,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
         acc.spares.push({
           name: spare.title,
           "Supply Qty": cur.quantity.value,
-          "Order Qty": spare.quantity,
+          orderQty: spare.quantity,
         });
       }
       return acc;
@@ -65,8 +65,8 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     }
   );
 
-  const [selectedCompanies, setSelectedCompanies] = useState<any[]>(companies);
-  console.log({ renderedCompanies: companies });
+  const [companies, setCompanies] = useState<any[]>(initCompanies);
+  const [spares, setSpares] = useState<any[]>(initSpares);
 
   const aggregate = rfqs.reduce((acc, cur) => {
     const vendor = cur.vendor;
@@ -98,12 +98,12 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
         companyCols={companyCols as Mutable<typeof companyCols>}
         aggregateCols={aggregateCols as Mutable<typeof aggregateCols>}
         //@ts-ignore
-        companies={selectedCompanies}
+        companies={companies}
         aggregate={aggregate}
         spares={spares}
-        onChange={(companies) => {
-          console.log({ companies });
-          setSelectedCompanies(companies);
+        onChange={(companies, spares) => {
+          setCompanies(companies);
+          setSpares(spares);
         }}
       />
       <div className="flex justify-end mt-6">

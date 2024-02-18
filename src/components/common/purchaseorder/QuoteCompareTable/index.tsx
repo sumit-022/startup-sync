@@ -20,12 +20,26 @@ export default function QuoteCompareTable<
   aggregate,
   onChange,
 }: {
-  spareCols: any;
-  companyCols: any;
-  aggregateCols: any;
-  spares: any[];
-  aggregate: any;
-  onChange?: (c: any) => void;
+  spareCols: S;
+  companyCols: C;
+  aggregateCols: A;
+  spares: ({
+    [x in S[number]]: string;
+  } & { name: string; orderQty: number })[];
+  companies: ({
+    [s in (typeof spares)[number]["name"]]: { [x in C[number]]: string } & {
+      selected: boolean;
+      total: number;
+    };
+  } & {
+    name: string;
+  })[];
+  aggregate: {
+    [company in (typeof companies)[number]["name"]]: {
+      [x in A[number]]: string;
+    };
+  };
+  onChange?: (c: typeof companies, s: typeof spares) => void;
 }) {
   const totals = Object.fromEntries(
     companies.map((company) => [
@@ -69,7 +83,7 @@ export default function QuoteCompareTable<
     <table className={styles["quote-comparison-table"]}>
       {/* 1st row */}
       <tr>
-        <th colSpan={spareCols.length + 2}></th>
+        <th colSpan={spareCols.length + 3}></th>
         {/* Company names */}
         {companies.map((company, idx) => (
           <th colSpan={companyCols.length + 2} key={idx}>
@@ -87,6 +101,7 @@ export default function QuoteCompareTable<
             {col}
           </th>
         ))}
+        <th rowSpan={2}>Order Quantity</th>
         {companies.map((company, idx) => (
           <th key={idx} colSpan={companyCols.length + 2}>
             1 USD = 1.0 USD
@@ -123,7 +138,7 @@ export default function QuoteCompareTable<
                     }
                   );
 
-                  onChange?.([...companies]);
+                  onChange?.([...companies], [...spares]);
                 }}
               />
             </th>
@@ -139,6 +154,24 @@ export default function QuoteCompareTable<
           {spareCols.map((col, i) => (
             <td key={i}>{spare[col as S[number]]}</td>
           ))}
+          <td>
+            <input
+              type="number"
+              value={spare.orderQty}
+              className={styles["order-qty-inp"]}
+              onChange={(ev) => {
+                const orderQty = parseInt(ev.target.value || "0");
+                spares[idx].orderQty = orderQty;
+                companies.forEach((company) => {
+                  const spareName =
+                    spare.name as (typeof spares)[number]["name"];
+                  const spareData = company[spareName];
+                  spareData.total = spareData.unit * orderQty;
+                });
+                onChange?.([...companies], [...spares]);
+              }}
+            />
+          </td>
           {companies.map((company, idx) => {
             const spareName = spare.name as (typeof spares)[number]["name"];
             const spareData = company[spareName];
@@ -187,7 +220,7 @@ export default function QuoteCompareTable<
                     onChange={(ev) => {
                       const selected = ev.target.checked;
                       spareData["selected"] = selected;
-                      onChange?.([...companies]);
+                      onChange?.([...companies], [...spares]);
                     }}
                   />
                 </td>
@@ -200,7 +233,7 @@ export default function QuoteCompareTable<
       {/* Aggregate Rows */}
       {/* TOTAL Row First */}
       <tr>
-        <td colSpan={spareCols.length + 2}>Total</td>
+        <td colSpan={spareCols.length + 3}>Total</td>
         {companies.map((company, idx) => {
           const companyName =
             company.name as (typeof companies)[number]["name"];
@@ -221,7 +254,7 @@ export default function QuoteCompareTable<
       </tr>
       {aggregateCols.map((agg, idx) => (
         <tr key={idx}>
-          <td colSpan={spareCols.length + 2}>{agg}</td>
+          <td colSpan={spareCols.length + 3}>{agg}</td>
           {companies.map((company, idx) => {
             const companyName =
               company.name as (typeof companies)[number]["name"];
