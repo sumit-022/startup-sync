@@ -106,7 +106,7 @@ export default function RfqHash(props: PageProps) {
             delivery: data.common.delivery,
             connectPort: data.common.connectPort,
             connectTime: data.common.connectTime,
-            total: data.rfqs[i].unitPrice * data.rfqs[i].quantity.value,
+            total: 0,
             amount: data.common.amount,
             filled: true,
           },
@@ -165,7 +165,6 @@ export default function RfqHash(props: PageProps) {
               <th className="py-4 font-bold">Description</th>
               <th className="py-4 font-bold">Attachments</th>
               <th className="py-4 font-bold">Ordered Quantity</th>
-              <th className="py-4 font-bold">Supplied Quantity</th>
               <th className="py-4 font-bold">Unit Price</th>
             </tr>
           </thead>
@@ -177,32 +176,13 @@ export default function RfqHash(props: PageProps) {
               >
                 <td className="py-4 w-[5%]">{index + 1}</td>
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
-                <td className="py-4 w-[30%]">{rfq.spare.description}</td>
+                <td className="py-4 w-[35%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
                   <Button onClick={downloadAttachments(rfq.spare.attachments)}>
                     Download Attatchments
                   </Button>
                 </td>
                 <td className="py-4 w-[8%]">{rfq.spare.quantity}</td>
-                <td className="py-4 w-[8%]">
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      "& .MuiInputBase-root": {
-                        color: "gray",
-                      },
-                    }}
-                    {...register(`rfqs.${index}.quantity.value`, {
-                      required: "This field is required",
-                      pattern: {
-                        value: /^[0-9]*$/,
-                        message: "Only numbers are allowed",
-                      },
-                    })}
-                    error={errors.rfqs?.[index]?.quantity?.value ? true : false}
-                  />
-                </td>
                 <td className="py-4 w-[10%]">
                   <TextField
                     variant="outlined"
@@ -229,7 +209,7 @@ export default function RfqHash(props: PageProps) {
               </tr>
             ))}
             <tr className="border-t-2">
-              <td colSpan={6} className="py-4 text-right font-bold">
+              <td colSpan={5} className="py-4 text-right font-bold">
                 <span className="mr-2">Total</span>
               </td>
               <td className="py-4">

@@ -2,32 +2,22 @@ import jsPDF, { TableConfig } from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from "@/assets/image/logo.jpg";
 
-export default function createPO(data: any) {
+type POType = {
+  poNo: string;
+  vesselName: string;
+  spares: any[];
+  subtotal: number;
+  gst: number;
+  total: number;
+  vendor: any;
+};
+export default function createPO(data?: POType) {
   const doc = new jsPDF();
+  const today = new Date();
   const tableConfig: TableConfig = {
     autoSize: true,
     headerBackgroundColor: "#dce9f1",
     headerTextColor: "#5097ce",
-  };
-
-  type POType = {
-    poNo: string;
-    orderDate: string;
-    vesselName: string;
-    supplierAddress: string;
-    deliveryAddress: string;
-    billingAddress: string;
-    items: {
-      no: number;
-      item: string;
-      description: string;
-      quantity: number;
-      unitPrice: number;
-      total: number;
-    }[];
-    subtotal: number;
-    gst: number;
-    total: number;
   };
 
   const termsandConditions = [
@@ -53,9 +43,10 @@ export default function createPO(data: any) {
   doc.text("Our Order Date", 85, 70);
   doc.text("Vessel Name", 150, 70);
   doc.setFont("helvetica", "normal");
-  doc.text("PO-001", 15, 80);
-  doc.text("01/01/2022", 85, 80);
-  doc.text("MT SANDRO", 150, 80);
+  doc.text(data?.poNo || "PO", 15, 80);
+  // doc.text("01/01/2022", 85, 80);
+  doc.text(today.toLocaleDateString(), 85, 80);
+  doc.text(data?.vesselName || "Vessel Name", 150, 80);
   doc.setLineWidth(0.5);
   doc.line(15, 85, 195, 85);
   doc.setFont("helvetica", "bold");

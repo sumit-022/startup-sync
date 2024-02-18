@@ -14,7 +14,7 @@ declare interface JobType {
   jobCode: string;
   receivedAt: string | undefined;
   quotedAt: string | undefined;
-  shipName: string | undefined;
+  shipName: string;
   company: CompanyType;
   assignedTo: ServiceCoordinatorType;
   poNumber: string | undefined;
