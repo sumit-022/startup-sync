@@ -10,6 +10,38 @@ export default function createPO(data: any) {
     headerTextColor: "#5097ce",
   };
 
+  type POType = {
+    poNo: string;
+    orderDate: string;
+    vesselName: string;
+    supplierAddress: string;
+    deliveryAddress: string;
+    billingAddress: string;
+    items: {
+      no: number;
+      item: string;
+      description: string;
+      quantity: number;
+      unitPrice: number;
+      total: number;
+    }[];
+    subtotal: number;
+    gst: number;
+    total: number;
+  };
+
+  const termsandConditions = [
+    "Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.",
+    "All the invoices shall only be addressed to accounts@shinpoengineering.com",
+    "Send only one invoice per email as a PDF file ",
+    "Ensure that the purchase order no ,Job code no are clearly stated on the invoice",
+    "Ensure that full banking details are clearly stated on the invoice",
+    "Ensure that vessel name, job description and pricing are clearly mentioned on the invoice",
+    "Ensure the copy of quotes is/are attached with the invoice",
+    "Ensure time sheets are attached and signed off by Shinpo representative",
+    "Ask your Shinpo Engineering representative for clarification if any doubt",
+  ];
+
   doc.addImage(logo.src, "JPEG", 15, 15, 45, 30);
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
@@ -77,5 +109,23 @@ export default function createPO(data: any) {
     tableLineColor: [0, 0, 0],
     ...tableConfig,
   });
+  // total
+  doc.setFontSize(9);
+  doc.text("SUBTOTAL:", 150, 250);
+  doc.text("100.00", 186, 250);
+  doc.text("GST:", 150, 255);
+  doc.text("7.00", 186, 255);
+  doc.text("TOTAL:", 150, 260);
+  doc.text("107.00", 186, 260);
+  doc.addPage();
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("Terms & Conditions", 15, 15);
+  doc.setTextColor(128);
+  doc.setFont("helvetica", "normal");
+  termsandConditions.forEach((term, index) => {
+    doc.text(`${index + 1}. ${term}`, 15, 25 + index * 10);
+  });
+
   return doc.save("po.pdf");
 }

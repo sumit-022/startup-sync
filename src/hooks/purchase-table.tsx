@@ -73,9 +73,10 @@ export default function usePurchaseTable({
     {
       field: "Action",
       headerName: "Action",
-      width: 200,
+      headerAlign: "center",
+      width: 350,
       renderCell: (params) => (
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center w-full gap-4">
           {renderActions && renderActions(params)}
         </div>
       ),

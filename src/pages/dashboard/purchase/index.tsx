@@ -6,8 +6,9 @@ import IconButton from "@/components/atoms/button/icon-button";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
-import Button from "@/components/atoms/button";
+import { Button } from "@mui/material";
 import { useRouter } from "next/router";
+import { IoMdEye } from "react-icons/io";
 
 type PurchaseTableFilter = {
   status: string;
@@ -45,11 +46,22 @@ export default function Home() {
             },
             className: "bg-green-500 hover:bg-green-600",
           },
+          {
+            icon: <IoMdEye />,
+            name: "Compare Quotes",
+            onClick: (params: any) => {
+              const job = rows.data.find((el) => el.id == params.row.id);
+              job &&
+                router.push(`/dashboard/purchase/quotes/RFQ-${job.jobCode}`);
+            },
+            className: "bg-green-500 hover:bg-green-600",
+          },
         ];
   const renderActions = (params: any) => {
     return actions.map((action) => (
       <Button
         key={action.name}
+        variant="outlined"
         className="text-xs"
         onClick={() => action.onClick(params)}
       >
