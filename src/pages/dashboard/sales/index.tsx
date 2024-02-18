@@ -7,7 +7,7 @@ import Filters from "@/components/common/joborder/joborder-sort";
 import JobOrderForm from "../../../components/common/joborder/joborder-form";
 import Search from "../../../components/common/joborder/joborder-search";
 import AuthContext from "@/context/AuthContext";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import useSalesTable from "@/hooks/sales-table";
 import {
   Box,
@@ -151,6 +151,8 @@ export default function SalesDashboard() {
 
   const router = useRouter();
 
+  const apiRef = useGridApiRef();
+
   return (
     <DashboardLayout header sidebar>
       <div className="flex gap-4">
@@ -204,9 +206,17 @@ export default function SalesDashboard() {
         )}
       </div>
       <div className="mb-4">
-        <Filters setFilters={setFilters} />
+        <Filters
+          setFilters={setFilters}
+          onDownload={() =>
+            apiRef.current.exportDataAsCsv({
+              fileName: "Job Orders",
+            })
+          }
+        />
       </div>
       <DataGrid
+        apiRef={apiRef}
         rows={rows.data}
         columnVisibilityModel={{
           quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
