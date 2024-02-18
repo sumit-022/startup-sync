@@ -156,7 +156,6 @@ export default function QuoteCompareTable<
           ))}
           <td>
             <input
-              type="number"
               value={spare.orderQty}
               className={styles["order-qty-inp"]}
               onChange={(ev) => {
