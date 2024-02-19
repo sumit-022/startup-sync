@@ -442,9 +442,25 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           name="targetPort"
           label="TARGET PORT"
           control={control}
+          rules={{
+            required: {
+              value: true,
+              message: "Please enter a target port",
+            },
+          }}
         />
       </div>
-      <FormInputDate name="vesselETA" label="VESSEL ETA" control={control} />
+      <FormInputDate
+        name="vesselETA"
+        label="VESSEL ETA"
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: "Please select a date",
+          },
+        }}
+      />
       <FormInputAutoComplete
         title="services"
         label="SERVICES"
