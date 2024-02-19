@@ -319,29 +319,6 @@ export default function RfqHash(props: PageProps) {
             }}
             size="small"
             className="flex-1"
-            {...register("common.deliveryTime", {
-              required: "This field is required",
-              pattern: {
-                value: /^[0-9]*$/,
-                message: "Only numbers are allowed",
-              },
-            })}
-            error={errors.common?.deliveryTime ? true : false}
-            helperText={errors.common?.deliveryTime?.message as string}
-          />
-          <InputLabel className="text-gray-500">Connect Date:</InputLabel>
-          <TextField
-            variant="outlined"
-            sx={{
-              "& .MuiInputBase-root": {
-                color: "gray",
-              },
-            }}
-            InputProps={{
-              endAdornment: "Days",
-            }}
-            size="small"
-            className="flex-1"
             {...register("common.connectTime", {
               required: "This field is required",
               pattern: {

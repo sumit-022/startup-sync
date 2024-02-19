@@ -63,7 +63,7 @@ export default function QuoteCompareTable<
     const min = companies.reduce(
       (acc, cur) => {
         const spareData = cur[spareName];
-        if (spareData.total < acc.total) {
+        if (spareData?.total < acc.total) {
           return {
             name: cur.name,
             total: spareData.total,

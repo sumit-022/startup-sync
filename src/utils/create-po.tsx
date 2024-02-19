@@ -112,7 +112,6 @@ export default function createPO(data?: POType) {
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.text("Terms & Conditions", 15, 15);
-  doc.setTextColor(128);
   doc.setFont("helvetica", "normal");
   termsandConditions.forEach((term, index) => {
     doc.text(`${index + 1}. ${term}`, 15, 25 + index * 10);

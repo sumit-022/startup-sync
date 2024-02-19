@@ -75,7 +75,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     const vendor = cur.vendor;
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
-      "Amount Payable": cur.amount,
+      "Amount Payable": 0,
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
