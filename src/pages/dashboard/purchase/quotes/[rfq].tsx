@@ -41,7 +41,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           name: vendor.name,
           [spare.title]: {
             ...spare,
-            total: 0,
+            total: cur.unitPrice * spare.quantity,
             unit: cur.unitPrice,
             selected: false,
           },
@@ -49,7 +49,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: 0,
+          total: cur.unitPrice * spare.quantity,
           unit: cur.unitPrice,
         };
       }
@@ -73,9 +73,20 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
 
   const aggregate = rfqs.reduce((acc, cur) => {
     const vendor = cur.vendor;
+    console.log({ companies, name: vendor.name });
+    const { name, ...spares } = companies.find(
+      (c) => c.name === vendor.name
+    ) || { name: "" };
+
+    const total = Object.keys(spares).reduce((acc, cur) => {
+      return acc + spares[cur].total;
+    }, 0);
+
+    console.log({ total });
+
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
-      "Amount Payable": 0,
+      "Amount Payable": (1 - (cur.discount || 0) * 0.01) * total + cur.delivery,
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
@@ -83,6 +94,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     };
     return acc;
   }, {});
+  console.log({ rfqs, companies, spares, aggregate });
 
   return (
     <DashboardLayout header sidebar>
