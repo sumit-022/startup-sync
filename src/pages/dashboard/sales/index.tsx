@@ -21,6 +21,7 @@ import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
 import FlagForm from "@/components/common/joborder/form/flag";
+import downloadTable from "@/utils/download-table";
 
 export default function SalesDashboard() {
   const [modal, setModal] = useState<
@@ -41,6 +42,8 @@ export default function SalesDashboard() {
     assignedTo: null,
     jobCompleted: false,
   });
+
+  const [downloadSubroutine, setDownloadSubroutine] = useState<any>(null);
 
   useEffect(() => {
     if (maintab === "live") {
@@ -144,14 +147,28 @@ export default function SalesDashboard() {
     refresh,
     page,
     data: realData,
+    getAllRows,
   } = useSalesTable({
     filters,
     renderActions,
   });
 
-  const router = useRouter();
+  useEffect(() => {
+    setDownloadSubroutine(null);
+  }, [rows]);
 
+  const router = useRouter();
   const apiRef = useGridApiRef();
+
+  const startDownload = async () => {
+    const { data, rows } = await getAllRows();
+    setDownloadSubroutine({
+      data,
+      rows,
+    });
+    console.log("Download Subroutine", { data, rows });
+    return { data, rows };
+  };
 
   return (
     <DashboardLayout header sidebar>
@@ -208,11 +225,11 @@ export default function SalesDashboard() {
       <div className="mb-4">
         <Filters
           setFilters={setFilters}
-          onDownload={() =>
-            apiRef.current.exportDataAsCsv({
-              fileName: "Job Orders",
-            })
-          }
+          onDownload={() => {
+            startDownload().then(({ rows }) => {
+              downloadTable(rows.data);
+            });
+          }}
           onPrint={() =>
             apiRef.current.exportDataAsPrint({
               fileName: "Job Orders",
@@ -222,28 +239,54 @@ export default function SalesDashboard() {
       </div>
       <DataGrid
         apiRef={apiRef}
-        rows={rows.data}
+        initialState={
+          downloadSubroutine === null
+            ? undefined
+            : {
+                pagination: {
+                  paginationModel: {
+                    page: 1,
+                    pageSize: 10,
+                  },
+                },
+              }
+        }
+        rows={
+          downloadSubroutine === null ? rows.data : downloadSubroutine.rows.data
+        }
         columnVisibilityModel={{
           quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
           targetPort: false,
         }}
-        rowCount={rows.total}
+        rowCount={
+          downloadSubroutine === null
+            ? rows.total
+            : downloadSubroutine.rows.total
+        }
         columns={columns}
         loading={loading}
         disableRowSelectionOnClick
-        paginationModel={{
-          page: page - 1,
-          pageSize: 10,
-        }}
+        paginationModel={
+          downloadSubroutine === null
+            ? {
+                page: page - 1,
+                pageSize: 10,
+              }
+            : undefined
+        }
         pageSizeOptions={[10]}
-        onPaginationModelChange={(params) => {
-          router.push({
-            pathname: router.pathname,
-            query: { page: params.page + 1 },
-          });
-        }}
+        onPaginationModelChange={
+          downloadSubroutine === null
+            ? (params) => {
+                router.push({
+                  pathname: router.pathname,
+                  query: { page: params.page + 1 },
+                });
+              }
+            : undefined
+        }
         pagination
-        paginationMode="server"
+        paginationMode={downloadSubroutine === null ? "server" : "client"}
       />
       <Modal open={Boolean(modal)} onClose={() => setModal(null)}>
         <Box
