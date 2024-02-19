@@ -57,7 +57,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         acc.spares.push({
           name: spare.title,
           "Supply Qty": spare.quantity,
-          orderQty: 0,
+          orderQty: spare.quantity,
         });
       }
       return acc;
