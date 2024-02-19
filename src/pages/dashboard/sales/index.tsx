@@ -21,6 +21,7 @@ import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
 import FlagForm from "@/components/common/joborder/form/flag";
+import downloadTable from "@/utils/download-table";
 
 export default function SalesDashboard() {
   const [modal, setModal] = useState<
@@ -161,11 +162,12 @@ export default function SalesDashboard() {
 
   const startDownload = async () => {
     const { data, rows } = await getAllRows();
-    console.log({ data, rows });
     setDownloadSubroutine({
       data,
       rows,
     });
+    console.log("Download Subroutine", { data, rows });
+    return { data, rows };
   };
 
   return (
@@ -221,7 +223,14 @@ export default function SalesDashboard() {
         )}
       </div>
       <div className="mb-4">
-        <Filters setFilters={setFilters} onDownload={() => startDownload()} />
+        <Filters
+          setFilters={setFilters}
+          onDownload={() => {
+            startDownload().then(({ rows }) => {
+              downloadTable(rows.data);
+            });
+          }}
+        />
       </div>
       <DataGrid
         apiRef={apiRef}
