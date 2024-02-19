@@ -7,9 +7,10 @@ import { IoMdPrint } from "react-icons/io";
 interface Props {
   setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
   onDownload?: () => void;
+  onPrint?: () => void;
 }
 
-const Filters: React.FC<Props> = ({ onDownload, setFilters }) => {
+const Filters: React.FC<Props> = ({ onDownload, setFilters, onPrint }) => {
   const [filters, showFilters] = useState(false);
   return (
     <div className="flex flex-col gap-3">
@@ -30,7 +31,10 @@ const Filters: React.FC<Props> = ({ onDownload, setFilters }) => {
           >
             <IoMdDownload />
           </button>
-          <button className="flex border gap-1 items-center px-2 py-1 hover:bg-gray-200 rounded-md w-max">
+          <button
+            className="flex border gap-1 items-center px-2 py-1 hover:bg-gray-200 rounded-md w-max"
+            onClick={() => onPrint && onPrint()}
+          >
             <IoMdPrint />
           </button>
         </div>

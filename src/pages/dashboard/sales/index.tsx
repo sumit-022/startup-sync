@@ -230,6 +230,11 @@ export default function SalesDashboard() {
               downloadTable(rows.data);
             });
           }}
+          onPrint={() =>
+            apiRef.current.exportDataAsPrint({
+              fileName: "Job Orders",
+            })
+          }
         />
       </div>
       <DataGrid

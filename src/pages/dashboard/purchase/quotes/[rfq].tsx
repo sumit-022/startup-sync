@@ -14,9 +14,12 @@ const QuoteCompareTable = dynamic(
 
 type PageProps = {
   rfqs: any[];
+  job: JobType[];
 };
 
-export default function QuoteComparisionPage({ rfqs }: PageProps) {
+export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
+  console.log({ job });
+
   const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -38,7 +41,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
           name: vendor.name,
           [spare.title]: {
             ...spare,
-            total: cur.total,
+            total: 0,
             unit: cur.unitPrice,
             selected: false,
           },
@@ -46,15 +49,15 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: cur.unitPrice * spare.orderQty,
+          total: 0,
           unit: cur.unitPrice,
         };
       }
       if (!acc.spares.find((s: any) => s.name === spare.title)) {
         acc.spares.push({
           name: spare.title,
-          "Supply Qty": cur.quantity.value,
-          orderQty: spare.quantity,
+          "Supply Qty": spare.quantity,
+          orderQty: 0,
         });
       }
       return acc;
@@ -73,7 +76,7 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
       "Amount Payable": cur.amount,
-      "Connect Date": cur.connectTime,
+      "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
       Remark: cur.remark,
@@ -111,7 +114,17 @@ export default function QuoteComparisionPage({ rfqs }: PageProps) {
           variant="contained"
           color="primary"
           className="bg-blue-500"
-          onClick={createPO}
+          onClick={() => {
+            createPO({
+              poNo: `PO-${job[0].jobCode}`,
+              vesselName: job[0].shipName,
+              spares,
+              subtotal: 0,
+              gst: 0,
+              total: 0,
+              vendor: {},
+            });
+          }}
         >
           Generate Purchase Order
         </Button>
@@ -137,11 +150,20 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     return {
       notFound: true,
     };
-  console.log({ rfqs });
+  const job = parseAttributes(
+    (await instance.get(`/jobs?filters[spares][id]=${rfqs[0].spare.id}`)).data
+  );
+
+  if (!job || job.length === 0) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
       rfqs,
+      job,
     },
   };
 };
