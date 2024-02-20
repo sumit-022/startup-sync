@@ -1,6 +1,7 @@
 import jsPDF, { TableCellData } from "jspdf";
 import logo from "@/assets/image/logo.jpg";
 import { TableConfig, CellConfig } from "jspdf";
+import autoTable, { CellInput } from "jspdf-autotable";
 
 type RFQPdfType = {
   shipName: string;
@@ -10,50 +11,32 @@ type RFQPdfType = {
     quantity: string;
   }[];
   vendor: VendorType;
+  jobCode: string;
+  description: string;
+  portOfDelivery: string;
 };
 
 const createRfqPdf = (data: RFQPdfType) => {
-  console.log({ data });
-
-  const myData = {
-    shipName: "SINGAPORE CARGO",
-    rfqnumber: "RFQ-0001",
-  };
   const today = new Date();
   const doc = new jsPDF();
-  var header: CellConfig[] = [
-    {
-      name: "Item Name",
-      prompt: "Spare Name",
-      width: 100,
-      align: "center",
-      padding: 0,
-    },
-    {
-      name: "Quantity",
-      prompt: "Quantity",
-      width: 50,
-      align: "center",
-      padding: 0,
-    },
-    {
-      name: "Description",
-      prompt: "Description",
-      width: 100,
-      align: "center",
-      padding: 0,
-    },
-  ];
 
-  const tableData = data.spareDetails.map((spare) => ({
-    "Item Name": spare.title,
-    Quantity: spare.quantity,
-    Description: spare.description,
-  }));
-  var config: TableConfig = {
-    autoSize: false,
-    printHeaders: true,
-  };
+  // const tableData = data.spareDetails.map((spare) => ({
+  //   "Item Name": spare.title,
+  //   Quantity: spare.quantity,
+  //   Description: spare.description,
+  // }));
+  // var config: TableConfig = {
+  //   autoSize: false,
+  //   printHeaders: true,
+  // };
+
+  const tableData: CellInput[][] = data.spareDetails.map((spare, index) => [
+    { content: index + 1, styles: { halign: "center" } },
+    { content: spare.title, styles: { halign: "center" } },
+    { content: spare.quantity, styles: { halign: "center" } },
+    { content: spare.description, styles: { halign: "center" } },
+    { content: "", styles: { halign: "center" } },
+  ]);
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
@@ -71,23 +54,55 @@ const createRfqPdf = (data: RFQPdfType) => {
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.setTextColor("#1bb1d8");
   //underline
   doc.text("Requisition for Quote", 110, 60, { align: "center" });
-  doc.setDrawColor("#1bb1d8");
+  //line
   doc.setLineWidth(0.5);
-  doc.line(75, 62, 145, 62);
-
+  doc.line(15, 65, 195, 65);
   doc.setFontSize(12);
-  doc.setTextColor("#000");
-  doc.setFont("helvetica", "bold");
-  doc.text(`${data.vendor.name}`, 15, 70);
+  doc.text("RFQ Number:", 15, 75);
+  doc.text("Vessel Name:", 15, 85);
+  doc.text("Job Description:", 15, 95);
+  doc.text("Port Of Delivery:", 15, 105);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(`${data.vendor.address}`, 15, 80);
-  doc.text(`Date : ${today.toDateString()}`, 150, 75);
+  doc.text(`RFQ-${data.jobCode}`, 50, 75);
+  doc.text(data.shipName, 50, 85);
+  doc.text(data.description, 50, 95);
+  doc.text(data.portOfDelivery, 50, 105);
 
-  doc.table(15, 90, tableData, header, config);
+  //supplier details to the right side
+  doc.setFont("helvetica", "bold");
+  doc.text("Supplier Details:", 130, 75);
+  doc.setFont("helvetica", "normal");
+  doc.text(data.vendor.name, 130, 85);
+  const address = doc.splitTextToSize(data.vendor.address, 60);
+  doc.text(address, 130, 90);
+
+  //table
+  autoTable(doc, {
+    head: [
+      [
+        { content: "S/N", styles: { halign: "center" } },
+        { content: "Item Name", styles: { halign: "center" } },
+        { content: "Quantity", styles: { halign: "center" } },
+        { content: "Description", styles: { halign: "center" } },
+        { content: "Unit Price", styles: { halign: "center" } },
+      ],
+    ],
+    body: tableData,
+    startY: 120,
+    theme: "striped",
+    margin: { top: 120 },
+    tableWidth: "auto",
+  });
+  //go below the table
+  doc.setFontSize(12);
+  doc.text("Your Reference:", 15, 200);
+  doc.text("Discount:", 15, 210);
+  doc.text("Delivery Charge:", 15, 220);
+  doc.text("Delivery Time:", 15, 230);
+  doc.text("Connect Port:", 15, 240);
+  doc.text("Remarks:", 15, 250);
 
   // return doc.save("rfq.pdf");
   return doc.output("blob");

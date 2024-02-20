@@ -77,9 +77,19 @@ const RFQForm = ({ job }: { job: JobType }) => {
     for (let i = 0; i < data.vendors.length; i++) {
       const vendor = vendors.find((vendor) => vendor.id == data.vendors[i].id);
       if (!vendor) continue;
+      // createRfqPdf({
+      //   ...data,
+      //   vendor,
+      //   jobCode: job.jobCode,
+      //   description: job.description || "N/A",
+      //   portOfDelivery: job.targetPort,
+      // });
       data.vendors[i].attachment = createRfqPdf({
         ...data,
         vendor,
+        jobCode: job.jobCode,
+        description: job.description || "N/A",
+        portOfDelivery: job.targetPort,
       });
     }
 
@@ -205,10 +215,10 @@ const RFQForm = ({ job }: { job: JobType }) => {
         )}
         <LoadingButton
           variant="contained"
+          loading={loading}
           disabled={fields.length == 0}
           sx={{ mt: 2 }}
           onClick={handleSubmit(onSubmit)}
-          loading={loading}
           className="bg-blue-500 hover:bg-blue-700 text-white"
         >
           Send RFQ to Vendors

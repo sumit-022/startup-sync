@@ -1,7 +1,8 @@
 import React from "react";
 
 const TestPage = () => {
-  return <div>TestPage</div>;
+  const today = new Date();
+  return <div>{today.toDateString()}</div>;
 };
 
 export default TestPage;
