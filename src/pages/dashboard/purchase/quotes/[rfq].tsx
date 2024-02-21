@@ -81,6 +81,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         if (company[spare].selected) {
           selections[spare].push({
             vendor: company.vendor,
+            ...aggregate[company.vendor.name],
             ...company[spare],
             ...(company[spare].quantity = company[spare].orderQty),
           });
