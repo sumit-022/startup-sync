@@ -7,6 +7,9 @@ import dynamic from "next/dynamic";
 import DashboardLayout from "@/components/layout";
 import { Button, Typography } from "@mui/material";
 import createPO from "@/utils/create-po";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import LoadingButton from "@mui/lab/LoadingButton";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -18,6 +21,8 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -69,13 +74,14 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
   );
 
   const handleSendPO = async () => {
-    const spares = (() => {
+    setLoading(true);
+    const spareNames = (() => {
       const { vendor, ...spares } = companies[0];
       return Object.keys(spares);
     })();
 
     const selections: any = {};
-    for (const spare of spares) {
+    for (const spare of spareNames) {
       selections[spare] = [];
       for (const company of companies) {
         if (company[spare].selected) {
@@ -83,17 +89,15 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
             vendor: company.vendor,
             ...aggregate[company.vendor.name],
             ...company[spare],
-            ...(company[spare].quantity = company[spare].orderQty),
           });
         }
       }
     }
-    console.log({ selections });
 
     const vendorObject: any = {};
 
-    for (const spareCategory in selections) {
-      const sparesArray = selections[spareCategory];
+    for (const spareName in selections) {
+      const sparesArray = selections[spareName];
 
       for (const spare of sparesArray) {
         const vendorId = spare.vendor.id;
@@ -106,20 +110,51 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         }
 
         vendorObject[vendorId].spares.push({
-          spareDetails: spare,
+          spareDetails: {
+            ...spares.find((s) => s.name === spare.title),
+            ...spare,
+          },
         });
       }
     }
-    console.log(vendorObject);
+
+    const vendors = [];
 
     for (const vendor in vendorObject) {
-      createPO({
-        poNo: `PO-${job[0].jobCode}`,
-        vendor: vendorObject[vendor].vendorDetails,
-        spares: vendorObject[vendor].spares,
-        vesselName: job[0].shipName,
+      vendors.push({
+        id: vendorObject[vendor].vendorDetails.id,
+        attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
+        body: "Please find the attached Purchase Order",
       });
     }
+    //change the vendors array into formData and send it to the backend
+    const form = new FormData();
+    form.append("vendors", JSON.stringify(vendors));
+    for (const vendor in vendorObject) {
+      form.append(
+        "attachments",
+        createPO({
+          poNo: `PO-${job[0].jobCode}`,
+          vendor: vendorObject[vendor].vendorDetails,
+          spares: vendorObject[vendor].spares,
+          vesselName: job[0].shipName,
+        }),
+        `${vendorObject[vendor].vendorDetails.id}.pdf`
+      );
+    }
+    instance
+      .post(`/job/send-po`, form)
+      .then((res) => {
+        toast.success("Purchase Order Sent Successfully");
+        router.push("/dashboard/purchase");
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error("Error sending Purchase Order");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const [companies, setCompanies] = useState<any[]>(initCompanies);
@@ -171,14 +206,15 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         }}
       />
       <div className="flex justify-end mt-6">
-        <Button
+        <LoadingButton
           variant="contained"
           color="primary"
           className="bg-blue-500"
           onClick={handleSendPO}
+          loading={loading}
         >
           Generate Purchase Order
-        </Button>
+        </LoadingButton>
       </div>
     </DashboardLayout>
   );

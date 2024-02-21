@@ -7,7 +7,6 @@ type POType = {
   vesselName: string;
   spares: any[];
   vendor: any;
-  discount?: number;
 };
 export default function createPO(data?: POType) {
   const doc = new jsPDF();
@@ -22,15 +21,24 @@ export default function createPO(data?: POType) {
     index + 1,
     spare.spareDetails.title,
     spare.spareDetails.description,
-    spare.spareDetails.quantity,
+    spare.spareDetails.orderQty,
     spare.spareDetails.unit,
     spare.spareDetails.total,
   ]);
 
-  const total = data?.spares.reduce(
+  const subtotal = data?.spares.reduce(
     (acc, cur) => acc + cur.spareDetails.total,
     0
   );
+
+  const discount = data?.spares[0]?.spareDetails.Discount;
+  const discountDecimal = Number(discount.replace("%", "")) / 100;
+
+  const total =
+    subtotal +
+    data?.spares[0]?.spareDetails["Delivery Charge"] -
+    discountDecimal *
+      (subtotal + data?.spares[0]?.spareDetails["Delivery Charge"]);
 
   const termsandConditions = [
     "Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.",
@@ -103,11 +111,13 @@ export default function createPO(data?: POType) {
   // total
   doc.setFontSize(9);
   doc.text("SUBTOTAL:", 150, 250);
-  doc.text(`${total}`, 186, 250);
-  doc.text("GST:", 150, 255);
-  doc.text("7.00", 186, 255);
-  doc.text("TOTAL:", 150, 260);
-  doc.text("107.00", 186, 260);
+  doc.text(`${subtotal}`, 186, 250);
+  doc.text("Delivery Charge:", 150, 255);
+  doc.text(`${data?.spares[0]?.spareDetails["Delivery Charge"]}`, 186, 255);
+  doc.text("Discount:", 150, 260);
+  doc.text(`${data?.spares[0]?.spareDetails.Discount}`, 186, 260);
+  doc.text("TOTAL:", 150, 265);
+  doc.text(`${total}`, 186, 265);
   doc.addPage();
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
@@ -117,5 +127,6 @@ export default function createPO(data?: POType) {
     doc.text(`${index + 1}. ${term}`, 15, 25 + index * 10);
   });
 
-  return doc.save("po.pdf");
+  // return doc.save("po.pdf");
+  return doc.output("blob");
 }
