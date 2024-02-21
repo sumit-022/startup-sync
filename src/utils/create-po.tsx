@@ -6,10 +6,8 @@ type POType = {
   poNo: string;
   vesselName: string;
   spares: any[];
-  subtotal: number;
-  gst: number;
-  total: number;
   vendor: any;
+  discount?: number;
 };
 export default function createPO(data?: POType) {
   const doc = new jsPDF();
@@ -19,6 +17,20 @@ export default function createPO(data?: POType) {
     headerBackgroundColor: "#dce9f1",
     headerTextColor: "#5097ce",
   };
+
+  const body = data?.spares.map((spare, index) => [
+    index + 1,
+    spare.spareDetails.title,
+    spare.spareDetails.description,
+    spare.spareDetails.quantity,
+    spare.spareDetails.unit,
+    spare.spareDetails.total,
+  ]);
+
+  const total = data?.spares.reduce(
+    (acc, cur) => acc + cur.spareDetails.total,
+    0
+  );
 
   const termsandConditions = [
     "Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.",
@@ -53,10 +65,11 @@ export default function createPO(data?: POType) {
   // supplier address
   doc.text("Supplier Address", 15, 95);
   doc.setFont("helvetica", "normal");
-  doc.text("Shinpo Engineering PTE. LTD.", 15, 105);
-  doc.text("1 Tuas South Avenue 6, #05-20", 15, 110);
-  doc.text("S-637021", 15, 115);
-  doc.text("Singapore", 15, 120);
+  doc.text(data?.vendor.name, 15, 105);
+  const address = doc.splitTextToSize(data?.vendor.address, 60);
+  address.forEach((line: string, index: number) => {
+    doc.text(line, 15, 110 + index * 5);
+  });
   // delivery address
   doc.setFont("helvetica", "bold");
   doc.text("Delivery Address", 130, 95);
@@ -80,20 +93,7 @@ export default function createPO(data?: POType) {
   autoTable(doc, {
     theme: "striped",
     head: [["No.", "Item", "Description", "Quantity", "Unit Price", "Total"]],
-    body: [
-      [
-        "1",
-        "Spare Part bcukbd  cacg  ueg b yu g  uygs hs  g",
-        "lorembuicbvsfvsfjvbvsdjvbsv, bsdkvikb bdvj, abavjvsd,  hbvadl LVvudbv livubdlv nlvb",
-        "1",
-        "100",
-        "100",
-      ],
-      ["2", "Spare Part", "Spare Part Description", "1", "100", "100"],
-      ["3", "Spare Part", "Spare Part Description", "1", "100", "100"],
-      ["4", "Spare Part", "Spare Part Description", "1", "100", "100"],
-      ["5", "Spare Part", "Spare Part Description", "1", "100", "100"],
-    ],
+    body: body || [],
     startY: 190,
     margin: { top: 10 },
     tableWidth: "auto",
@@ -103,7 +103,7 @@ export default function createPO(data?: POType) {
   // total
   doc.setFontSize(9);
   doc.text("SUBTOTAL:", 150, 250);
-  doc.text("100.00", 186, 250);
+  doc.text(`${total}`, 186, 250);
   doc.text("GST:", 150, 255);
   doc.text("7.00", 186, 255);
   doc.text("TOTAL:", 150, 260);

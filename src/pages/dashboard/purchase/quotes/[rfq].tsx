@@ -18,8 +18,6 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
-  console.log({ job });
-
   const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -35,10 +33,12 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     (acc, cur) => {
       const vendor = cur.vendor;
       const spare = cur.spare;
-      const company = acc.companies.find((c: any) => c.name === vendor.name);
+      const company = acc.companies.find(
+        (c: any) => c.vendor.name === vendor.name
+      );
       if (!company) {
         acc.companies.push({
-          name: vendor.name,
+          vendor,
           [spare.title]: {
             ...spare,
             total: cur.unitPrice * spare.quantity,
@@ -68,21 +68,70 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     }
   );
 
+  const handleSendPO = async () => {
+    const spares = (() => {
+      const { vendor, ...spares } = companies[0];
+      return Object.keys(spares);
+    })();
+
+    const selections: any = {};
+    for (const spare of spares) {
+      selections[spare] = [];
+      for (const company of companies) {
+        if (company[spare].selected) {
+          selections[spare].push({
+            vendor: company.vendor,
+            ...company[spare],
+            ...(company[spare].quantity = company[spare].orderQty),
+          });
+        }
+      }
+    }
+    console.log({ selections });
+
+    const vendorObject: any = {};
+
+    for (const spareCategory in selections) {
+      const sparesArray = selections[spareCategory];
+
+      for (const spare of sparesArray) {
+        const vendorId = spare.vendor.id;
+
+        if (!vendorObject[vendorId]) {
+          vendorObject[vendorId] = {
+            vendorDetails: spare.vendor as VendorType,
+            spares: [],
+          };
+        }
+
+        vendorObject[vendorId].spares.push({
+          spareDetails: spare,
+        });
+      }
+    }
+    console.log(vendorObject);
+
+    for (const vendor in vendorObject) {
+      createPO({
+        poNo: `PO-${job[0].jobCode}`,
+        vendor: vendorObject[vendor].vendorDetails,
+        spares: vendorObject[vendor].spares,
+        vesselName: job[0].shipName,
+      });
+    }
+  };
+
   const [companies, setCompanies] = useState<any[]>(initCompanies);
   const [spares, setSpares] = useState<any[]>(initSpares);
 
   const aggregate = rfqs.reduce((acc, cur) => {
-    const vendor = cur.vendor;
-    console.log({ companies, name: vendor.name });
-    const { name, ...spares } = companies.find(
-      (c) => c.name === vendor.name
-    ) || { name: "" };
+    const rfqvendor = cur.vendor;
+    const { vendor, ...spares } =
+      companies.find((c) => c.vendor.id === rfqvendor.id) || {};
 
     const total = Object.keys(spares).reduce((acc, cur) => {
       return acc + spares[cur].total;
     }, 0);
-
-    console.log({ total });
 
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
@@ -94,7 +143,6 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     };
     return acc;
   }, {});
-  console.log({ rfqs, companies, spares, aggregate });
 
   return (
     <DashboardLayout header sidebar>
@@ -126,17 +174,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           variant="contained"
           color="primary"
           className="bg-blue-500"
-          onClick={() => {
-            createPO({
-              poNo: `PO-${job[0].jobCode}`,
-              vesselName: job[0].shipName,
-              spares,
-              subtotal: 0,
-              gst: 0,
-              total: 0,
-              vendor: {},
-            });
-          }}
+          onClick={handleSendPO}
         >
           Generate Purchase Order
         </Button>

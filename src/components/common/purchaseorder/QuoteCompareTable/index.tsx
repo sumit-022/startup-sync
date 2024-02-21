@@ -25,14 +25,14 @@ export default function QuoteCompareTable<
   aggregateCols: A;
   spares: ({
     [x in S[number]]: string;
-  } & { name: string; orderQty: number })[];
+  } & { name: string; orderQty: number; unit: number })[];
   companies: ({
     [s in (typeof spares)[number]["name"]]: { [x in C[number]]: string } & {
       selected: boolean;
       total: number;
     };
   } & {
-    name: string;
+    vendor: VendorType;
   })[];
   aggregate: {
     [company in (typeof companies)[number]["name"]]: {
@@ -43,9 +43,9 @@ export default function QuoteCompareTable<
 }) {
   const totals = Object.fromEntries(
     companies.map((company) => [
-      company.name,
+      company.vendor.name,
       (() => {
-        const { name, ...s } = company;
+        const { vendor, ...s } = company;
         return Object.keys(s).reduce((acc, cur) => {
           const spare = company[cur as (typeof spares)[number]["name"]];
           return acc + spare.total;
@@ -65,7 +65,7 @@ export default function QuoteCompareTable<
         const spareData = cur[spareName];
         if (spareData?.total < acc.total) {
           return {
-            name: cur.name,
+            name: cur.vendor.name,
             total: spareData.total,
             spareName,
           };
@@ -77,8 +77,6 @@ export default function QuoteCompareTable<
     return min;
   });
 
-  console.log({ minCompanyForEachSpare });
-
   return (
     <table className={styles["quote-comparison-table"]}>
       {/* 1st row */}
@@ -87,7 +85,7 @@ export default function QuoteCompareTable<
         {/* Company names */}
         {companies.map((company, idx) => (
           <th colSpan={companyCols.length + 2} key={idx}>
-            {company.name}
+            {company.vendor.name}
           </th>
         ))}
       </tr>
@@ -124,14 +122,14 @@ export default function QuoteCompareTable<
                 name=""
                 id=""
                 checked={(() => {
-                  const { name, ...s } = company;
+                  const { vendor, ...s } = company;
                   return (
                     Object.keys(s) as (typeof spares)[number]["name"][]
                   ).reduce((acc, cur) => acc && company[cur].selected, true);
                 })()}
                 onChange={(ev) => {
                   const selected = ev.target.checked;
-                  const { name, ...s } = company;
+                  const { vendor, ...s } = company;
                   (Object.keys(s) as (typeof spares)[number]["name"][]).forEach(
                     (key) => {
                       company[key].selected = selected;
@@ -185,7 +183,7 @@ export default function QuoteCompareTable<
                       } ${
                         minCompanyForEachSpare.find(
                           (min) =>
-                            min.name === company.name &&
+                            min.name === company.vendor.name &&
                             min.spareName === spareName
                         )
                           ? styles.highligted
@@ -202,7 +200,8 @@ export default function QuoteCompareTable<
                   } ${
                     minCompanyForEachSpare.find(
                       (min) =>
-                        min.name === company.name && min.spareName === spareName
+                        min.name === company.vendor.name &&
+                        min.spareName === spareName
                     )
                       ? styles.highligted
                       : ""
@@ -234,8 +233,8 @@ export default function QuoteCompareTable<
       <tr>
         <td colSpan={spareCols.length + 3}>Total</td>
         {companies.map((company, idx) => {
-          const companyName =
-            company.name as (typeof companies)[number]["name"];
+          const companyName = company.vendor
+            .name as (typeof companies)[number]["name"];
           return (
             <>
               <td></td>
@@ -255,8 +254,8 @@ export default function QuoteCompareTable<
         <tr key={idx}>
           <td colSpan={spareCols.length + 3}>{agg}</td>
           {companies.map((company, idx) => {
-            const companyName =
-              company.name as (typeof companies)[number]["name"];
+            const companyName = company.vendor
+              .name as (typeof companies)[number]["name"];
             return (
               <>
                 <td></td>

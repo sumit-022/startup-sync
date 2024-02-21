@@ -77,13 +77,6 @@ const RFQForm = ({ job }: { job: JobType }) => {
     for (let i = 0; i < data.vendors.length; i++) {
       const vendor = vendors.find((vendor) => vendor.id == data.vendors[i].id);
       if (!vendor) continue;
-      // createRfqPdf({
-      //   ...data,
-      //   vendor,
-      //   jobCode: job.jobCode,
-      //   description: job.description || "N/A",
-      //   portOfDelivery: job.targetPort,
-      // });
       data.vendors[i].attachment = createRfqPdf({
         ...data,
         vendor,
