@@ -27,7 +27,7 @@ export default function usePurchaseTable({
     {
       sort: "jobCode:desc",
       filters: {
-        status: {
+        purchaseStatus: {
           $eq: status,
         },
       },
