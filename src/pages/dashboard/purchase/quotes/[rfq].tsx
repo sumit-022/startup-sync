@@ -155,6 +155,9 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       .post(`/job/send-po`, form)
       .then((res) => {
         toast.success("Purchase Order Sent Successfully");
+        instance.put(`/jobs/${job[0].id}`, {
+          purchaseStatus: "POISSUED",
+        });
         router.push("/dashboard/purchase");
         setLoading(false);
       })
