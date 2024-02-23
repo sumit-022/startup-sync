@@ -19,6 +19,7 @@ export default function QuoteCompareTable<
   aggregateCols,
   aggregate,
   onChange,
+  mode,
 }: {
   spareCols: S;
   companyCols: C;
@@ -40,6 +41,7 @@ export default function QuoteCompareTable<
     };
   };
   onChange?: (c: typeof companies, s: typeof spares) => void;
+  mode?: "view" | "edit";
 }) {
   const totals = Object.fromEntries(
     companies.map((company) => [
@@ -115,31 +117,33 @@ export default function QuoteCompareTable<
               <th key={i}>{col}</th>
             ))}
             <th>Total</th>
-            <th>
-              Order{" "}
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                checked={(() => {
-                  const { vendor, ...s } = company;
-                  return (
-                    Object.keys(s) as (typeof spares)[number]["name"][]
-                  ).reduce((acc, cur) => acc && company[cur].selected, true);
-                })()}
-                onChange={(ev) => {
-                  const selected = ev.target.checked;
-                  const { vendor, ...s } = company;
-                  (Object.keys(s) as (typeof spares)[number]["name"][]).forEach(
-                    (key) => {
+            {mode === "edit" && (
+              <th>
+                Order{" "}
+                <input
+                  type="checkbox"
+                  name=""
+                  id=""
+                  checked={(() => {
+                    const { vendor, ...s } = company;
+                    return (
+                      Object.keys(s) as (typeof spares)[number]["name"][]
+                    ).reduce((acc, cur) => acc && company[cur].selected, true);
+                  })()}
+                  onChange={(ev) => {
+                    const selected = ev.target.checked;
+                    const { vendor, ...s } = company;
+                    (
+                      Object.keys(s) as (typeof spares)[number]["name"][]
+                    ).forEach((key) => {
                       company[key].selected = selected;
-                    }
-                  );
+                    });
 
-                  onChange?.([...companies], [...spares]);
-                }}
-              />
-            </th>
+                    onChange?.([...companies], [...spares]);
+                  }}
+                />
+              </th>
+            )}
           </>
         ))}
       </tr>
@@ -209,19 +213,21 @@ export default function QuoteCompareTable<
                 >
                   {spareData.total}
                 </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    id=""
-                    checked={spareData["selected"]}
-                    onChange={(ev) => {
-                      const selected = ev.target.checked;
-                      spareData["selected"] = selected;
-                      onChange?.([...companies], [...spares]);
-                    }}
-                  />
-                </td>
+                {mode === "edit" && (
+                  <td>
+                    <input
+                      type="checkbox"
+                      name=""
+                      id=""
+                      checked={spareData["selected"]}
+                      onChange={(ev) => {
+                        const selected = ev.target.checked;
+                        spareData["selected"] = selected;
+                        onChange?.([...companies], [...spares]);
+                      }}
+                    />
+                  </td>
+                )}
               </>
             );
           })}
@@ -245,7 +251,7 @@ export default function QuoteCompareTable<
               >
                 {totals[companyName]}
               </td>
-              <td></td>
+              {mode === "edit" && <td></td>}
             </>
           );
         })}
@@ -262,7 +268,7 @@ export default function QuoteCompareTable<
                 <td className={styles.number}>
                   {aggregate[companyName][agg as A[number]]}
                 </td>
-                <td></td>
+                {mode === "edit" && <td></td>}
               </>
             );
           })}

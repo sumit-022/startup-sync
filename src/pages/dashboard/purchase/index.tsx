@@ -34,7 +34,8 @@ export default function Home() {
             className: "bg-green-500 hover:bg-green-600",
           },
         ]
-      : [
+      : filters.status == "RFQSENT"
+      ? [
           {
             icon: <MdAdd />,
             name: "Update Quotes",
@@ -51,6 +52,18 @@ export default function Home() {
               const job = rows.data.find((el) => el.id == params.row.id);
               job &&
                 router.push(`/dashboard/purchase/quotes/RFQ-${job.jobCode}`);
+            },
+            className: "bg-green-500 hover:bg-green-600",
+          },
+        ]
+      : [
+          {
+            icon: <MdAdd />,
+            name: "View Quotes",
+            onClick: (params: any) => {
+              router.push(
+                `/dashboard/purchase/quotes/view/RFQ-${params.row.jobCode}`
+              );
             },
             className: "bg-green-500 hover:bg-green-600",
           },

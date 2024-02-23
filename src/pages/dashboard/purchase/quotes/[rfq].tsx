@@ -156,7 +156,9 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       .then((res) => {
         toast.success("Purchase Order Sent Successfully");
         instance.put(`/jobs/${job[0].id}`, {
-          purchaseStatus: "POISSUED",
+          data: {
+            purchaseStatus: "POISSUED",
+          },
         });
         router.push("/dashboard/purchase");
         setLoading(false);
@@ -205,6 +207,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         Quote Comparison
       </Typography>
       <QuoteCompareTable
+        mode="edit"
         spareCols={spareCols as Mutable<typeof spareCols>}
         companyCols={companyCols as Mutable<typeof companyCols>}
         aggregateCols={aggregateCols as Mutable<typeof aggregateCols>}
