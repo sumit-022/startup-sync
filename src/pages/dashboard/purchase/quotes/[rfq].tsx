@@ -1,5 +1,5 @@
 import { Mutable } from "@/utils/type-utils";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import parseAttributes from "@/utils/parse-data";
 import instance from "@/config/axios.config";
@@ -7,6 +7,11 @@ import dynamic from "next/dynamic";
 import DashboardLayout from "@/components/layout";
 import { Button, Typography } from "@mui/material";
 import createPO from "@/utils/create-po";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import LoadingButton from "@mui/lab/LoadingButton";
+import logo from "@/assets/image/logo.jpg";
+import AuthContext from "@/context/AuthContext";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -18,6 +23,13 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_FRONTEND_URL;
+  console.log(
+    `<img src="${baseUrl}/logo.png" alt="Shinpo Engineering Pte Ltd" style="width: 100px;height: 100px;"/>`
+  );
   const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -69,13 +81,14 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
   );
 
   const handleSendPO = async () => {
-    const spares = (() => {
+    setLoading(true);
+    const spareNames = (() => {
       const { vendor, ...spares } = companies[0];
       return Object.keys(spares);
     })();
 
     const selections: any = {};
-    for (const spare of spares) {
+    for (const spare of spareNames) {
       selections[spare] = [];
       for (const company of companies) {
         if (company[spare].selected) {
@@ -83,17 +96,15 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
             vendor: company.vendor,
             ...aggregate[company.vendor.name],
             ...company[spare],
-            ...(company[spare].quantity = company[spare].orderQty),
           });
         }
       }
     }
-    console.log({ selections });
 
     const vendorObject: any = {};
 
-    for (const spareCategory in selections) {
-      const sparesArray = selections[spareCategory];
+    for (const spareName in selections) {
+      const sparesArray = selections[spareName];
 
       for (const spare of sparesArray) {
         const vendorId = spare.vendor.id;
@@ -106,20 +117,56 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         }
 
         vendorObject[vendorId].spares.push({
-          spareDetails: spare,
+          spareDetails: {
+            ...spares.find((s) => s.name === spare.title),
+            ...spare,
+          },
         });
       }
     }
-    console.log(vendorObject);
+
+    const vendors = [];
 
     for (const vendor in vendorObject) {
-      createPO({
-        poNo: `PO-${job[0].jobCode}`,
-        vendor: vendorObject[vendor].vendorDetails,
-        spares: vendorObject[vendor].spares,
-        vesselName: job[0].shipName,
+      vendors.push({
+        id: vendorObject[vendor].vendorDetails.id,
+        attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
+        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/logo.png" alt="Shinpo Engineering Pte Ltd" style="width: 140px;height: 70px;margin-right:10px"/><div><p style="font-weight: 700;color:blue;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">Procurement Department</p><p style="margin:0;padding:0;color:blue">Email: purchase@shinpoengineering.com</p><p style="color:blue;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
+        The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
+        </div></div>`,
       });
     }
+    //change the vendors array into formData and send it to the backend
+    const form = new FormData();
+    form.append("vendors", JSON.stringify(vendors));
+    for (const vendor in vendorObject) {
+      form.append(
+        "attachments",
+        createPO({
+          poNo: `PO-${job[0].jobCode}`,
+          vendor: vendorObject[vendor].vendorDetails,
+          spares: vendorObject[vendor].spares,
+          vesselName: job[0].shipName,
+        }),
+        `${vendorObject[vendor].vendorDetails.id}.pdf`
+      );
+    }
+    instance
+      .post(`/job/send-po`, form)
+      .then((res) => {
+        toast.success("Purchase Order Sent Successfully");
+        instance.put(`/jobs/${job[0].id}`, {
+          purchaseStatus: "POISSUED",
+        });
+        router.push("/dashboard/purchase");
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error("Error sending Purchase Order");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const [companies, setCompanies] = useState<any[]>(initCompanies);
@@ -171,14 +218,15 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         }}
       />
       <div className="flex justify-end mt-6">
-        <Button
+        <LoadingButton
           variant="contained"
           color="primary"
           className="bg-blue-500"
           onClick={handleSendPO}
+          loading={loading}
         >
           Generate Purchase Order
-        </Button>
+        </LoadingButton>
       </div>
     </DashboardLayout>
   );
