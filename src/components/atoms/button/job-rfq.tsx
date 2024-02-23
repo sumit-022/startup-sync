@@ -51,7 +51,7 @@ const RFQDialog = ({
               &times;
             </button>
           </div>
-          <RFQForm job={job} />
+          <RFQForm job={job} setModalOpen={setOpen} />
         </Box>
       </Dialog>
     </>

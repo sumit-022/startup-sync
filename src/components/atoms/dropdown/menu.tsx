@@ -48,6 +48,7 @@ export default function LongMenu({ options, params }: Props) {
           <MenuItem
             key={index}
             onClick={(e) => {
+              e.stopPropagation();
               handleClose();
               option.onClick(params);
             }}

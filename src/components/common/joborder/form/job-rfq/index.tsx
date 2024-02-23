@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   FormControl,
-  IconButton,
   Modal,
   TextField,
   Typography,
@@ -11,7 +10,7 @@ import {
 import { IoMdCloudUpload } from "react-icons/io";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useForm, useFieldArray } from "react-hook-form";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import FormInputText from "@/components/atoms/input/text";
@@ -22,12 +21,17 @@ import Image from "next/image";
 import createRfqPdf from "@/utils/create-rfq-pdf";
 import qs from "qs";
 import { toast } from "react-toastify";
-import InputGroup from "@/components/atoms/input/input-group";
 import SpareCard from "@/components/atoms/card/spare-card";
-import FormInputFile from "@/components/atoms/input/file";
 import MultiFileInput from "@/components/atoms/input/multiple-file";
+import AuthContext from "@/context/AuthContext";
 
-const RFQForm = ({ job }: { job: JobType }) => {
+const RFQForm = ({
+  job,
+  setModalOpen,
+}: {
+  job: JobType;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -37,6 +41,8 @@ const RFQForm = ({ job }: { job: JobType }) => {
     quantity: "",
     attachments: null,
   });
+
+  const { user } = useContext(AuthContext);
 
   const { control, handleSubmit, watch } = useForm<RFQFormType>({
     defaultValues: {
@@ -87,9 +93,13 @@ const RFQForm = ({ job }: { job: JobType }) => {
     }
 
     const form = new FormData();
+    const mailFooter = `<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/logo.png" alt="Shinpo Engineering Pte Ltd" style="width: 140px;height: 70px;margin-right:10px"/><div><p style="font-weight: 700;color:blue;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">Procurement Department</p><p style="margin:0;padding:0;color:blue">Email: purchase@shinpoengineering.com</p><p style="color:blue;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
+    The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
+    </div></div>`;
     form.append("jobId", data.jobId);
     form.append("description", data.description);
     form.append("shipName", data.shipName);
+    form.append("mailFooter", mailFooter);
     form.append(
       "vendors",
       JSON.stringify(
@@ -127,7 +137,7 @@ const RFQForm = ({ job }: { job: JobType }) => {
       .post("/job/send-rfq", form)
       .then((res) => {
         toast.success("RFQ Sent");
-        console.log({ res });
+        setModalOpen(false);
       })
       .catch((err) => {
         toast.error("Something went wrong");

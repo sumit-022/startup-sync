@@ -1,7 +1,7 @@
 import { encrypt } from "@/utils/crypt";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const { rfqNumber, vendorId } = req.body;
     const origin = process.env.NEXT_PUBLIC_BASE_FRONTEND_URL;
@@ -19,10 +19,10 @@ export function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     return res.status(200).json({
-      link: `${origin}/dashboard/purchase/quotes/RFQ-${rfqNumber}?vendorId=${encrypt(
-        vendorId,
+      link: `${origin}/vendor/form/rfq/${encrypt(
+        rfqNumber,
         ENCRYPTION_KEY
-      )}`,
+      )}/${encrypt(vendorId, ENCRYPTION_KEY)}`,
     });
   } else {
     res.status(405).json({ message: "Method not allowed" });

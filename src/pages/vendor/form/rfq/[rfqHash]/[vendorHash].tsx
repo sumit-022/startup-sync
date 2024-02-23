@@ -378,7 +378,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   try {
     // Get the rfq hash
     const rfqHash = context.params?.rfqHash;
+    console.log(rfqHash);
+
     const vendorHash = context.params?.vendorHash;
+    console.log(vendorHash);
 
     if (
       !rfqHash ||

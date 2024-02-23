@@ -2,13 +2,14 @@ import React from "react";
 import DashboardLayout from "@/components/layout";
 import { DataGrid } from "@mui/x-data-grid";
 import usePurchaseTable from "@/hooks/purchase-table";
-import IconButton from "@/components/atoms/button/icon-button";
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup, Modal } from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
+import LongMenu from "@/components/atoms/dropdown/menu";
+import UpdateModal from "@/components/common/purchaseorder/modal/update";
 
 type PurchaseTableFilter = {
   status: string;
@@ -38,11 +39,8 @@ export default function Home() {
             icon: <MdAdd />,
             name: "Update Quotes",
             onClick: (params: any) => {
-              const job = rows.data.find((el) => el.id == params.row.id);
-              job &&
-                router.push(
-                  `/dashboard/purchase/quotes/update/RFQ-${job.jobCode}`
-                );
+              setUpdateOpen(true);
+              setJobCode(params.row.jobCode);
             },
             className: "bg-green-500 hover:bg-green-600",
           },
@@ -57,19 +55,9 @@ export default function Home() {
             className: "bg-green-500 hover:bg-green-600",
           },
         ];
-  const renderActions = (params: any) => {
-    return actions.map((action) => (
-      <Button
-        key={action.name}
-        variant="outlined"
-        className="text-xs"
-        onClick={() => action.onClick(params)}
-      >
-        {action.icon}
-        {action.name}
-      </Button>
-    ));
-  };
+  const renderActions = (params: any) => (
+    <LongMenu options={actions} params={params} />
+  );
   const { columns, rows, loading, page } = usePurchaseTable({
     renderActions,
     status: filters.status,
@@ -87,6 +75,8 @@ export default function Home() {
 
   const [RFQOpen, setRFQOpen] = React.useState(true);
   const [job, setJob] = React.useState<JobType | null>(null);
+  const [updateOpen, setUpdateOpen] = React.useState(false);
+  const [jobCode, setJobCode] = React.useState<string | null>(null);
 
   return (
     <DashboardLayout header sidebar>
@@ -125,6 +115,13 @@ export default function Home() {
         />
       </Box>
       {job && <RFQDialog open={RFQOpen} setOpen={setRFQOpen} job={job} />}
+      {jobCode && (
+        <UpdateModal
+          open={updateOpen}
+          onClose={() => setUpdateOpen(false)}
+          jobCode={jobCode}
+        />
+      )}
     </DashboardLayout>
   );
 }
