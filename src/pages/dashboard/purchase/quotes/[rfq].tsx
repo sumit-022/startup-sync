@@ -5,13 +5,14 @@ import parseAttributes from "@/utils/parse-data";
 import instance from "@/config/axios.config";
 import dynamic from "next/dynamic";
 import DashboardLayout from "@/components/layout";
-import { Button, Typography } from "@mui/material";
+import { Button, Checkbox, TextField, Typography } from "@mui/material";
 import createPO from "@/utils/create-po";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import LoadingButton from "@mui/lab/LoadingButton";
 import logo from "@/assets/image/logo.jpg";
 import AuthContext from "@/context/AuthContext";
+import FormHeading from "@/components/atoms/heading/form-heading";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -24,6 +25,12 @@ type PageProps = {
 
 export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
   const [loading, setLoading] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    default: true,
+    address:
+      "Shinpo Engineering Pte Ltd, 1 Tuas South Avenue 6 #05-20 The Westcom Singapore 637021",
+  });
+  const [remarks, setRemarks] = useState("");
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const baseUrl = process.env.NEXT_PUBLIC_BASE_FRONTEND_URL;
@@ -147,6 +154,8 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           vendor: vendorObject[vendor].vendorDetails,
           spares: vendorObject[vendor].spares,
           vesselName: job[0].shipName,
+          deliveryAddress: deliveryAddress.address,
+          remarks,
         }),
         `${vendorObject[vendor].vendorDetails.id}.pdf`
       );
@@ -220,6 +229,54 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           setSpares(spares);
         }}
       />
+      <TextField
+        multiline
+        rows={4}
+        label="Remarks"
+        fullWidth
+        value={remarks}
+        onChange={(e) => {
+          setRemarks(e.target.value);
+        }}
+        sx={{
+          mt: 4,
+        }}
+      />
+      <div className="mt-3">
+        <FormHeading heading="Delivery Address" />
+        <div className="flex items-center">
+          <Checkbox
+            checked={deliveryAddress.default}
+            onChange={() => {
+              setDeliveryAddress((prev) => ({
+                ...prev,
+                default: !prev.default,
+              }));
+            }}
+          />
+          <Typography variant="body1" color="gray">
+            Same as Billing Address
+          </Typography>
+        </div>
+        {!deliveryAddress.default && (
+          <TextField
+            multiline
+            disabled={deliveryAddress.default}
+            rows={4}
+            label="Enter Delivery Address"
+            fullWidth
+            onChange={(e) => {
+              setDeliveryAddress((prev) => ({
+                ...prev,
+                address: e.target.value,
+              }));
+            }}
+            sx={{
+              mt: 1,
+            }}
+          />
+        )}
+      </div>
       <div className="flex justify-end mt-6">
         <LoadingButton
           variant="contained"

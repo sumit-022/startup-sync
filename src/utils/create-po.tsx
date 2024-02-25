@@ -7,8 +7,10 @@ type POType = {
   vesselName: string;
   spares: any[];
   vendor: any;
+  deliveryAddress: string;
+  remarks?: string;
 };
-export default function createPO(data?: POType) {
+export default function createPO(data: POType) {
   const doc = new jsPDF();
   const today = new Date();
   const tableConfig: TableConfig = {
@@ -64,7 +66,6 @@ export default function createPO(data?: POType) {
   doc.text("Vessel Name", 150, 70);
   doc.setFont("helvetica", "normal");
   doc.text(data?.poNo || "PO", 15, 80);
-  // doc.text("01/01/2022", 85, 80);
   doc.text(today.toLocaleDateString(), 85, 80);
   doc.text(data?.vesselName || "Vessel Name", 150, 80);
   doc.setLineWidth(0.5);
@@ -78,14 +79,24 @@ export default function createPO(data?: POType) {
   address.forEach((line: string, index: number) => {
     doc.text(line, 15, 110 + index * 5);
   });
+
+  //remarks to the left
+  doc.setFont("helvetica", "bold");
+  doc.text("Remarks", 15, 140);
+  doc.setFont("helvetica", "normal");
+  const remarks = doc.splitTextToSize(data?.remarks || "", 60);
+  remarks.forEach((line: string, index: number) => {
+    doc.text(line, 15, 150 + index * 5);
+  });
+
   // delivery address
   doc.setFont("helvetica", "bold");
   doc.text("Delivery Address", 130, 95);
   doc.setFont("helvetica", "normal");
-  doc.text("Shinpo Engineering PTE. LTD.", 130, 105);
-  doc.text("1 Tuas South Avenue 6, #05-20", 130, 110);
-  doc.text("S-637021", 130, 115);
-  doc.text("Singapore", 130, 120);
+  const deliveryAddress = doc.splitTextToSize(data.deliveryAddress, 60);
+  deliveryAddress.forEach((line: string, index: number) => {
+    doc.text(line, 130, 105 + index * 5);
+  });
   // billing address to the right
   doc.setFont("helvetica", "bold");
   doc.text("Billing Address", 130, 140);
