@@ -11,6 +11,8 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
 import JSZip from "jszip";
 import axios from "axios";
+import { useRouter } from "next/router";
+import createAckPDF from "@/utils/create-rfq-ack";
 
 type PageProps = {
   rfqs: any[];
@@ -33,6 +35,7 @@ type RFQReplyFormType = {
       quantity: number;
     };
     total: number;
+    vendor: VendorType;
   }[];
   common: {
     selected: boolean;
@@ -105,11 +108,13 @@ export default function RfqHash(props: PageProps) {
           attachments: rfq.spare.attachments,
           quantity: rfq.spare.quantity,
         },
+        vendor: rfq.vendor,
       })),
     },
   });
 
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [referenceNumber, setReferenceNumber] = React.useState<string>("");
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -123,14 +128,14 @@ export default function RfqHash(props: PageProps) {
     return acc;
   }, 0);
 
+  const router = useRouter();
+
   useEffect(() => {
     setValue("common.amount", total - (total * discount) / 100 + delivery);
   }, [total, discount, delivery]);
 
   const onSubmit = async (data: RFQReplyFormType) => {
     setLoading(true);
-    console.log({ data });
-
     try {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
@@ -148,7 +153,43 @@ export default function RfqHash(props: PageProps) {
           },
         });
       }
-      toast.success("Quotation submitted successfully");
+      const mailBody = `Acknowledgement for Requisition for Quote ${props.rfqs[0].RFQNumber} from ${props.rfqs[0].vendor.name} for ${props.job.shipName} has been submitted. Please find the attached Acknowledgement for Requisition for Quote.`;
+      const pdf = createAckPDF({
+        shipName: props.job.shipName,
+        spareDetails: data.rfqs.map((rfq) => ({
+          title: rfq.spare.title,
+          description: rfq.spare.description,
+          quantity: `${rfq.spare.quantity}`,
+          unitPrice: `${rfq.unitPrice}`,
+        })),
+        jobCode: props.rfqs[0].RFQNumber,
+        portOfDelivery: props.job.targetPort,
+        description: props.job.description || "No Description Available",
+        vendor: props.rfqs[0].vendor,
+        connectPort: data.common.connectPort,
+        deliveryCharge: `${data.common.delivery}`,
+        discount: `${data.common.discount}`,
+        deliveryTime: `${data.common.connectTime}`,
+        remarks: data.common.remark,
+        yourReference: referenceNumber,
+        amountPayable: `${data.common.amount}`,
+        subtotal: `${total}`,
+      });
+      const formData = new FormData();
+      formData.append("vendorId", props.rfqs[0].vendor.id);
+      formData.append("attachment", pdf, `acknowledgement.pdf`);
+      formData.append("mailBody", mailBody);
+
+      await instance.post(
+        `/rfq/${props.rfqs[0].RFQNumber}/send-ack`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      router.push("/vendor/form/rfq/success");
     } catch (err) {
       console.error(err);
       toast.error("Failed to submit quotation");
@@ -281,6 +322,8 @@ export default function RfqHash(props: PageProps) {
             }}
             size="small"
             className="flex-1"
+            value={referenceNumber}
+            onChange={(e) => setReferenceNumber(e.target.value)}
           />
           <InputLabel className="text-gray-500">Discount:</InputLabel>
           <TextField
@@ -453,7 +496,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     const rfqs = parseAttributes(
       (
         await instance.get(
-          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&filters[filled][$ne]=true&populate=spare.attachments`
+          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&filters[filled][$ne]=true&populate[0]=spare.attachments&populate[1]=vendor`
         )
       ).data
     );
