@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import Head from "next/head";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
+import JSZip from "jszip";
+import axios from "axios";
 
 type PageProps = {
   rfqs: any[];
@@ -47,7 +49,45 @@ type RFQReplyFormType = {
   };
 };
 
+interface Attachment {
+  id: number;
+  name: string;
+  mime: string;
+  url: string;
+}
+
+const downloadAttachments = async (attachments: Attachment[]) => {
+  const zip = new JSZip();
+
+  // Fetch each attachment and add it to the zip file
+  await Promise.all(
+    attachments.map(async (attachment) => {
+      const response = await axios.get(attachment.url, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        responseType: "blob",
+      });
+      const data = await response.data;
+      zip.file(attachment.name, data);
+    })
+  );
+
+  // Generate the zip file
+  const content = await zip.generateAsync({ type: "blob" });
+
+  // Create a download link and trigger the download
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(content);
+  link.download = "attachments.zip";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export default function RfqHash(props: PageProps) {
+  console.log(props.rfqs);
   const {
     register,
     control,
@@ -86,10 +126,6 @@ export default function RfqHash(props: PageProps) {
   useEffect(() => {
     setValue("common.amount", total - (total * discount) / 100 + delivery);
   }, [total, discount, delivery]);
-
-  const downloadAttachments = (attachments: any[]) => () => {
-    console.log(attachments);
-  };
 
   const onSubmit = async (data: RFQReplyFormType) => {
     setLoading(true);
@@ -178,7 +214,9 @@ export default function RfqHash(props: PageProps) {
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
                 <td className="py-4 w-[35%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
-                  <Button onClick={downloadAttachments(rfq.spare.attachments)}>
+                  <Button
+                    onClick={() => downloadAttachments(rfq.spare.attachments)}
+                  >
                     Download Attatchments
                   </Button>
                 </td>
@@ -378,10 +416,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   try {
     // Get the rfq hash
     const rfqHash = context.params?.rfqHash;
-    console.log(rfqHash);
 
     const vendorHash = context.params?.vendorHash;
-    console.log(vendorHash);
 
     if (
       !rfqHash ||
@@ -421,8 +457,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
         )
       ).data
     );
-
-    console.log(JSON.stringify(rfqs));
 
     if (!rfqs || rfqs.length === 0) {
       return {
