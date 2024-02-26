@@ -309,6 +309,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     return {
       notFound: true,
     };
+  console.log(rfqs[0]);
+
   const job = parseAttributes(
     (await instance.get(`/jobs?filters[spares][id]=${rfqs[0].spare.id}`)).data
   );

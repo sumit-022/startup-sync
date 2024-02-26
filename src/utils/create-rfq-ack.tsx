@@ -104,11 +104,11 @@ export default function createAckPDF(data: RFQPdfType) {
   doc.text("Connect Port:", 15, 250);
   doc.text("Remarks:", 15, 260);
   doc.setFont("helvetica", "normal");
-  doc.text(`SGD ${data.subtotal}`, 50, 190);
+  doc.text(`${data.subtotal}`, 50, 190);
   doc.text(data.yourReference, 50, 200);
   doc.text(`${data.discount}%`, 50, 210);
-  doc.text(`SGD ${data.deliveryCharge}`, 50, 220);
-  doc.text(`SGD ${data.amountPayable}`, 50, 230);
+  doc.text(`${data.deliveryCharge}`, 50, 220);
+  doc.text(`${data.amountPayable}`, 50, 230);
   doc.text(`${data.deliveryTime} Days`, 50, 240);
   doc.text(data.connectPort, 50, 250);
   const remarks = doc.splitTextToSize(data.remarks, 140);

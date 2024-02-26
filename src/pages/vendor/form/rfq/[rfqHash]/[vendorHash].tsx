@@ -4,13 +4,19 @@ import { decrypt } from "@/utils/crypt";
 import { GetServerSideProps } from "next";
 import Header from "@/components/layout/header/rfq";
 import parseAttributes from "@/utils/parse-data";
-import { Button, InputAdornment, InputLabel, TextField } from "@mui/material";
-import { useForm } from "react-hook-form";
+import {
+  Button,
+  FormHelperText,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import { Form, useForm } from "react-hook-form";
 import Head from "next/head";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
-import JSZip from "jszip";
-import axios from "axios";
 import { useRouter } from "next/router";
 import createAckPDF from "@/utils/create-rfq-ack";
 
@@ -52,37 +58,15 @@ type RFQReplyFormType = {
   };
 };
 
-interface Attachment {
-  id: number;
-  name: string;
-  mime: string;
-  url: string;
-}
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-const downloadAttachments = async (attachments: Attachment[]) => {
-  const zip = new JSZip();
-
-  // Fetch each attachment and add it to the zip file
-  await Promise.all(
-    attachments.map(async (attachment) => {
-      const response = await axios.get(attachment.url, {
-        responseType: "blob",
-      });
-      const data = await response.data;
-      zip.file(attachment.name, data);
-    })
-  );
-
-  // Generate the zip file
-  const content = await zip.generateAsync({ type: "blob" });
-
-  // Create a download link and trigger the download
+const downloadAttachments = (spare: any) => {
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(content);
-  link.download = "attachments.zip";
+  link.href = `${baseUrl}/spare/${spare.id}/attachments`;
+  link.setAttribute("download", "attachments.zip");
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
 };
 
 export default function RfqHash(props: PageProps) {
@@ -111,6 +95,8 @@ export default function RfqHash(props: PageProps) {
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");
+  const [selectedCurrency, setSelectedCurrency] = React.useState<string>("");
+  const [error, setError] = React.useState<string>("");
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -131,20 +117,39 @@ export default function RfqHash(props: PageProps) {
   }, [total, discount, delivery]);
 
   const onSubmit = async (data: RFQReplyFormType) => {
+    if (selectedCurrency === "") {
+      setError("Please select a currency");
+      return;
+    }
     setLoading(true);
     try {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
           data: {
-            unitPrice: data.rfqs[i].unitPrice,
+            unitPrice:
+              selectedCurrency === "USD"
+                ? data.rfqs[i].unitPrice
+                : selectedCurrency === "SGD"
+                ? data.rfqs[i].unitPrice * 0.74
+                : data.rfqs[i].unitPrice * 0.012,
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
             discount: data.common.discount,
-            delivery: data.common.delivery,
+            delivery:
+              selectedCurrency === "USD"
+                ? data.common.delivery
+                : selectedCurrency === "SGD"
+                ? data.common.delivery * 0.74
+                : data.common.delivery * 0.012,
             connectPort: data.common.connectPort,
             connectTime: data.common.connectTime,
             total: 0,
-            amount: data.common.amount,
+            amount:
+              selectedCurrency === "USD"
+                ? data.common.amount
+                : selectedCurrency === "SGD"
+                ? data.common.amount * 0.74
+                : data.common.amount * 0.012,
             filled: true,
           },
         });
@@ -155,21 +160,21 @@ export default function RfqHash(props: PageProps) {
         spareDetails: data.rfqs.map((rfq) => ({
           title: rfq.spare.title,
           description: rfq.spare.description,
-          quantity: `${rfq.spare.quantity}`,
-          unitPrice: `${rfq.unitPrice}`,
+          quantity: `${selectedCurrency} ${rfq.spare.quantity}`,
+          unitPrice: `${selectedCurrency} ${rfq.unitPrice}`,
         })),
         jobCode: props.rfqs[0].RFQNumber,
         portOfDelivery: props.job.targetPort,
         description: props.job.description || "No Description Available",
         vendor: props.rfqs[0].vendor,
         connectPort: data.common.connectPort,
-        deliveryCharge: `${data.common.delivery}`,
+        deliveryCharge: `${selectedCurrency} ${data.common.delivery}`,
         discount: `${data.common.discount}`,
         deliveryTime: `${data.common.connectTime}`,
         remarks: data.common.remark,
         yourReference: referenceNumber,
-        amountPayable: `${data.common.amount}`,
-        subtotal: `${total}`,
+        amountPayable: `${selectedCurrency} ${data.common.amount}`,
+        subtotal: `${selectedCurrency} ${total}`,
       });
       const formData = new FormData();
       formData.append("vendorId", props.rfqs[0].vendor.id);
@@ -251,9 +256,7 @@ export default function RfqHash(props: PageProps) {
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
                 <td className="py-4 w-[35%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
-                  <Button
-                    onClick={() => downloadAttachments(rfq.spare.attachments)}
-                  >
+                  <Button onClick={() => downloadAttachments(rfq.spare)}>
                     Download Attatchments
                   </Button>
                 </td>
@@ -266,11 +269,6 @@ export default function RfqHash(props: PageProps) {
                       "& .MuiInputBase-root": {
                         color: "gray",
                       },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">SGD</InputAdornment>
-                      ),
                     }}
                     {...register(`rfqs.${index}.unitPrice`, {
                       setValueAs: (value) => {
@@ -296,11 +294,6 @@ export default function RfqHash(props: PageProps) {
                       color: "gray",
                     },
                   }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">SGD</InputAdornment>
-                    ),
-                  }}
                   value={total}
                 />
               </td>
@@ -321,6 +314,27 @@ export default function RfqHash(props: PageProps) {
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
           />
+          <InputLabel className="text-gray-500">
+            Your Primary Currency:
+          </InputLabel>
+          <div className="w-full flex flex-col">
+            <Select
+              variant="outlined"
+              size="small"
+              className="flex-1"
+              error={error.length > 0}
+              value={selectedCurrency}
+              onChange={(e) => {
+                setSelectedCurrency(e.target.value as string);
+                setError("");
+              }}
+            >
+              <MenuItem value="USD">USD($)</MenuItem>
+              <MenuItem value="SGD">SGD($)</MenuItem>
+              <MenuItem value="INR">INR(₹)</MenuItem>
+            </Select>
+            <FormHelperText error={error.length > 0}>{error}</FormHelperText>
+          </div>
           <InputLabel className="text-gray-500">Discount:</InputLabel>
           <TextField
             variant="outlined"
@@ -348,11 +362,6 @@ export default function RfqHash(props: PageProps) {
                 color: "gray",
               },
             }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">SGD</InputAdornment>
-              ),
-            }}
             size="small"
             className="flex-1"
             {...register("common.delivery", {
@@ -368,11 +377,6 @@ export default function RfqHash(props: PageProps) {
               "& .MuiInputBase-root": {
                 color: "gray",
               },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">SGD</InputAdornment>
-              ),
             }}
             size="small"
             className="flex-1"
