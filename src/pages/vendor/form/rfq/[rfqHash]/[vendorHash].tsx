@@ -66,10 +66,6 @@ const downloadAttachments = async (attachments: Attachment[]) => {
   await Promise.all(
     attachments.map(async (attachment) => {
       const response = await axios.get(attachment.url, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
         responseType: "blob",
       });
       const data = await response.data;
