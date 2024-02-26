@@ -181,15 +181,7 @@ export default function RfqHash(props: PageProps) {
       formData.append("attachment", pdf, `acknowledgement.pdf`);
       formData.append("mailBody", mailBody);
 
-      await instance.post(
-        `/rfq/${props.rfqs[0].RFQNumber}/send-ack`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await instance.post(`/rfq/${props.rfqs[0].RFQNumber}/send-ack`, formData);
       router.push("/vendor/form/rfq/success");
     } catch (err) {
       console.error(err);

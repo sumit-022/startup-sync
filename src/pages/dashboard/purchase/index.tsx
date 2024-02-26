@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
+import instance from "@/config/axios.config";
 
 type PurchaseTableFilter = {
   status: string;
@@ -67,6 +68,20 @@ export default function Home() {
             },
             className: "bg-green-500 hover:bg-green-600",
           },
+          {
+            icon: <IoMdEye />,
+            name: "Mark Purchase Complete",
+            onClick: (params: any) => {
+              instance
+                .put(`/job/${params.row.id}`, {
+                  data: { status: "COMPLETED" },
+                })
+                .then(() => {
+                  setFilters({ ...filters, status: "COMPLETED" });
+                });
+            },
+            className: "bg-green-500 hover:bg-green-600",
+          },
         ];
   const renderActions = (params: any) => (
     <LongMenu options={actions} params={params} />
@@ -104,6 +119,7 @@ export default function Home() {
           <ToggleButton value="QUERYRECEIVED">Query</ToggleButton>
           <ToggleButton value="RFQSENT">RFQ Sent</ToggleButton>
           <ToggleButton value="POISSUED">PO Issued</ToggleButton>
+          <ToggleButton value="COMPLETED">Completed</ToggleButton>
         </ToggleButtonGroup>
         <DataGrid
           rows={rows.data}

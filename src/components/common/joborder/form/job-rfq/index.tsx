@@ -54,6 +54,8 @@ const RFQForm = ({
     },
   });
 
+  const vendorsWatch = watch("vendors");
+
   const apiRoute = qs.stringify({
     filters: {
       services: {
@@ -219,7 +221,7 @@ const RFQForm = ({
         <LoadingButton
           variant="contained"
           loading={loading}
-          disabled={fields.length == 0}
+          disabled={fields.length == 0 || vendorsWatch.length == 0}
           sx={{ mt: 2 }}
           onClick={handleSubmit(onSubmit)}
           className="bg-blue-500 hover:bg-blue-700 text-white"
