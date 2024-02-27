@@ -108,7 +108,6 @@ export default function RfqHash(props: PageProps) {
 
   const watchCurrency = watch("common.currency", "USD");
   const conversionRate = useCurrency(watchCurrency);
-  console.log({ conversionRate });
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -134,22 +133,29 @@ export default function RfqHash(props: PageProps) {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
           data: {
-            unitPrice: data.rfqs[i].unitPrice * (conversionRate || 1),
+            unitPrice: conversionRate
+              ? data.rfqs[i].unitPrice / conversionRate
+              : data.rfqs[i].unitPrice,
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
             discount: data.common.discount,
-            delivery: data.common.delivery * (conversionRate || 1),
+            delivery: conversionRate
+              ? data.common.delivery / conversionRate
+              : data.common.delivery,
             connectPort: data.common.connectPort,
             connectTime: data.common.connectTime,
             total: 0,
-            amount: data.common.amount * (conversionRate || 1),
-            currency: data.common.currency,
+            amount: conversionRate
+              ? data.common.amount / conversionRate
+              : data.common.amount,
+            currencyCode: data.common.currency,
             quality: data.common.quality,
             filled: true,
           },
         });
       }
       const mailBody = `Acknowledgement for Requisition for Quote ${props.rfqs[0].RFQNumber} from ${props.rfqs[0].vendor.name} for ${props.job.shipName} has been submitted. Please find the attached Acknowledgement for Requisition for Quote.`;
+      const subject = `Acknowledgement of Quotes - ${props.job.jobCode}`;
       const pdf = createAckPDF({
         shipName: props.job.shipName,
         spareDetails: data.rfqs.map((rfq) => ({
@@ -174,6 +180,7 @@ export default function RfqHash(props: PageProps) {
       const formData = new FormData();
       formData.append("vendorId", props.rfqs[0].vendor.id);
       formData.append("attachment", pdf, `acknowledgement.pdf`);
+      formData.append("subject", subject);
       formData.append("mailBody", mailBody);
 
       await instance.post(`/rfq/${props.rfqs[0].RFQNumber}/send-ack`, formData);

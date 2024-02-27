@@ -24,6 +24,8 @@ type PageProps = {
 };
 
 export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
+  console.log({ rfqs });
+
   const [loading, setLoading] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState({
     default: true,
@@ -42,6 +44,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
   const aggregateCols = [
     "Discount",
     "Delivery Charge",
+    "Quality of Spare",
     "Amount Payable",
     "Connect Date",
     "Connect Port",
@@ -51,6 +54,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
   const { companies: initCompanies, spares: initSpares } = rfqs.reduce(
     (acc, cur) => {
       const vendor = cur.vendor;
+      const currencyCode = cur.currencyCode;
       const spare = cur.spare;
       const company = acc.companies.find(
         (c: any) => c.vendor.name === vendor.name
@@ -64,7 +68,9 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
             unit: cur.unitPrice,
             selected: false,
           },
+          currencyCode,
         });
+        console.log(acc.companies);
       } else {
         company[spare.title] = {
           ...spare,
@@ -198,6 +204,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
+      "Quality of Spare": cur.quality,
       Remark: cur.remark,
     };
     return acc;

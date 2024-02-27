@@ -25,9 +25,13 @@ export const CurrencyProvider = ({
   const lastUpdated = useRef(new Date());
 
   const updateRates = async () => {
-    const res = await instance.get("/currencies");
+    const res = await instance.get(
+      "/currencies?pagination[page]=1&pagination[pageSize]=200"
+    );
+
     const data = parseAttributes(res.data.data) as any[];
     lastUpdated.current = new Date();
+
     setRates(Object.fromEntries(data.map(({ code, rate }) => [code, rate])));
   };
 

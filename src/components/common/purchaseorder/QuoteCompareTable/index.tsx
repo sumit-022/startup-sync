@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import styles from "./QuoteComparision.module.css";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export type DeliveryTime = {
   value: number;
@@ -34,6 +35,7 @@ export default function QuoteCompareTable<
     };
   } & {
     vendor: VendorType;
+    currencyCode: string;
   })[];
   aggregate: {
     [company in (typeof companies)[number]["name"]]: {
@@ -102,11 +104,16 @@ export default function QuoteCompareTable<
           </th>
         ))}
         <th rowSpan={2}>Order Quantity</th>
-        {companies.map((company, idx) => (
-          <th key={idx} colSpan={companyCols.length + 2}>
-            1 USD = 1.0 USD
-          </th>
-        ))}
+        {companies.map((company, idx) => {
+          return (
+            <th key={idx} colSpan={companyCols.length + 2}>
+              1 USD ={" "}
+              {() => {
+                return currency[company.currencyCode];
+              }}
+            </th>
+          );
+        })}
       </tr>
 
       {/* 3rd row */}

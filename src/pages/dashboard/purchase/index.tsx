@@ -5,7 +5,6 @@ import usePurchaseTable from "@/hooks/purchase-table";
 import { Box, ToggleButton, ToggleButtonGroup, Modal } from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
-import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
@@ -107,7 +106,7 @@ export default function Home() {
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [jobCode, setJobCode] = React.useState<string | null>(null);
 
-  const myRate = useCurrency("SGD");
+  const myRate = useCurrency("USD");
   console.log({ myRate });
 
   return (
