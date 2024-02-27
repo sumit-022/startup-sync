@@ -107,7 +107,7 @@ export default function Home() {
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [jobCode, setJobCode] = React.useState<string | null>(null);
 
-  const myRate = useCurrency("USD");
+  const myRate = useCurrency("SGD");
   console.log({ myRate });
 
   return (

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const CurrencyContext = createContext({
   rates: {} as { [x: string]: number },
-  base: "SGD",
+  base: "USD",
   lastUpdated: new Date(),
   loading: true,
   refreshRates: () => {},
@@ -44,7 +44,7 @@ export const CurrencyProvider = ({
     <CurrencyContext.Provider
       value={{
         rates,
-        base: "SGD",
+        base: "USD",
         lastUpdated: lastUpdated.current,
         loading,
         refreshRates,

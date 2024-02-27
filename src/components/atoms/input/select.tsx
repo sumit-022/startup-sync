@@ -18,13 +18,15 @@ const FormInputSelect = ({
   className,
   disabled,
   rules,
+  size = "medium",
 }: {
   id: string;
   name: string;
   control: any;
   options: { id: any; name: string }[];
-  label: string;
+  label?: string;
   className?: string;
+  size?: "small" | "medium";
   fullWidth?: boolean;
   multiple?: boolean;
   disabled?: boolean;
@@ -65,6 +67,7 @@ const FormInputSelect = ({
                 disabled={disabled}
                 fullWidth={fullWidth}
                 value={value}
+                size={size}
                 onChange={onChange}
                 id={id}
                 className={className}

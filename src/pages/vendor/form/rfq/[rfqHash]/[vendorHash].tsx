@@ -4,15 +4,7 @@ import { decrypt } from "@/utils/crypt";
 import { GetServerSideProps } from "next";
 import Header from "@/components/layout/header/rfq";
 import parseAttributes from "@/utils/parse-data";
-import {
-  Button,
-  FormHelperText,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Button, InputLabel, TextField } from "@mui/material";
 import { Form, useForm } from "react-hook-form";
 import Head from "next/head";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -20,6 +12,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import createAckPDF from "@/utils/create-rfq-ack";
 import downloadBlob from "@/utils/download-utils";
+import FormInputSelect from "@/components/atoms/input/select";
+import { useCurrency } from "@/context/CurrencyContext";
 
 type PageProps = {
   rfqs: any[];
@@ -56,6 +50,8 @@ type RFQReplyFormType = {
     connectTime: any;
     connectPort: any;
     remark: any;
+    quality: string;
+    currency: string;
   };
 };
 
@@ -109,8 +105,10 @@ export default function RfqHash(props: PageProps) {
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");
-  const [selectedCurrency, setSelectedCurrency] = React.useState<string>("");
-  const [error, setError] = React.useState<string>("");
+
+  const watchCurrency = watch("common.currency", "USD");
+  const conversionRate = useCurrency(watchCurrency);
+  console.log({ conversionRate });
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -131,39 +129,22 @@ export default function RfqHash(props: PageProps) {
   }, [total, discount, delivery]);
 
   const onSubmit = async (data: RFQReplyFormType) => {
-    if (selectedCurrency === "") {
-      setError("Please select a currency");
-      return;
-    }
     setLoading(true);
     try {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
           data: {
-            unitPrice:
-              selectedCurrency === "USD"
-                ? data.rfqs[i].unitPrice
-                : selectedCurrency === "SGD"
-                ? data.rfqs[i].unitPrice * 0.74
-                : data.rfqs[i].unitPrice * 0.012,
+            unitPrice: data.rfqs[i].unitPrice * (conversionRate || 1),
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
             discount: data.common.discount,
-            delivery:
-              selectedCurrency === "USD"
-                ? data.common.delivery
-                : selectedCurrency === "SGD"
-                ? data.common.delivery * 0.74
-                : data.common.delivery * 0.012,
+            delivery: data.common.delivery * (conversionRate || 1),
             connectPort: data.common.connectPort,
             connectTime: data.common.connectTime,
             total: 0,
-            amount:
-              selectedCurrency === "USD"
-                ? data.common.amount
-                : selectedCurrency === "SGD"
-                ? data.common.amount * 0.74
-                : data.common.amount * 0.012,
+            amount: data.common.amount * (conversionRate || 1),
+            currency: data.common.currency,
+            quality: data.common.quality,
             filled: true,
           },
         });
@@ -174,21 +155,21 @@ export default function RfqHash(props: PageProps) {
         spareDetails: data.rfqs.map((rfq) => ({
           title: rfq.spare.title,
           description: rfq.spare.description,
-          quantity: `${selectedCurrency} ${rfq.spare.quantity}`,
-          unitPrice: `${selectedCurrency} ${rfq.unitPrice}`,
+          quantity: `${rfq.spare.quantity}`,
+          unitPrice: `${watchCurrency} ${rfq.unitPrice}`,
         })),
         jobCode: props.rfqs[0].RFQNumber,
         portOfDelivery: props.job.targetPort,
         description: props.job.description || "No Description Available",
         vendor: props.rfqs[0].vendor,
         connectPort: data.common.connectPort,
-        deliveryCharge: `${selectedCurrency} ${data.common.delivery}`,
+        deliveryCharge: `${watchCurrency} ${data.common.delivery}`,
         discount: `${data.common.discount}`,
         deliveryTime: `${data.common.connectTime}`,
         remarks: data.common.remark,
         yourReference: referenceNumber,
-        amountPayable: `${selectedCurrency} ${data.common.amount}`,
-        subtotal: `${selectedCurrency} ${total}`,
+        amountPayable: `${watchCurrency} ${data.common.amount}`,
+        subtotal: `${watchCurrency} ${total}`,
       });
       const formData = new FormData();
       formData.append("vendorId", props.rfqs[0].vendor.id);
@@ -327,22 +308,53 @@ export default function RfqHash(props: PageProps) {
             Your Primary Currency:
           </InputLabel>
           <div className="w-full flex flex-col">
-            <Select
-              variant="outlined"
+            <FormInputSelect
               size="small"
-              className="flex-1"
-              error={error.length > 0}
-              value={selectedCurrency}
-              onChange={(e) => {
-                setSelectedCurrency(e.target.value as string);
-                setError("");
+              options={[
+                {
+                  id: "USD",
+                  name: "USD($)",
+                },
+                {
+                  id: "SGD",
+                  name: "SGD($)",
+                },
+                {
+                  id: "INR",
+                  name: "INR(₹)",
+                },
+                {
+                  id: "AUD",
+                  name: "AUD($)",
+                },
+                {
+                  id: "EURO",
+                  name: "EURO(€)",
+                },
+                {
+                  id: "GBP",
+                  name: "GBP(£)",
+                },
+                {
+                  id: "JPY",
+                  name: "JPY(¥)",
+                },
+                {
+                  id: "CNY",
+                  name: "CNY(¥)",
+                },
+                {
+                  id: "MYR",
+                  name: "MYR(RM)",
+                },
+              ]}
+              control={control}
+              name="common.currency"
+              id="currency"
+              rules={{
+                required: "This field is required",
               }}
-            >
-              <MenuItem value="USD">USD($)</MenuItem>
-              <MenuItem value="SGD">SGD($)</MenuItem>
-              <MenuItem value="INR">INR(₹)</MenuItem>
-            </Select>
-            <FormHelperText error={error.length > 0}>{error}</FormHelperText>
+            />
           </div>
           <InputLabel className="text-gray-500">Discount:</InputLabel>
           <TextField
@@ -417,6 +429,52 @@ export default function RfqHash(props: PageProps) {
               },
             })}
           />
+          <InputLabel className="text-gray-500">Quality of Spares:</InputLabel>
+          <div className="w-full flex flex-col">
+            <FormInputSelect
+              size="small"
+              options={[
+                {
+                  id: "OEM-JAPAN",
+                  name: "OEM JAPAN",
+                },
+                {
+                  id: "OEM-KOREA",
+                  name: "OEM KOREA",
+                },
+                {
+                  id: "OEM-CHINA",
+                  name: "OEM CHINA",
+                },
+                {
+                  id: "OTHEROEM",
+                  name: "OTHER OEM",
+                },
+                {
+                  id: "GENUINE",
+                  name: "GENUINE",
+                },
+                {
+                  id: "MAKERS",
+                  name: "MAKERS",
+                },
+                {
+                  id: "REPLACEMENT",
+                  name: "REPLACEMENT",
+                },
+                {
+                  id: "COMPATIBLE",
+                  name: "COMPATIBLE",
+                },
+              ]}
+              control={control}
+              name="common.quality"
+              id="quality"
+              rules={{
+                required: "This field is required",
+              }}
+            />
+          </div>
           <InputLabel className="text-gray-500">Connect Port:</InputLabel>
           <TextField
             variant="outlined"
