@@ -19,6 +19,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import createAckPDF from "@/utils/create-rfq-ack";
+import downloadBlob from "@/utils/download-utils";
 
 type PageProps = {
   rfqs: any[];
@@ -60,13 +61,26 @@ type RFQReplyFormType = {
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-const downloadAttachments = (spare: any) => {
-  const link = document.createElement("a");
-  link.href = `${baseUrl}/spare/${spare.id}/attachments`;
-  link.setAttribute("download", "attachments.zip");
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+const downloadAttachments = async (spare: any) => {
+  toast.loading("Preparing attachments");
+  try {
+    const data = await instance.get(`/spare/${spare.id}/attachments`, {
+      responseType: "blob",
+      timeout: 30000,
+    });
+    toast.dismiss();
+    const attachments = data.data;
+    downloadBlob(attachments, `${spare.title}-attachments.zip`);
+  } catch (err) {
+    toast.dismiss();
+    toast.error(
+      "Failed to download attachments\n" +
+        (err instanceof Error ? err.message : ""),
+      {
+        autoClose: 10000,
+      }
+    );
+  }
 };
 
 export default function RfqHash(props: PageProps) {
@@ -248,7 +262,10 @@ export default function RfqHash(props: PageProps) {
                 <td className="py-4 w-[20%]">{rfq.spare.title}</td>
                 <td className="py-4 w-[35%]">{rfq.spare.description}</td>
                 <td className="py-4 w-[15%]">
-                  <Button onClick={() => downloadAttachments(rfq.spare)}>
+                  <Button
+                    onClick={() => downloadAttachments(rfq.spare)}
+                    disabled={!Array.isArray(rfq.spare.attachments)}
+                  >
                     Download Attatchments
                   </Button>
                 </td>
