@@ -11,6 +11,7 @@ import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
 import instance from "@/config/axios.config";
+import { useCurrency } from "@/context/CurrencyContext";
 
 type PurchaseTableFilter = {
   status: string;
@@ -105,6 +106,9 @@ export default function Home() {
   const [job, setJob] = React.useState<JobType | null>(null);
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [jobCode, setJobCode] = React.useState<string | null>(null);
+
+  const myRate = useCurrency("USD");
+  console.log({ myRate });
 
   return (
     <DashboardLayout header sidebar>

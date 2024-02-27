@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -13,7 +14,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <ToastContainer />
         <AuthProvider>
           <NotificationProvider>
-            <Component {...pageProps} />
+            <CurrencyProvider>
+              <Component {...pageProps} />
+            </CurrencyProvider>
           </NotificationProvider>
         </AuthProvider>
       </StyledEngineProvider>
