@@ -69,6 +69,7 @@ const createRfqPdf = (data: RFQPdfType) => {
   doc.setFont("helvetica", "normal");
   doc.text(`RFQ-${data.jobCode}`, 50, 75);
   doc.text(data.shipName, 50, 85);
+  doc.text(data.vesselEta, 50, 95);
   doc.text(data.description, 50, 105);
   doc.text(data.portOfDelivery, 50, 115);
 

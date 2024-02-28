@@ -100,7 +100,7 @@ const RFQForm = ({
         jobCode: job.jobCode,
         description: job.description || "N/A",
         portOfDelivery: job.targetPort,
-        vesselEta: job.vesselEta,
+        vesselEta: job.vesselEta || "N/A",
       });
     }
 
