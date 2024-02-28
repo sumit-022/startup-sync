@@ -126,7 +126,7 @@ export default function Home() {
       });
   };
 
-  const myRate = useCurrency("USD");
+  const myRate = useCurrency("AED");
   console.log({ myRate });
 
   return (

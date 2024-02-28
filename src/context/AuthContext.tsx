@@ -31,6 +31,8 @@ function useAuth() {
               email: res.data.email,
               id: res.data.id,
               role: res.data.role.name,
+              designation: res.data.designation,
+              phone: res.data.phone,
             });
           }
         })
