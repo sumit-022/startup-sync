@@ -80,14 +80,14 @@ export default function useSalesTable({
           ? {
               $or: [
                 { jobCode: { $contains: filters.search } },
-                { description: { $contains: filters.search } },
-                { shipName: { $contains: filters.search } },
-                { targetPort: { $contains: filters.search } },
-                { type: { $contains: filters.search } },
+                { description: { $containis: filters.search } },
+                { shipName: { $containsi: filters.search } },
+                { targetPort: { $containsi: filters.search } },
+                { type: { $containsi: filters.search } },
                 {
                   company: {
                     name: {
-                      $contains: filters.search,
+                      $containsi: filters.search,
                     },
                   },
                 },
