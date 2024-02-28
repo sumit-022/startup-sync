@@ -10,12 +10,18 @@ import {
 import { IoMdCloudUpload } from "react-icons/io";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useForm, useFieldArray } from "react-hook-form";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import FormInputText from "@/components/atoms/input/text";
 import FormHeading from "@/components/atoms/heading/form-heading";
-import { MdDelete, MdAdd } from "react-icons/md";
+import { MdDelete, MdAdd, MdEdit } from "react-icons/md";
 import logo from "@/assets/image/logo.jpg";
 import Image from "next/image";
 import createRfqPdf from "@/utils/create-rfq-pdf";
@@ -43,6 +49,7 @@ const RFQForm = ({
     quantity: "",
     attachments: null,
   });
+  const editing = useRef<number | null>(null);
 
   const { user } = useContext(AuthContext);
 
@@ -76,7 +83,7 @@ const RFQForm = ({
       });
   }, []);
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     name: "spareDetails",
     control,
   });
@@ -221,13 +228,14 @@ const RFQForm = ({
                 setOpen(true);
               }}
               onSpareEdit={() => {
-                setOpen(true);
+                editing.current = index;
                 setSpareDetails({
                   title: field.title,
                   description: field.description,
                   quantity: field.quantity,
-                  attachments: null,
+                  attachments: field.attachments,
                 });
+                setOpen(true);
               }}
             />
           ))
@@ -243,7 +251,18 @@ const RFQForm = ({
           Send RFQ to Vendors
         </LoadingButton>
       </FormControl>
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setSpareDetails({
+            title: "",
+            description: "",
+            quantity: "",
+            attachments: null,
+          });
+        }}
+      >
         <Box
           sx={{
             position: "absolute",
@@ -266,6 +285,7 @@ const RFQForm = ({
           <TextField
             name="spareDetails.title"
             label="Title"
+            value={spareDetails.title}
             onChange={(e) => {
               setSpareDetails((prev) => ({
                 ...prev,
@@ -275,6 +295,7 @@ const RFQForm = ({
           />
           <TextField
             name="spareDetails.description"
+            value={spareDetails.description}
             label="Description"
             onChange={(e) => {
               setSpareDetails((prev) => ({
@@ -286,6 +307,7 @@ const RFQForm = ({
           <TextField
             type="number"
             name="spareDetails.quantity"
+            value={spareDetails.quantity}
             label="Quantity"
             onChange={(e) => {
               setSpareDetails((prev) => ({
@@ -306,21 +328,41 @@ const RFQForm = ({
               }));
             }}
           />
-          <Button
-            onClick={() => {
-              setOpen(false);
-              append(spareDetails);
-              setSpareDetails({
-                title: "",
-                description: "",
-                quantity: "",
-                attachments: null,
-              });
-            }}
-          >
-            <MdAdd />
-            Add
-          </Button>
+          {editing.current === null ? (
+            <Button
+              onClick={() => {
+                setOpen(false);
+                append(spareDetails);
+                setSpareDetails({
+                  title: "",
+                  description: "",
+                  quantity: "",
+                  attachments: null,
+                });
+              }}
+            >
+              <MdAdd />
+              Add
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                setOpen(false);
+                if (editing.current === null) return;
+                update(editing.current, spareDetails);
+                setSpareDetails({
+                  title: "",
+                  description: "",
+                  quantity: "",
+                  attachments: null,
+                });
+                editing.current = null;
+              }}
+            >
+              <MdEdit />
+              Update
+            </Button>
+          )}
         </Box>
       </Modal>
     </>
