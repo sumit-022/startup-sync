@@ -73,6 +73,11 @@ const VendorPage = () => {
                   },
                 },
               },
+              {
+                country: {
+                  $containsi: search,
+                },
+              },
             ],
           },
           filters.categories.length > 0 && {
