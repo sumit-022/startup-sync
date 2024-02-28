@@ -18,6 +18,7 @@ import { useSearchParams } from "next/navigation";
 import Search from "@/components/common/joborder/joborder-search";
 import qs from "qs";
 import { Box } from "@mui/material";
+import { toast } from "react-toastify";
 
 const VendorPage = () => {
   const router = useRouter();
@@ -104,11 +105,16 @@ const VendorPage = () => {
 
   const handleRegisterVendor = () => {
     setIsLoading(true);
-    instance.post("/vendors/form/generate-vendor-id").then((res) => {
+    instance.post("/vendors/form/generate-vendor-hash").then((res) => {
       setIsLoading(false);
+      const hash = res.data.hash;
+      if (!hash) {
+        toast.error("Something went wrong");
+        return;
+      }
       const base =
         process.env.NEXT_PUBLIC_BASE_FRONTEND_URL || window.location.origin;
-      window.open(`${base}/vendor/form/${res.data}`, "_blank");
+      window.open(`${base}/vendor/form/${hash}`, "_blank");
     });
   };
 
