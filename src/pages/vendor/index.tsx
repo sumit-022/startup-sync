@@ -17,7 +17,7 @@ import EditVendor from "@/components/atoms/button/edit-vendor";
 import { useSearchParams } from "next/navigation";
 import Search from "@/components/common/joborder/joborder-search";
 import qs from "qs";
-import { Box } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { toast } from "react-toastify";
 
 const VendorPage = () => {
@@ -36,6 +36,9 @@ const VendorPage = () => {
   const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
+  const [vendorStatus, setVendorStatus] = useState<"APPROVED" | "NONAPPROVED">(
+    "APPROVED"
+  );
 
   const [filters, setFilters] = useState<VendorFilterType>({
     categories: [],
@@ -53,7 +56,43 @@ const VendorPage = () => {
       });
     }, 1000);
     if (page === 1) getVendors();
-  }, [search, filters]);
+  }, [search, filters, vendorStatus]);
+
+  const handleApprove = (id: string) => {
+    toast.info("Approving Vendor");
+    instance
+      .put(`/vendors/${id}`, {
+        data: {
+          registered: true,
+        },
+      })
+      .then((res) => {
+        toast.dismiss();
+        toast.success("Vendor Approved", {
+          autoClose: 3000,
+        });
+        getVendors();
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+      });
+  };
+
+  const hendleReject = (id: string) => {
+    toast.info("Deleting Vendor");
+    instance
+      .delete(`/vendors/${id}`)
+      .then((res) => {
+        toast.dismiss();
+        toast.error("Vendor Rejected", {
+          autoClose: 3000,
+        });
+        getVendors();
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+      });
+  };
 
   const getVendors = async (page: number = 1) => {
     const apiqueries = qs.stringify({
@@ -87,6 +126,9 @@ const VendorPage = () => {
               },
             },
           },
+          vendorStatus === "APPROVED"
+            ? { registered: true }
+            : { registered: false },
         ].filter(Boolean),
       },
     });
@@ -203,10 +245,31 @@ const VendorPage = () => {
       filterable: false,
       sortable: false,
       renderCell: (params) => {
-        return (
+        return vendorStatus === "APPROVED" ? (
           <div className="flex gap-4">
             <EditVendor id={params.row.id} callback={getVendors} />
             <DeleteVendor id={params.row.id} callback={getVendors} />
+          </div>
+        ) : (
+          <div className="flex gap-4">
+            <Button
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApprove(params.row.id);
+              }}
+            >
+              Approve
+            </Button>
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                hendleReject(params.row.id);
+              }}
+            >
+              Reject
+            </Button>
           </div>
         );
       },
@@ -261,6 +324,20 @@ const VendorPage = () => {
             setSearch(() => event.target.value);
           }}
         />
+        <ToggleButtonGroup
+          sx={{ mb: 2 }}
+          color="primary"
+          exclusive
+          value={vendorStatus}
+          onChange={(event, newVendorStatus) => {
+            if (!newVendorStatus) return;
+            setVendorStatus(newVendorStatus);
+            console.log({ filters });
+          }}
+        >
+          <ToggleButton value="APPROVED">Approved</ToggleButton>
+          <ToggleButton value="NONAPPROVED">Non Approved</ToggleButton>
+        </ToggleButtonGroup>
         <VendorFilters
           setFilters={(filters) => {
             setFilters(filters);
