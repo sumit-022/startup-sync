@@ -68,7 +68,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
       });
       const { link } = response.data;
       setLoading(false);
-      router.push(link);
+      window.open(link, "_blank");
     } catch (error) {
       console.error(error);
       setLoading(false);
