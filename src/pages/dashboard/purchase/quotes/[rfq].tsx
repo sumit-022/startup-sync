@@ -60,7 +60,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           vendor,
           [spare.title]: {
             ...spare,
-            total: cur.unitPrice * spare.quantity,
+            total: Math.round(cur.unitPrice * spare.quantity * 100) / 100,
             unit: cur.unitPrice,
             selected: false,
           },
@@ -69,7 +69,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: cur.unitPrice * spare.quantity,
+          total: Math.round(cur.unitPrice * spare.quantity * 100) / 100,
           unit: cur.unitPrice,
         };
       }
@@ -208,7 +208,11 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
 
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
-      "Amount Payable": (1 - (cur.discount || 0) * 0.01) * total + cur.delivery,
+
+      "Amount Payable":
+        Math.round(
+          ((1 - (cur.discount || 0) * 0.01) * total + cur.delivery) * 100
+        ) / 100,
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,

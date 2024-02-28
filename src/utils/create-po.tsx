@@ -27,8 +27,12 @@ export default function createPO(data: POType) {
     spare.spareDetails.title,
     spare.spareDetails.description,
     spare.spareDetails.orderQty,
-    `${data.currencyCode} ${spare.spareDetails.unit * conversionRate}`,
-    `${data.currencyCode} ${spare.spareDetails.total * conversionRate}`,
+    `${data.currencyCode} ${
+      Math.round(spare.spareDetails.unit * conversionRate * 100) / 100
+    }`,
+    `${data.currencyCode} ${
+      Math.round(spare.spareDetails.total * conversionRate * 100) / 100
+    }`,
   ]);
 
   const subtotal = data?.spares.reduce(
@@ -124,11 +128,17 @@ export default function createPO(data: POType) {
   // total
   doc.setFontSize(9);
   doc.text("SUBTOTAL:", 150, 250);
-  doc.text(`${data.currencyCode} ${subtotal}`, 178, 250);
+  doc.text(
+    `${data.currencyCode} ${Math.round(subtotal * 100) / 100}`,
+    178,
+    250
+  );
   doc.text("Delivery Charge:", 150, 255);
   doc.text(
     `${data.currencyCode} ${
-      data?.spares[0]?.spareDetails["Delivery Charge"] * conversionRate
+      Math.round(
+        data?.spares[0]?.spareDetails["Delivery Charge"] * conversionRate * 100
+      ) / 100
     }`,
     178,
     255
@@ -136,7 +146,7 @@ export default function createPO(data: POType) {
   doc.text("Discount:", 150, 260);
   doc.text(`${data?.spares[0]?.spareDetails.Discount}`, 178, 260);
   doc.text("TOTAL:", 150, 265);
-  doc.text(`${data.currencyCode} ${total}`, 178, 265);
+  doc.text(`${data.currencyCode} ${Math.round(total * 100) / 100}`, 178, 265);
   doc.addPage();
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
