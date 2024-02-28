@@ -162,6 +162,10 @@ const RFQForm = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
+    if (e.target.files.length > 2) {
+      toast.error("Cannot upload more than 2 files");
+      return;
+    }
     setSpareDetails((prev) => ({
       ...prev,
       attachments: e.target.files,
