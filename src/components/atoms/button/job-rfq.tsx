@@ -18,10 +18,12 @@ const RFQDialog = ({
   job,
   open,
   setOpen,
+  refresh,
 }: {
   job: JobType;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  refresh: () => void;
 }) => {
   return (
     <>
@@ -51,7 +53,7 @@ const RFQDialog = ({
               &times;
             </button>
           </div>
-          <RFQForm job={job} setModalOpen={setOpen} />
+          <RFQForm job={job} setModalOpen={setOpen} refresh={refresh} />
         </Box>
       </Dialog>
     </>

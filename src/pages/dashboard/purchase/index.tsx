@@ -166,7 +166,14 @@ export default function Home() {
           paginationMode="server"
         />
       </Box>
-      {job && <RFQDialog open={RFQOpen} setOpen={setRFQOpen} job={job} />}
+      {job && (
+        <RFQDialog
+          open={RFQOpen}
+          setOpen={setRFQOpen}
+          job={job}
+          refresh={refresh}
+        />
+      )}
       {jobCode && (
         <UpdateModal
           open={updateOpen}

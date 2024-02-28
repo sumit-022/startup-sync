@@ -1,5 +1,6 @@
 import { IconButton } from "@mui/material";
 import React from "react";
+import { BiPencil } from "react-icons/bi";
 import { FaBoxOpen } from "react-icons/fa";
 import { MdDelete, MdAdd } from "react-icons/md";
 
@@ -9,6 +10,7 @@ interface SpareCardProps {
   quantity?: number | string | null;
   onSpareDelete: () => void;
   onSpareAdd: () => void;
+  onSpareEdit: () => void;
 }
 
 const SpareCard: React.FC<SpareCardProps> = (props) => {
@@ -31,6 +33,13 @@ const SpareCard: React.FC<SpareCardProps> = (props) => {
           onClick={props.onSpareDelete}
         >
           <MdDelete />
+        </IconButton>
+        <IconButton
+          className="text-white"
+          size="small"
+          onClick={props.onSpareEdit}
+        >
+          <BiPencil />
         </IconButton>
         <IconButton
           className="text-white"

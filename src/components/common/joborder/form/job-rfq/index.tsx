@@ -28,9 +28,11 @@ import AuthContext from "@/context/AuthContext";
 const RFQForm = ({
   job,
   setModalOpen,
+  refresh,
 }: {
   job: JobType;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  refresh: () => void;
 }) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -140,6 +142,7 @@ const RFQForm = ({
       .then((res) => {
         toast.success("RFQ Sent");
         setModalOpen(false);
+        refresh();
       })
       .catch((err) => {
         toast.error("Something went wrong");
@@ -214,7 +217,18 @@ const RFQForm = ({
               quantity={field.quantity}
               title={field.title}
               onSpareDelete={() => remove(index)}
-              onSpareAdd={() => setOpen(true)}
+              onSpareAdd={() => {
+                setOpen(true);
+              }}
+              onSpareEdit={() => {
+                setOpen(true);
+                setSpareDetails({
+                  title: field.title,
+                  description: field.description,
+                  quantity: field.quantity,
+                  attachments: null,
+                });
+              }}
             />
           ))
         )}
