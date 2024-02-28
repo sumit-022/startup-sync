@@ -30,10 +30,8 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
         <FormInputText
           label="Mobile Number"
           name="salesmobile"
-          required
           control={control}
           rules={{
-            required: "This field is required",
             pattern: {
               value: /^[0-9]*$/i,
               message: "Only numbers are allowed",
@@ -106,10 +104,8 @@ const ContactDetails: React.FC<ContactDetailsProperties> = ({ control }) => {
         <FormInputText
           label="Mobile Number"
           name="accountsmobile"
-          required
           control={control}
           rules={{
-            required: "This field is required",
             pattern: {
               value: /^[0-9]*$/i,
               message: "Only numbers are allowed",

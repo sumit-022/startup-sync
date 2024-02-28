@@ -14,6 +14,7 @@ type RFQPdfType = {
   jobCode: string;
   description: string;
   portOfDelivery: string;
+  vesselEta: string;
 };
 
 const createRfqPdf = (data: RFQPdfType) => {
@@ -62,13 +63,14 @@ const createRfqPdf = (data: RFQPdfType) => {
   doc.setFontSize(12);
   doc.text("RFQ Number:", 15, 75);
   doc.text("Vessel Name:", 15, 85);
-  doc.text("Job Description:", 15, 95);
-  doc.text("Port Of Delivery:", 15, 105);
+  doc.text("Vessel ETA:", 15, 95);
+  doc.text("Job Description:", 15, 105);
+  doc.text("Port Of Delivery:", 15, 115);
   doc.setFont("helvetica", "normal");
   doc.text(`RFQ-${data.jobCode}`, 50, 75);
   doc.text(data.shipName, 50, 85);
-  doc.text(data.description, 50, 95);
-  doc.text(data.portOfDelivery, 50, 105);
+  doc.text(data.description, 50, 105);
+  doc.text(data.portOfDelivery, 50, 115);
 
   //supplier details to the right side
   doc.setFont("helvetica", "bold");
@@ -90,9 +92,9 @@ const createRfqPdf = (data: RFQPdfType) => {
       ],
     ],
     body: tableData,
-    startY: 120,
+    startY: 130,
     theme: "striped",
-    margin: { top: 120 },
+    margin: { top: 130 },
     tableWidth: "auto",
   });
   //go below the table
