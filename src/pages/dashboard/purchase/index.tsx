@@ -2,7 +2,18 @@ import React from "react";
 import DashboardLayout from "@/components/layout";
 import { DataGrid } from "@mui/x-data-grid";
 import usePurchaseTable from "@/hooks/purchase-table";
-import { Box, ToggleButton, ToggleButtonGroup, Modal } from "@mui/material";
+import {
+  Box,
+  ToggleButton,
+  ToggleButtonGroup,
+  Modal,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
 import { useRouter } from "next/router";
@@ -72,13 +83,8 @@ export default function Home() {
             icon: <IoMdEye />,
             name: "Mark Purchase Complete",
             onClick: (params: any) => {
-              instance
-                .put(`/job/${params.row.id}`, {
-                  data: { status: "COMPLETED" },
-                })
-                .then(() => {
-                  setFilters({ ...filters, status: "COMPLETED" });
-                });
+              const job = rows.data.find((el) => el.id == params.row.id);
+              job && setPurchaseCompleted({ open: true, id: `${job.id}` });
             },
             className: "bg-green-500 hover:bg-green-600",
           },
@@ -86,7 +92,7 @@ export default function Home() {
   const renderActions = (params: any) => (
     <LongMenu options={actions} params={params} />
   );
-  const { columns, rows, loading, page } = usePurchaseTable({
+  const { columns, rows, loading, page, refresh } = usePurchaseTable({
     renderActions,
     status: filters.status,
   });
@@ -105,6 +111,20 @@ export default function Home() {
   const [job, setJob] = React.useState<JobType | null>(null);
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [jobCode, setJobCode] = React.useState<string | null>(null);
+  const [purchaseComplted, setPurchaseCompleted] = React.useState({
+    open: false,
+    id: "",
+  });
+
+  const handlePurchaseComplete = (id: string) => {
+    instance
+      .put(`/jobs/${id}`, {
+        data: { purchaseStatus: "COMPLETED" },
+      })
+      .then(() => {
+        refresh();
+      });
+  };
 
   const myRate = useCurrency("USD");
   console.log({ myRate });
@@ -153,6 +173,41 @@ export default function Home() {
           onClose={() => setUpdateOpen(false)}
           jobCode={jobCode}
         />
+      )}
+      {purchaseComplted && (
+        <Dialog
+          open={purchaseComplted.open}
+          onClose={() => setPurchaseCompleted({ open: false, id: "" })}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Mark Purchase as Completed?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to mark this purchase as completed?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setPurchaseCompleted({ open: false, id: "" });
+              }}
+            >
+              Disagree
+            </Button>
+            <Button
+              onClick={() => {
+                handlePurchaseComplete(purchaseComplted.id);
+                setPurchaseCompleted({ open: false, id: "" });
+              }}
+              autoFocus
+            >
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </DashboardLayout>
   );

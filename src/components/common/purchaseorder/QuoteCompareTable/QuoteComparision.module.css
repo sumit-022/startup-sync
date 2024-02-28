@@ -1,6 +1,8 @@
 .quote-comparison-table {
   border-collapse: collapse;
   min-width: 100%;
+  overflow-x: auto;
+  table-layout: auto;
 }
 
 .quote-comparison-table th,

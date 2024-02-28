@@ -1,7 +1,8 @@
 // @ts-nocheck
 
 import styles from "./QuoteComparision.module.css";
-import { useCurrency } from "@/context/CurrencyContext";
+import { useContext } from "react";
+import { CurrencyContext } from "@/context/CurrencyContext";
 
 export type DeliveryTime = {
   value: number;
@@ -49,7 +50,7 @@ export default function QuoteCompareTable<
     companies.map((company) => [
       company.vendor.name,
       (() => {
-        const { vendor, ...s } = company;
+        const { vendor, currencyCode, ...s } = company;
         return Object.keys(s).reduce((acc, cur) => {
           const spare = company[cur as (typeof spares)[number]["name"]];
           return acc + spare.total;
@@ -81,6 +82,8 @@ export default function QuoteCompareTable<
     return min;
   });
 
+  const { rates } = useContext(CurrencyContext);
+
   return (
     <table className={styles["quote-comparison-table"]}>
       {/* 1st row */}
@@ -104,16 +107,11 @@ export default function QuoteCompareTable<
           </th>
         ))}
         <th rowSpan={2}>Order Quantity</th>
-        {companies.map((company, idx) => {
-          return (
-            <th key={idx} colSpan={companyCols.length + 2}>
-              1 USD ={" "}
-              {() => {
-                return currency[company.currencyCode];
-              }}
-            </th>
-          );
-        })}
+        {companies.map((company, idx) => (
+          <th key={idx} colSpan={companyCols.length + 2}>
+            1 USD = {rates[company.currencyCode]} {company.currencyCode}
+          </th>
+        ))}
       </tr>
 
       {/* 3rd row */}
@@ -132,14 +130,14 @@ export default function QuoteCompareTable<
                   name=""
                   id=""
                   checked={(() => {
-                    const { vendor, ...s } = company;
+                    const { vendor, currencyCode, ...s } = company;
                     return (
                       Object.keys(s) as (typeof spares)[number]["name"][]
                     ).reduce((acc, cur) => acc && company[cur].selected, true);
                   })()}
                   onChange={(ev) => {
                     const selected = ev.target.checked;
-                    const { vendor, ...s } = company;
+                    const { vendor, currencyCode, ...s } = company;
                     (
                       Object.keys(s) as (typeof spares)[number]["name"][]
                     ).forEach((key) => {

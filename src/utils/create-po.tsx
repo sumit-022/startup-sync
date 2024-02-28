@@ -3,14 +3,17 @@ import autoTable from "jspdf-autotable";
 import logo from "@/assets/image/logo.jpg";
 
 type POType = {
+  currencyCode: string;
   poNo: string;
   vesselName: string;
   spares: any[];
   vendor: any;
   deliveryAddress: string;
   remarks?: string;
+  conversionRate: number;
 };
 export default function createPO(data: POType) {
+  const { conversionRate } = data;
   const doc = new jsPDF();
   const today = new Date();
   const tableConfig: TableConfig = {
@@ -24,12 +27,12 @@ export default function createPO(data: POType) {
     spare.spareDetails.title,
     spare.spareDetails.description,
     spare.spareDetails.orderQty,
-    spare.spareDetails.unit,
-    spare.spareDetails.total,
+    `${data.currencyCode} ${spare.spareDetails.unit * conversionRate}`,
+    `${data.currencyCode} ${spare.spareDetails.total * conversionRate}`,
   ]);
 
   const subtotal = data?.spares.reduce(
-    (acc, cur) => acc + cur.spareDetails.total,
+    (acc, cur) => acc + cur.spareDetails.total * conversionRate,
     0
   );
 
@@ -37,10 +40,9 @@ export default function createPO(data: POType) {
   const discountDecimal = Number(discount.replace("%", "")) / 100;
 
   const total =
-    subtotal +
-    data?.spares[0]?.spareDetails["Delivery Charge"] -
-    discountDecimal *
-      (subtotal + data?.spares[0]?.spareDetails["Delivery Charge"]);
+    subtotal -
+    subtotal * discountDecimal +
+    data?.spares[0]?.spareDetails["Delivery Charge"] * conversionRate;
 
   const termsandConditions = [
     "Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.",
@@ -122,13 +124,19 @@ export default function createPO(data: POType) {
   // total
   doc.setFontSize(9);
   doc.text("SUBTOTAL:", 150, 250);
-  doc.text(`${subtotal}`, 186, 250);
+  doc.text(`${data.currencyCode} ${subtotal}`, 178, 250);
   doc.text("Delivery Charge:", 150, 255);
-  doc.text(`${data?.spares[0]?.spareDetails["Delivery Charge"]}`, 186, 255);
+  doc.text(
+    `${data.currencyCode} ${
+      data?.spares[0]?.spareDetails["Delivery Charge"] * conversionRate
+    }`,
+    178,
+    255
+  );
   doc.text("Discount:", 150, 260);
-  doc.text(`${data?.spares[0]?.spareDetails.Discount}`, 186, 260);
+  doc.text(`${data?.spares[0]?.spareDetails.Discount}`, 178, 260);
   doc.text("TOTAL:", 150, 265);
-  doc.text(`${total}`, 186, 265);
+  doc.text(`${data.currencyCode} ${total}`, 178, 265);
   doc.addPage();
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");

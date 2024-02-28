@@ -40,6 +40,9 @@ export default function usePurchaseTable({
   );
 
   useEffect(() => {
+    refresh();
+  }, [status, page]);
+  const refresh = async () => {
     const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
     instance
@@ -61,7 +64,7 @@ export default function usePurchaseTable({
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, [status, page]);
+  };
   const columns: GridColDef[] = [
     { field: "jobCode", headerName: "Job Code", width: 130, flex: 0.3 },
     {
@@ -87,5 +90,5 @@ export default function usePurchaseTable({
     },
   ];
 
-  return { columns, rows, loading, page };
+  return { columns, rows, loading, page, refresh };
 }
