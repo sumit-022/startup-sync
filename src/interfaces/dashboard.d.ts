@@ -24,7 +24,7 @@ declare interface JobType {
   services: ServiceType[];
   invoiceDate: Date | undefined;
   targetPort: string;
-  vesselEta: string | undefined;
+  vesselETA: string | undefined;
   description: string | undefined;
   notification:
     | {

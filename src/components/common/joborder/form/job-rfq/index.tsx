@@ -100,12 +100,13 @@ const RFQForm = ({
         jobCode: job.jobCode,
         description: job.description || "N/A",
         portOfDelivery: job.targetPort,
+        vesselETA: job.vesselETA || "N/A",
       });
       data.vendors[i].attachment = blob;
     }
 
     const form = new FormData();
-    const mailFooter = `<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/logo.png" alt="Shinpo Engineering Pte Ltd" style="width: 80px;height: 40px;margin-right:10px"/><div><p style="font-weight: 700;color:blue;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">Procurement Department</p><p style="margin:0;padding:0;color:blue">Email: purchase@shinpoengineering.com</p><p style="color:blue;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
+    const mailFooter = `<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
     The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
     </div></div>`;
     form.append("jobId", data.jobId);
@@ -159,6 +160,10 @@ const RFQForm = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
+    if (e.target.files.length > 2) {
+      toast.error("Cannot upload more than 2 files");
+      return;
+    }
     setSpareDetails((prev) => ({
       ...prev,
       attachments: e.target.files,

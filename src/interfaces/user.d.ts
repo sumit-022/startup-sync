@@ -1,6 +1,8 @@
 interface AuthData {
-    id: number;
-    role: "admin" | "SC";
-    email: string;
-    fullname: string;
-  };
+  id: number;
+  role: "admin" | "SC";
+  email: string;
+  fullname: string;
+  phone: string;
+  designation: string;
+}

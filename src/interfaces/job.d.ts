@@ -8,7 +8,7 @@ interface JobFormType {
   assignedTo: { id: number; name: string } | null;
   targetPort: string;
   poNumber: string;
-  vesselEta: Date | string | null;
+  vesselETA: Date | string | null;
   services: { id: number; title: string }[];
   type: string;
   description: string;

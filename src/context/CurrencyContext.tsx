@@ -32,7 +32,11 @@ export const CurrencyProvider = ({
     const data = parseAttributes(res.data.data) as any[];
     lastUpdated.current = new Date();
 
-    setRates(Object.fromEntries(data.map(({ code, rate }) => [code, rate])));
+    setRates(
+      Object.fromEntries(
+        data.map(({ code, rate }) => [code, Math.round(rate * 100) / 100])
+      )
+    );
   };
 
   const refreshRates = () => {

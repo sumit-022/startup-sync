@@ -51,7 +51,7 @@ const JobOrderView: React.FC<JobOrderViewProperties> = ({ data }) => {
       <Field
         icon={<CiBarcode />}
         title={"Vessel ETA"}
-        value={formatDate(data?.vesselEta) || "Not Available"}
+        value={formatDate(data?.vesselETA) || "Not Available"}
       />
       <Field
         icon={<CiBarcode />}

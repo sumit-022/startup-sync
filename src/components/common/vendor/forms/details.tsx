@@ -59,14 +59,6 @@ const VendorDetails: React.FC<VendorDetailsProperties> = ({ control }) => {
           label="Tax and Business Registration Number"
           name="regNumber"
           control={control}
-          required
-          rules={{
-            required: "This field is required",
-            pattern: {
-              value: /^[a-zA-Z0-9]*$/,
-              message: "Invalid registration number",
-            },
-          }}
         />
       </InputGroup>
       <FormHeading heading="Address" />

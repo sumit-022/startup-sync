@@ -154,7 +154,7 @@ export default function RfqHash(props: PageProps) {
           },
         });
       }
-      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards`;
+      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>`;
       const subject = `Acknowledgement of Quotes - ${props.job.jobCode}`;
       const pdf = createAckPDF({
         shipName: props.job.shipName,

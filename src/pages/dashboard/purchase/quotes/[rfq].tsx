@@ -144,12 +144,12 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         id: vendorObject[vendor].vendorDetails.id,
         subject: ` P.O-${job[0].jobCode} - ${job[0].description}`,
         attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
-        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/logo.png" alt="Shinpo Engineering Pte Ltd" style="width: 80px;height: 40px;margin-right:10px"/><div><p style="font-weight: 700;color:blue;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">Procurement Department</p><p style="margin:0;padding:0;color:blue">Email: purchase@shinpoengineering.com</p><p style="color:blue;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
+        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
         The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
         </div></div>`,
       });
     }
-    //change the vendors array into formData and send it to the backend
+
     const form = new FormData();
     form.append("vendors", JSON.stringify(vendors));
     for (const vendor in vendorObject) {
@@ -168,7 +168,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         `${vendorObject[vendor].vendorDetails.id}.pdf`
       );
     }
-    instance
+    await instance
       .post(`/job/send-po`, form)
       .then((res) => {
         toast.success("Purchase Order Sent Successfully");
@@ -177,7 +177,13 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
             purchaseStatus: "POISSUED",
           },
         });
-        // router.push("/dashboard/purchase");
+        for (const vendor in vendorObject) {
+          instance.post(`/purchase-orders`, {
+            vendor: vendorObject[vendor].vendorDetails.id,
+            job: job[0].id,
+          });
+        }
+        router.push("/dashboard/purchase");
         setLoading(false);
       })
       .catch((err) => {
@@ -203,7 +209,11 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
 
     acc[vendor.name] = {
       Discount: `${cur.discount}%`,
-      "Amount Payable": (1 - (cur.discount || 0) * 0.01) * total + cur.delivery,
+
+      "Amount Payable":
+        Math.round(
+          ((1 - (cur.discount || 0) * 0.01) * total + cur.delivery) * 100
+        ) / 100,
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
       "Delivery Charge": cur.delivery,
