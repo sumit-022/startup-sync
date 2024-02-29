@@ -109,7 +109,7 @@ export default function QuoteCompareTable<
         <th rowSpan={2}>Order Quantity</th>
         {companies.map((company, idx) => (
           <th key={idx} colSpan={companyCols.length + 2}>
-            1 USD = {rates[company.currencyCode]} {company.currencyCode}
+            1 USD = {rates[company.currencyCode] || 1} {company.currencyCode}
           </th>
         ))}
       </tr>

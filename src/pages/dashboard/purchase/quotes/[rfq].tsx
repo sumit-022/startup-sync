@@ -162,7 +162,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           deliveryAddress: deliveryAddress.address,
           remarks,
           currencyCode: vendorObject[vendor].currencyCode,
-          conversionRate: rates[companies[0].currencyCode],
+          conversionRate: rates[companies[0].currencyCode] || 1,
         }),
         `${vendorObject[vendor].vendorDetails.id}.pdf`
       );
