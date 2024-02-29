@@ -271,11 +271,6 @@ export default function RfqHash(props: PageProps) {
                       setValueAs: (value) => {
                         return parseFloat(value || "0.0");
                       },
-                      required: "This field is required",
-                      pattern: {
-                        value: /^[0-9]*$/,
-                        message: "Only numbers are allowed",
-                      },
                     })}
                     error={errors.rfqs?.[index]?.unitPrice ? true : false}
                   />
