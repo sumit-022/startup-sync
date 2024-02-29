@@ -9,6 +9,10 @@ export type DeliveryTime = {
   unit: "D" | "W" | "M" | "Y";
 };
 
+function displayNum(val: any) {
+  return typeof val === "number" ? val.toFixed(2) : val === null ? "-" : val;
+}
+
 export default function QuoteCompareTable<
   S extends string[],
   C extends string[],
@@ -28,7 +32,7 @@ export default function QuoteCompareTable<
   aggregateCols: A;
   spares: ({
     [x in S[number]]: string;
-  } & { name: string; orderQty: number; unit: number })[];
+  } & { name: string; orderQty: number; unit: number | null })[];
   companies: ({
     [s in (typeof spares)[number]["name"]]: { [x in C[number]]: string } & {
       selected: boolean;
@@ -46,6 +50,14 @@ export default function QuoteCompareTable<
   onChange?: (c: typeof companies, s: typeof spares) => void;
   mode?: "view" | "edit";
 }) {
+  console.log({
+    spareCols,
+    companyCols,
+    spares,
+    companies,
+    aggregateCols,
+    aggregate,
+  });
   const totals = Object.fromEntries(
     companies.map((company) => [
       company.vendor.name,
@@ -53,21 +65,24 @@ export default function QuoteCompareTable<
         const { vendor, currencyCode, ...s } = company;
         return Object.keys(s).reduce((acc, cur) => {
           const spare = company[cur as (typeof spares)[number]["name"]];
-          return acc + spare.total;
+          return spare.total === null || acc === null
+            ? null
+            : acc + spare.total;
         }, 0);
       })(),
     ])
   ) as { [x in (typeof companies)[number]["name"]]: number };
 
-  const sortedTotals = (Object.entries(totals) as [string, number][]).sort(
-    ([, a], [, b]) => a - b
-  ) as [string, number][];
+  const sortedTotals = (Object.entries(totals) as [string, number][])
+    .sort(([, a], [, b]) => a - b)
+    .filter(([, a]) => a !== null) as [string, number][];
 
   const minCompanyForEachSpare = spares.map((spare) => {
     const spareName = spare.name as (typeof spares)[number]["name"];
     const min = companies.reduce(
       (acc, cur) => {
         const spareData = cur[spareName];
+        if (spareData.total === null) return acc;
         if (spareData?.total < acc.total) {
           return {
             name: cur.vendor.name,
@@ -141,6 +156,7 @@ export default function QuoteCompareTable<
                     (
                       Object.keys(s) as (typeof spares)[number]["name"][]
                     ).forEach((key) => {
+                      if (company[key].total === null) return;
                       company[key].selected = selected;
                     });
 
@@ -159,7 +175,7 @@ export default function QuoteCompareTable<
           <td>{idx + 1}</td>
           <td>{spare.name}</td>
           {spareCols.map((col, i) => (
-            <td key={i}>{spare[col as S[number]]}</td>
+            <td key={i}>{displayNum(spare[col as S[number]])}</td>
           ))}
           <td>
             <input
@@ -172,7 +188,8 @@ export default function QuoteCompareTable<
                   const spareName =
                     spare.name as (typeof spares)[number]["name"];
                   const spareData = company[spareName];
-                  spareData.total = spareData.unit * orderQty;
+                  spareData.total =
+                    spareData.unit === null ? null : spareData.unit * orderQty;
                 });
                 onChange?.([...companies], [...spares]);
               }}
@@ -199,7 +216,7 @@ export default function QuoteCompareTable<
                           : ""
                       }`}
                     >
-                      {spareData[col as C[number]]}
+                      {displayNum(spareData[col as C[number]])}
                     </td>
                   );
                 })}
@@ -216,15 +233,18 @@ export default function QuoteCompareTable<
                       : ""
                   }`}
                 >
-                  {spareData.total}
+                  {displayNum(spareData.total)}
                 </td>
                 {mode === "edit" && (
                   <td>
                     <input
+                      disabled={spareData.total === null}
                       type="checkbox"
                       name=""
                       id=""
-                      checked={spareData["selected"]}
+                      checked={
+                        spareData.total === null ? false : spareData["selected"]
+                      }
                       onChange={(ev) => {
                         const selected = ev.target.checked;
                         spareData["selected"] = selected;
@@ -251,10 +271,12 @@ export default function QuoteCompareTable<
               <td></td>
               <td
                 className={`${styles.number} ${
-                  sortedTotals[0][0] === companyName ? styles.highligted : ""
+                  sortedTotals?.[0]?.[0] === companyName
+                    ? styles.highligted
+                    : ""
                 }`}
               >
-                {totals[companyName]}
+                {displayNum(totals[companyName])}
               </td>
               {mode === "edit" && <td></td>}
             </>
@@ -270,8 +292,14 @@ export default function QuoteCompareTable<
             return (
               <>
                 <td></td>
-                <td className={styles.number}>
-                  {aggregate[companyName][agg as A[number]]}
+                <td
+                  className={
+                    typeof aggregate[companyName][agg as A[number]] === "number"
+                      ? styles.number
+                      : ""
+                  }
+                >
+                  {displayNum(aggregate[companyName][agg as A[number]])}
                 </td>
                 {mode === "edit" && <td></td>}
               </>

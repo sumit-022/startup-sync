@@ -60,7 +60,8 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
           vendor,
           [spare.title]: {
             ...spare,
-            total: Math.round(cur.unitPrice * spare.quantity * 100) / 100,
+            total:
+              cur.unitPrice === null ? null : cur.unitPrice * spare.quantity,
             unit: cur.unitPrice,
             selected: false,
           },
@@ -69,7 +70,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: Math.round(cur.unitPrice * spare.quantity * 100) / 100,
+          total: cur.unitPrice === null ? null : cur.unitPrice * spare.quantity,
           unit: cur.unitPrice,
         };
       }
