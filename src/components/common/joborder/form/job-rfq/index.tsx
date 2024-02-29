@@ -100,7 +100,8 @@ const RFQForm = ({
         jobCode: job.jobCode,
         description: job.description || "N/A",
         portOfDelivery: job.targetPort,
-        vesselETA: job.vesselETA || "N/A",
+        shipName: job.shipName,
+        spareDetails: data.spareDetails,
       });
       data.vendors[i].attachment = blob;
     }
