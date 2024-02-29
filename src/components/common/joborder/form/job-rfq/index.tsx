@@ -88,19 +88,20 @@ const RFQForm = ({
     control,
   });
 
-  const onSubmit = (data: RFQFormType) => {
+  const onSubmit = async (data: RFQFormType) => {
     setLoading(true);
     console.log({ data });
     for (let i = 0; i < data.vendors.length; i++) {
       const vendor = vendors.find((vendor) => vendor.id == data.vendors[i].id);
       if (!vendor) continue;
-      data.vendors[i].attachment = createRfqPdf({
+      const blob = await createRfqPdf({
         ...data,
         vendor,
         jobCode: job.jobCode,
         description: job.description || "N/A",
         portOfDelivery: job.targetPort,
       });
+      data.vendors[i].attachment = blob;
     }
 
     const form = new FormData();
@@ -144,19 +145,16 @@ const RFQForm = ({
       }
     });
 
-    instance
-      .post("/job/send-rfq", form)
-      .then((res) => {
-        toast.success("RFQ Sent");
-        setModalOpen(false);
-        refresh();
-      })
-      .catch((err) => {
-        toast.error("Something went wrong");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await instance.post("/job/send-rfq", form);
+      toast.success("RFQ Sent");
+      setModalOpen(false);
+      refresh();
+    } catch (err) {
+      toast.error("Failed to send RFQ");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
