@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AuthContext from "@/context/AuthContext";
-import { CurrencyContext } from "@/context/CurrencyContext";
 import FormHeading from "@/components/atoms/heading/form-heading";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
@@ -34,7 +33,6 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
   const [remarks, setRemarks] = useState("");
   const router = useRouter();
   const { user } = useContext(AuthContext);
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_FRONTEND_URL;
   const spareCols = ["Supply Qty"] as const;
   const companyCols = ["unit"] as const;
   const aggregateCols = [
@@ -214,7 +212,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
             purchaseStatus: "POISSUED",
           },
         });
-        // router.push("/dashboard/purchase");
+        router.push("/dashboard/purchase");
         setLoading(false);
       })
       .catch((err) => {

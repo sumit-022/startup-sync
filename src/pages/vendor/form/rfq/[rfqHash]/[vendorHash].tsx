@@ -210,6 +210,11 @@ export default function RfqHash(props: PageProps) {
           while connected to the Internet. Please indicate packing expenses
           expected if any. If no packing expense is mentioned separately, it
           will be assumed that packing expense is included in the quoted prices.
+          <span className="font-bold italic">
+            {" "}
+            If you don&apos;t have any item mentioned below, please leave the
+            respective field blank.
+          </span>
         </p>
         <table className="table-auto w-full mt-8">
           <tbody className="border-b-2 border-gray-200">
