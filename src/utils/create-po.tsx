@@ -26,7 +26,7 @@ type POType = {
     total: number;
   }[];
   aggregate: {
-    discount: string;
+    discount: number;
     deliveryCharge: number;
   };
   vendor: VendorType;
@@ -272,7 +272,7 @@ function POTable({
 }: {
   data: {
     subtotal: number;
-    discount: string;
+    discount: number;
     deliveryCharge: number;
     grandTotal: number;
     currencyCode: string;
@@ -324,7 +324,7 @@ function POTable({
           </View>
           <View style={styles.tableAggDetail}>
             <Text style={styles.tableAggHeading}>Discount:</Text>
-            <Text>{data.discount}</Text>
+            <Text>{data.discount}%</Text>
           </View>
           <View style={styles.tableAggDetail}>
             <Text style={styles.tableAggHeading}>Delivery Charge:</Text>
@@ -377,8 +377,7 @@ export const POTemplate = {
 
 const PODocument = (data: POType) => {
   const subtotal = data.spares.reduce((acc, cur) => acc + cur.total, 0);
-  const discount = Number(data.aggregate.discount.split("%")[0]);
-  const discountDecimal = discount / 100;
+  const discountDecimal = data.aggregate.discount / 100;
   const grandtotal =
     subtotal - subtotal * discountDecimal + data.aggregate.deliveryCharge;
 

@@ -117,10 +117,32 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       }
     }
 
+    console.log({ selections, rfqs });
+
     const vendorObject: any = {};
 
-    for (const spareName in selections) {
-      const sparesArray = selections[spareName];
+    // replace selections spare data with the og data from rfqs
+    const oldSelections = Object.fromEntries(
+      Object.keys(selections).map((spareName) => {
+        return [
+          spareName,
+          selections[spareName].map((data: any) => {
+            const vendorId = data.vendor.id;
+            const reqRfq = rfqs.find(
+              (rfq) =>
+                rfq.spare.title === spareName && rfq.vendor.id === vendorId
+            );
+            const { spare, ...rest } = reqRfq;
+            return { ...rest, ...spare };
+          }),
+        ];
+      })
+    );
+
+    console.log({ oldSelections });
+
+    for (const spareName in oldSelections) {
+      const sparesArray = oldSelections[spareName];
 
       for (const spare of sparesArray) {
         const vendorId = spare.vendor.id;
@@ -137,6 +159,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           spareDetails: {
             ...spares.find((s) => s.name === spare.title),
             ...spare,
+            total: spare.unitPrice * spare.quantity,
           },
         });
       }
@@ -150,9 +173,9 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
         id: vendorObject[vendor].vendorDetails.id,
         subject: ` P.O-${job[0].jobCode} - ${job[0].description}`,
         attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
-        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
-        The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
-        </div></div>`,
+        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20
+          The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
+          </div></div>`,
       });
     }
 
@@ -163,17 +186,13 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
         poNo: `PO-${job[0].jobCode}`,
         vendor: vendorObject[vendor].vendorDetails,
         aggregate: {
-          discount: aggregate[vendorObject[vendor].vendorDetails.name].Discount,
-          deliveryCharge:
-            aggregate[vendorObject[vendor].vendorDetails.name][
-              "Delivery Charge"
-            ],
+          discount: vendorObject[vendor].spares[0].spareDetails.discount,
+          deliveryCharge: vendorObject[vendor].spares[0].spareDetails.delivery,
         },
         currencyCode: vendorObject[vendor].currencyCode,
         spares: vendorObject[vendor].spares.map((s: any) => {
           return {
             ...s.spareDetails,
-            unitPrice: s.spareDetails.unit,
           };
         }),
         deliveryAddress: deliveryAddress.address,
@@ -224,11 +243,13 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
       "Amount Payable":
         Math.round(
-          ((1 - (cur.discount || 0) * 0.01) * total + cur.delivery) * 100
+          (((1 - (cur.discount || 0) * 0.01) * total + cur.delivery) /
+            (rates[currencyCode] ?? 1)) *
+            100
         ) / 100,
       "Connect Date": `${cur.connectTime} Days`,
       "Connect Port": cur.connectPort,
-      "Delivery Charge": cur.delivery,
+      "Delivery Charge": cur.delivery / (rates[currencyCode] ?? 1),
       "Quality of Spare": cur.quality,
       Remark: cur.remark,
     };
@@ -314,8 +335,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       <div className="flex justify-end mt-6">
         <LoadingButton
           variant="contained"
-          loading={loading}
           color="primary"
+          loading={loading}
           className="bg-blue-500"
           onClick={handleSendPO}
         >
