@@ -108,7 +108,6 @@ export default function RfqHash(props: PageProps) {
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");
 
   const watchCurrency = watch("common.currency", "USD");
-  const conversionRate = useCurrency(watchCurrency) || 1;
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -139,23 +138,19 @@ export default function RfqHash(props: PageProps) {
           data: {
             unitPrice: (() => {
               const unitPrice = data.rfqs[i].unitPrice;
-              if (conversionRate && unitPrice) {
-                return unitPrice / conversionRate;
+              if (unitPrice) {
+                return unitPrice;
               }
               return null;
             })(),
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
             discount: data.common.discount,
-            delivery: conversionRate
-              ? data.common.delivery / conversionRate
-              : data.common.delivery,
+            delivery: data.common.delivery,
             connectPort: data.common.connectPort,
             connectTime: data.common.connectTime,
             total: 0,
-            amount: conversionRate
-              ? data.common.amount / conversionRate
-              : data.common.amount,
+            amount: data.common.amount,
             currencyCode: data.common.currency,
             quality: data.common.quality,
             filled: true,
