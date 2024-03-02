@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   },
   detailCol: {
     minWidth: "30%",
+    maxWidth: "35%",
     display: "flex",
     flexDirection: "column",
     columnGap: 5,
