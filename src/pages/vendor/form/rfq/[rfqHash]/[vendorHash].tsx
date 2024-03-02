@@ -108,7 +108,7 @@ export default function RfqHash(props: PageProps) {
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");
 
   const watchCurrency = watch("common.currency", "USD");
-  const conversionRate = useCurrency(watchCurrency);
+  const conversionRate = useCurrency(watchCurrency) || 1;
 
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
@@ -132,17 +132,18 @@ export default function RfqHash(props: PageProps) {
   }, [total, discount, delivery]);
 
   const onSubmit = async (data: RFQReplyFormType) => {
-    console.log({ data });
-
     setLoading(true);
     try {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
           data: {
-            unitPrice: conversionRate
-              ? // @ts-ignore
-                data.rfqs[i].unitPrice / conversionRate
-              : data.rfqs[i].unitPrice,
+            unitPrice: (() => {
+              const unitPrice = data.rfqs[i].unitPrice;
+              if (conversionRate && unitPrice) {
+                return unitPrice / conversionRate;
+              }
+              return null;
+            })(),
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
             discount: data.common.discount,
@@ -157,7 +158,7 @@ export default function RfqHash(props: PageProps) {
               : data.common.amount,
             currencyCode: data.common.currency,
             quality: data.common.quality,
-            filled: false,
+            filled: true,
           },
         });
       }
@@ -278,9 +279,7 @@ export default function RfqHash(props: PageProps) {
                     }}
                     {...register(`rfqs.${index}.unitPrice`, {
                       setValueAs: (value) => {
-                        if (value === "" || typeof value === "string") {
-                          return null;
-                        }
+                        if (value === "") return null;
                         return parseFloat(value);
                       },
                     })}
