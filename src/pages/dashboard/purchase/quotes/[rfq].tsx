@@ -55,14 +55,17 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
         (c: any) => c.vendor.name === vendor.name
       );
       const currencyCode = cur.currencyCode;
+      const conversionRate = rates[currencyCode] ?? 1;
       if (!company) {
         acc.companies.push({
           vendor,
           [spare.title]: {
             ...spare,
             total:
-              cur.unitPrice === null ? null : cur.unitPrice * spare.quantity,
-            unit: cur.unitPrice,
+              cur.unitPrice === null
+                ? null
+                : (cur.unitPrice * spare.quantity) / conversionRate,
+            unit: cur.unitPrice / conversionRate,
             selected: false,
           },
           currencyCode,
@@ -70,8 +73,11 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       } else {
         company[spare.title] = {
           ...spare,
-          total: cur.unitPrice === null ? null : cur.unitPrice * spare.quantity,
-          unit: cur.unitPrice,
+          total:
+            cur.unitPrice === null
+              ? null
+              : (cur.unitPrice * spare.quantity) / conversionRate,
+          unit: cur.unitPrice / conversionRate,
         };
       }
       if (!acc.spares.find((s: any) => s.name === spare.title)) {
