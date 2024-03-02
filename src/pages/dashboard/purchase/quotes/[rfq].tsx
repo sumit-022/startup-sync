@@ -21,11 +21,11 @@ const QuoteCompareTable = dynamic(
 type PageProps = {
   rfqs: any[];
   job: JobType[];
+  rates: Record<string, number>;
 };
 
-export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
+export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
   const [loading, setLoading] = useState(false);
-  const { rates } = useContext(CurrencyContext);
   const [deliveryAddress, setDeliveryAddress] = useState({
     default: true,
     address:
@@ -349,6 +349,18 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     (await instance.get(`/jobs?filters[spares][id]=${rfqs[0].spare.id}`)).data
   );
 
+  const rawRates = parseAttributes(
+    (
+      await instance.get(
+        "/currencies?pagination[page]=1&pagination[pageSize]=200"
+      )
+    ).data.data
+  ) as { code: string; rate: number }[];
+
+  const rates = Object.fromEntries(
+    rawRates.map(({ code, rate }) => [code, Math.round(rate * 100) / 100])
+  );
+
   if (!job || job.length === 0) {
     return {
       notFound: true,
@@ -359,6 +371,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     props: {
       rfqs,
       job,
+      rates,
     },
   };
 };
