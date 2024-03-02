@@ -206,7 +206,7 @@ function RFQTable({
   };
 }) {
   return (
-    <View style={styles.table}>
+    <View style={styles.table} wrap>
       <View style={styles.tableHeader}>
         <Text style={styles.tableColSNo}>S/N</Text>
         <Text style={styles.tableColName}>Item Name</Text>
