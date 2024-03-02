@@ -1,8 +1,7 @@
 .quote-comparison-table {
   border-collapse: collapse;
-  width: 100%;
+  /* width: 100%; */
   overflow-x: auto;
-  table-layout: auto;
 }
 
 .quote-comparison-table th,
@@ -11,9 +10,10 @@
   padding: 12px;
   text-align: left;
   max-width: 300px;
+  min-width: 100px;
   max-height: 200px;
   overflow: auto;
-  word-break: break-all;
+  /* word-break: break-all; */
 }
 
 .quote-comparison-table .number {

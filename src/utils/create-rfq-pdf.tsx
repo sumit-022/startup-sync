@@ -196,7 +196,7 @@ function RFQTable({
     name: string;
     quantity: number;
     description: string;
-    unitPrice: number;
+    unitPrice: string;
   }[];
 }) {
   return (
@@ -271,7 +271,7 @@ const RFQDocument = ({
     name: string;
     quantity: number;
     description: string;
-    unitPrice: number;
+    unitPrice: string;
   }[];
 }) => (
   <Document>
@@ -339,7 +339,7 @@ export default async function createRfqPdf(data: RFQPdfType) {
         name: parseText(spare.title),
         quantity: parseInt(spare.quantity || "0"),
         description: parseText(spare.description),
-        unitPrice: 0,
+        unitPrice: "",
       }))}
       vesselName={parseText(data.shipName)}
       vendorAddress={parseText(data.vendor.address)}

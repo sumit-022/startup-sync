@@ -1,118 +1,447 @@
-import jsPDF, { TableCellData } from "jspdf";
+import React from "react";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  pdf,
+  Image,
+  Link,
+  PDFViewer,
+  Line,
+  Svg,
+} from "@react-pdf/renderer";
 import logo from "@/assets/image/logo.jpg";
-import { TableConfig, CellConfig } from "jspdf";
-import autoTable, { CellInput } from "jspdf-autotable";
 
-type RFQPdfType = {
-  shipName: string;
-  spareDetails: {
-    title: string;
-    description: string;
-    quantity: string;
-    unitPrice: string;
-  }[];
-  vendor: VendorType;
-  jobCode: string;
-  description: string;
+// Create styles
+const styles = StyleSheet.create({
+  page: {
+    fontFamily: "Helvetica",
+    lineHeight: 1.25,
+    fontSize: 10,
+    padding: 40,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+  head: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  logo: {
+    width: 150,
+  },
+  address: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  boldText: {
+    fontSize: 12,
+    fontFamily: "Helvetica-Bold",
+    fontWeight: "bold",
+  },
+  header: {
+    fontSize: 20,
+    textAlign: "center",
+    marginBottom: 5,
+    fontFamily: "Helvetica-Bold",
+  },
+  details: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    rowGap: 5,
+  },
+  detailCol: {
+    minWidth: "30%",
+    maxWidth: "35%",
+    display: "flex",
+    flexDirection: "column",
+    columnGap: 5,
+    rowGap: 5,
+    flexWrap: "wrap",
+  },
+  detail: {
+    display: "flex",
+    flexDirection: "row",
+    columnGap: 20,
+  },
+  table: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  tableHeader: {
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: "#2980ba",
+    fontFamily: "Helvetica-Bold",
+    color: "#fff",
+    textAlign: "center",
+  },
+  tableRowEven: {
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: "#f5f5f5",
+    textAlign: "center",
+    gap: 5,
+    alignItems: "center",
+  },
+  tableRowOdd: {
+    display: "flex",
+    flexDirection: "row",
+    textAlign: "center",
+    gap: 5,
+    alignItems: "center",
+  },
+  tableColSNo: {
+    padding: 5,
+    width: "10%",
+  },
+  tableColName: {
+    padding: 5,
+    width: "25%",
+  },
+  tableColQuantity: {
+    padding: 5,
+    width: "10%",
+  },
+  tableColDescription: {
+    padding: 5,
+    width: "40%",
+  },
+  tableColUnitPrice: {
+    padding: 5,
+    width: "15%",
+  },
+});
+
+function RFQHeader() {
+  return (
+    <View style={styles.head}>
+      <View style={styles.address}>
+        <Text style={styles.boldText}>SHINPO ENGINEERING PTE LTD</Text>
+        <Text>1 Tuas South Avenue 6 , #05-20</Text>
+        <Text>The Westcom</Text>
+        <Text>Singapore 637021</Text>
+        <Text>Tel: +65 81321465</Text>
+        <Link src="mailto:admin@shinpoengineering.com">
+          admin@shinpoengineering.com
+        </Link>
+        <Text>GST Registration No. : 202215215M</Text>
+      </View>
+      <Image src={logo.src} style={styles.logo} />
+    </View>
+  );
+}
+
+function RFQDetails({
+  rfqNumber,
+  vesselName,
+  jobDescription,
+  portOfDelivery,
+  vendorName,
+  vendorAddress,
+}: {
+  rfqNumber: string;
+  vesselName: string;
+  jobDescription: string;
   portOfDelivery: string;
-  remarks: string;
-  deliveryTime: string;
+  vendorName: string;
+  vendorAddress: string;
+}) {
+  return (
+    <View style={styles.details}>
+      <View style={styles.detailCol}>
+        <View style={styles.detail}>
+          <Text style={styles.boldText}>RFQ Number:</Text>
+          <Text>{rfqNumber}</Text>
+        </View>
+        <View style={styles.detail}>
+          <Text style={styles.boldText}>Vessel Name:</Text>
+          <Text>{vesselName}</Text>
+        </View>
+        <View style={styles.detail}>
+          <Text style={styles.boldText}>Job Description:</Text>
+          <Text>{jobDescription}</Text>
+        </View>
+        <View style={styles.detail}>
+          <Text style={styles.boldText}>Port of Delivery:</Text>
+          <Text>{portOfDelivery}</Text>
+        </View>
+      </View>
+      <View style={styles.detailCol}>
+        <Text style={styles.boldText}>Supplier Details:</Text>
+        <Text>{vendorName}</Text>
+        <Text>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Corrupti
+          reiciendis asperiores similique, ratione et earum incidunt consectetur
+          necessitatibus labore saepe!
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function RFQTable({
+  data,
+}: {
+  data: {
+    currencyCode?: string;
+    spares: {
+      name: string;
+      quantity: number;
+      description: string;
+      unitPrice?: number | null;
+    }[];
+  };
+}) {
+  return (
+    <View style={styles.table}>
+      <View style={styles.tableHeader}>
+        <Text style={styles.tableColSNo}>S/N</Text>
+        <Text style={styles.tableColName}>Item Name</Text>
+        <Text style={styles.tableColQuantity}>Quantity</Text>
+        <Text style={styles.tableColDescription}>Description</Text>
+        <Text style={styles.tableColUnitPrice}>Unit Price</Text>
+      </View>
+      {data.spares.map((item, index) => (
+        <View
+          key={index}
+          style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
+        >
+          <Text style={styles.tableColSNo}>{index + 1}</Text>
+          <Text style={styles.tableColName}>{item.name}</Text>
+          <Text style={styles.tableColQuantity}>{item.quantity}</Text>
+          <Text style={styles.tableColDescription}>{item.description}</Text>
+          <Text style={styles.tableColUnitPrice}>
+            {item.unitPrice
+              ? `${data.currencyCode} ${item.unitPrice}`
+              : "Not Quoted"}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function RFQFooter({
+  currencyCode,
+  reference,
+  grantTotal,
+  discount,
+  deliveryCharge,
+  deliveryTime,
+  connectPort,
+  remarks,
+  subtotal,
+}: {
+  reference: string;
+  discount: number;
+  deliveryCharge: number;
+  deliveryTime: number;
   connectPort: string;
-  discount: string;
-  yourReference: string;
-  deliveryCharge: string;
-  amountPayable: string;
-  subtotal: string;
+  remarks?: string;
+  currencyCode: string;
+  grantTotal: number;
+  subtotal: number;
+}) {
+  return (
+    <View
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        marginTop: 20,
+        ...styles.boldText,
+      }}
+    >
+      <View style={styles.detail}>
+        <Text>Subtotal:</Text>
+        <Text>{`${currencyCode} ${subtotal}`}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text style={styles.boldText}>Reference:</Text>
+        <Text>{reference}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Discount:</Text>
+        <Text>{`${discount}%`}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Delivery Charge:</Text>
+        <Text>{`${currencyCode} ${deliveryCharge}`}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Amount Payable:</Text>
+        <Text>{`${currencyCode} ${grantTotal}`}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Delivery Time:</Text>
+        <Text>{`${deliveryTime} Days`}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Connect Port:</Text>
+        <Text>{connectPort}</Text>
+      </View>
+      <View style={styles.detail}>
+        <Text>Remarks:</Text>
+        <Text>{remarks}</Text>
+      </View>
+    </View>
+  );
+}
+
+export const RFQTemplate = {
+  Header: RFQHeader,
+  Details: RFQDetails,
+  Table: RFQTable,
+  Footer: RFQFooter,
 };
 
-export default function createAckPDF(data: RFQPdfType) {
-  const tableData: CellInput[][] = data.spareDetails.map((spare, index) => [
-    { content: index + 1, styles: { halign: "center" } },
-    { content: spare.title, styles: { halign: "center" } },
-    { content: spare.quantity, styles: { halign: "center" } },
-    { content: spare.description, styles: { halign: "center" } },
-    { content: spare.unitPrice, styles: { halign: "center" } },
-  ]);
-  const doc = new jsPDF();
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("SHINPO ENGINEERING PTE LTD", 15, 15);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text("1 Tuas South Avenue 6 , #05-20", 15, 20);
-  doc.text("The Westcom", 15, 25);
-  doc.text("Singapore 637021", 15, 30);
-  doc.text("Tel: +65 81321465", 15, 35);
-  doc.text("admin@shinpoengineering.com", 15, 40);
-  doc.text("GST Registration No. : 202215215M", 15, 45);
+const RFQDocument = ({
+  rfqNumber,
+  vesselName,
+  jobDescription,
+  portOfDelivery,
+  vendorName,
+  vendorAddress,
+  spares,
+  currencyCode,
+  connectPort,
+  deliveryCharge,
+  discount,
+  deliveryTime,
+  reference,
+  remarks,
+  grandTotal,
+  subtotal,
+}: {
+  rfqNumber: string;
+  vesselName: string;
+  jobDescription: string;
+  portOfDelivery: string;
+  vendorName: string;
+  vendorAddress: string;
+  spares: {
+    name: string;
+    quantity: number;
+    description: string;
+    unitPrice?: number | null;
+  }[];
+  currencyCode: string;
+  connectPort: string;
+  deliveryCharge: number;
+  discount: number;
+  deliveryTime: number;
+  reference: string;
+  remarks?: string;
+  grandTotal: number;
+  subtotal: number;
+}) => (
+  <Document>
+    <Page size="A4" wrap style={styles.page}>
+      <RFQTemplate.Header />
+      <Text style={styles.header}>Acknowledgement Requisition for Quote</Text>
+      <Svg height="20" width="500">
+        <Line
+          x1={0}
+          y1={0}
+          x2={"100%"}
+          y2={0}
+          strokeWidth={2}
+          stroke="rgb(0, 0, 0)"
+        />
+      </Svg>
+      <RFQTemplate.Details
+        jobDescription={jobDescription}
+        portOfDelivery={portOfDelivery}
+        rfqNumber={rfqNumber}
+        vesselName={vesselName}
+        vendorAddress={vendorAddress}
+        vendorName={vendorName}
+      />
+      <RFQTemplate.Table
+        data={{
+          currencyCode: currencyCode,
+          spares: spares,
+        }}
+      />
+      <RFQFooter
+        connectPort={connectPort}
+        deliveryCharge={deliveryCharge}
+        deliveryTime={deliveryTime}
+        discount={discount}
+        currencyCode={currencyCode}
+        reference={reference}
+        remarks={remarks}
+        grantTotal={grandTotal}
+        subtotal={subtotal}
+      />
+    </Page>
+  </Document>
+);
 
-  doc.addImage(logo.src, "JPEG", 150, 15, 45, 30);
+type RFQAckPdfType = {
+  shipName?: string;
+  spareDetails: {
+    title?: string;
+    description?: string;
+    quantity?: string;
+    unitPrice?: number | null;
+  }[];
+  vendor: VendorType;
+  jobCode?: string;
+  description?: string;
+  portOfDelivery: string;
+  currencyCode: string;
+  connectPort: string;
+  deliveryCharge: number;
+  discount: number;
+  deliveryTime: number;
+  reference: string;
+  remarks?: string;
+  grandTotal: number;
+  subtotal: number;
+};
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  //underline
-  doc.text("Acknowledgement for Requisition for Quote", 110, 60, {
-    align: "center",
-  });
-  //line
-  doc.setLineWidth(0.5);
-  doc.line(15, 65, 195, 65);
-  doc.setFontSize(12);
-  doc.text("RFQ Number:", 15, 75);
-  doc.text("Vessel Name:", 15, 85);
-  doc.text("Job Description:", 15, 95);
-  doc.text("Port Of Delivery:", 15, 105);
-  doc.setFont("helvetica", "normal");
-  doc.text(`${data.jobCode}`, 50, 75);
-  doc.text(data.shipName, 50, 85);
-  doc.text(data.description, 50, 95);
-  doc.text(data.portOfDelivery, 50, 105);
+const parseText = (text?: string) => {
+  return text || "N/A";
+};
 
-  //supplier details to the right side
-  doc.setFont("helvetica", "bold");
-  doc.text("Supplier Details:", 130, 75);
-  doc.setFont("helvetica", "normal");
-  doc.text(data.vendor.name, 130, 85);
-  const address = doc.splitTextToSize(data.vendor.address, 60);
-  doc.text(address, 130, 90);
-
-  //table
-  autoTable(doc, {
-    head: [
-      [
-        { content: "S/N", styles: { halign: "center" } },
-        { content: "Item Name", styles: { halign: "center" } },
-        { content: "Quantity", styles: { halign: "center" } },
-        { content: "Description", styles: { halign: "center" } },
-        { content: "Unit Price", styles: { halign: "center" } },
-      ],
-    ],
-    body: tableData,
-    startY: 120,
-    theme: "striped",
-    margin: { top: 120 },
-    tableWidth: "auto",
-  });
-  //go below the table
-  doc.setFontSize(12);
-  doc.text("Subtotal:", 15, 190);
-  doc.text("Your Reference:", 15, 200);
-  doc.text("Discount:", 15, 210);
-  doc.text("Delivery Charge:", 15, 220);
-  doc.text("Amount Payable:", 15, 230);
-  doc.text("Delivery Time:", 15, 240);
-  doc.text("Connect Port:", 15, 250);
-  doc.text("Remarks:", 15, 260);
-  doc.setFont("helvetica", "normal");
-  doc.text(`${data.subtotal}`, 50, 190);
-  doc.text(data.yourReference, 50, 200);
-  doc.text(`${data.discount}%`, 50, 210);
-  doc.text(`${data.deliveryCharge}`, 50, 220);
-  doc.text(`${data.amountPayable}`, 50, 230);
-  doc.text(`${data.deliveryTime} Days`, 50, 240);
-  doc.text(data.connectPort, 50, 250);
-  const remarks = doc.splitTextToSize(data.remarks, 140);
-  doc.text(remarks, 50, 260);
-
-  return doc.output("blob");
+export default async function createAckPDF(data: RFQAckPdfType) {
+  return await pdf(
+    <RFQDocument
+      currencyCode={data.currencyCode}
+      jobDescription={parseText(data.description)}
+      portOfDelivery={parseText(data.portOfDelivery)}
+      rfqNumber={`RFQ-${data.jobCode}`}
+      spares={data.spareDetails.map((spare) => ({
+        name: parseText(spare.title),
+        quantity: parseInt(spare.quantity || "0"),
+        description: parseText(spare.description),
+        unitPrice: spare?.unitPrice,
+      }))}
+      vesselName={parseText(data.shipName)}
+      vendorAddress={parseText(data.vendor.address)}
+      vendorName={parseText(data.vendor.name)}
+      connectPort={parseText(data.connectPort)}
+      deliveryCharge={data.deliveryCharge}
+      discount={data.discount}
+      deliveryTime={data.deliveryTime}
+      reference={data.reference}
+      remarks={data.remarks}
+      grandTotal={data.grandTotal}
+      subtotal={data.subtotal}
+    />
+  ).toBlob();
 }

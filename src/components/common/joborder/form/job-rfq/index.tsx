@@ -299,6 +299,8 @@ const RFQForm = ({
           />
           <TextField
             name="spareDetails.description"
+            multiline
+            rows={4}
             value={spareDetails.description}
             label="Description"
             onChange={(e) => {

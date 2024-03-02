@@ -23,7 +23,7 @@ type PageProps = {
 type RFQReplyFormType = {
   rfqs: {
     id: number;
-    unitPrice: number;
+    unitPrice: number | null;
     quantity: {
       value: number;
       unit?: string;
@@ -91,6 +91,7 @@ export default function RfqHash(props: PageProps) {
   } = useForm<RFQReplyFormType>({
     defaultValues: {
       rfqs: props.rfqs.map((rfq) => ({
+        unitPrice: null,
         spare: {
           id: rfq.spare.id,
           title: rfq.spare.title,
@@ -116,7 +117,7 @@ export default function RfqHash(props: PageProps) {
 
   const total = unitPrices.reduce((acc, cur, index) => {
     if (cur && quantities[index]) {
-      return acc + cur * quantities[index];
+      return (acc ?? 0) + cur * quantities[index];
     }
     return acc;
   }, 0);
@@ -124,17 +125,23 @@ export default function RfqHash(props: PageProps) {
   const router = useRouter();
 
   useEffect(() => {
-    setValue("common.amount", total - (total * discount) / 100 + delivery);
+    setValue(
+      "common.amount",
+      (total || 0) - ((total || 0) * discount) / 100 + delivery
+    );
   }, [total, discount, delivery]);
 
   const onSubmit = async (data: RFQReplyFormType) => {
+    console.log({ data });
+
     setLoading(true);
     try {
       for (let i = 0; i < data.rfqs.length; i++) {
         await instance.put(`/rfqs/${props.rfqs[i].id}`, {
           data: {
             unitPrice: conversionRate
-              ? data.rfqs[i].unitPrice / conversionRate
+              ? // @ts-ignore
+                data.rfqs[i].unitPrice / conversionRate
               : data.rfqs[i].unitPrice,
             quantity: data.rfqs[i].quantity,
             remark: data.common.remark,
@@ -150,32 +157,33 @@ export default function RfqHash(props: PageProps) {
               : data.common.amount,
             currencyCode: data.common.currency,
             quality: data.common.quality,
-            filled: true,
+            filled: false,
           },
         });
       }
-      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>`;
+      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>Team Shinpo`;
       const subject = `Acknowledgement of Quotes - ${props.job.jobCode}`;
-      const pdf = createAckPDF({
+      const pdf = await createAckPDF({
         shipName: props.job.shipName,
         spareDetails: data.rfqs.map((rfq) => ({
           title: rfq.spare.title,
           description: rfq.spare.description,
           quantity: `${rfq.spare.quantity}`,
-          unitPrice: `${watchCurrency} ${rfq.unitPrice}`,
+          unitPrice: rfq.unitPrice,
         })),
-        jobCode: props.rfqs[0].RFQNumber,
+        jobCode: props.job.jobCode,
         portOfDelivery: props.job.targetPort,
         description: props.job.description || "No Description Available",
         vendor: props.rfqs[0].vendor,
         connectPort: data.common.connectPort,
-        deliveryCharge: `${watchCurrency} ${data.common.delivery}`,
-        discount: `${data.common.discount}`,
-        deliveryTime: `${data.common.connectTime}`,
+        deliveryCharge: data.common.delivery,
+        discount: data.common.discount,
+        deliveryTime: data.common.connectTime,
         remarks: data.common.remark,
-        yourReference: referenceNumber,
-        amountPayable: `${watchCurrency} ${data.common.amount}`,
-        subtotal: `${watchCurrency} ${total}`,
+        reference: referenceNumber,
+        grandTotal: data.common.amount,
+        subtotal: total ?? 0,
+        currencyCode: data.common.currency,
       });
       const formData = new FormData();
       formData.append("vendorId", props.rfqs[0].vendor.id);
@@ -184,7 +192,7 @@ export default function RfqHash(props: PageProps) {
       formData.append("mailBody", mailBody);
 
       await instance.post(`/rfq/${props.rfqs[0].RFQNumber}/send-ack`, formData);
-      router.push("/vendor/form/rfq/success");
+      // router.push("/vendor/form/rfq/success");
     } catch (err) {
       console.error(err);
       toast.error("Failed to submit quotation");
@@ -262,6 +270,7 @@ export default function RfqHash(props: PageProps) {
                   <TextField
                     variant="outlined"
                     size="small"
+                    type="number"
                     sx={{
                       "& .MuiInputBase-root": {
                         color: "gray",
@@ -269,10 +278,16 @@ export default function RfqHash(props: PageProps) {
                     }}
                     {...register(`rfqs.${index}.unitPrice`, {
                       setValueAs: (value) => {
-                        return parseFloat(value || "0.0");
+                        if (value === "" || typeof value === "string") {
+                          return null;
+                        }
+                        return parseFloat(value);
                       },
                     })}
                     error={errors.rfqs?.[index]?.unitPrice ? true : false}
+                    helperText={
+                      errors.rfqs?.[index]?.unitPrice?.message as string
+                    }
                   />
                 </td>
               </tr>

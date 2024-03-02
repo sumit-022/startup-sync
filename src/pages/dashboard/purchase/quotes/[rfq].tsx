@@ -153,18 +153,30 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
     const form = new FormData();
     form.append("vendors", JSON.stringify(vendors));
     for (const vendor in vendorObject) {
+      const blob = await createPO({
+        poNo: `PO-${job[0].jobCode}`,
+        vendor: vendorObject[vendor].vendorDetails,
+        aggregate: {
+          discount: aggregate[vendorObject[vendor].vendorDetails.name].Discount,
+          deliveryCharge:
+            aggregate[vendorObject[vendor].vendorDetails.name][
+              "Delivery Charge"
+            ],
+        },
+        currencyCode: vendorObject[vendor].currencyCode,
+        spares: vendorObject[vendor].spares.map((s: any) => {
+          return {
+            ...s.spareDetails,
+            unitPrice: s.spareDetails.unit,
+          };
+        }),
+        deliveryAddress: deliveryAddress.address,
+        remarks,
+        vesselName: job[0].shipName,
+      });
       form.append(
         "attachments",
-        createPO({
-          poNo: `PO-${job[0].jobCode}`,
-          vendor: vendorObject[vendor].vendorDetails,
-          spares: vendorObject[vendor].spares,
-          vesselName: job[0].shipName,
-          deliveryAddress: deliveryAddress.address,
-          remarks,
-          currencyCode: vendorObject[vendor].currencyCode,
-          conversionRate: rates[companies[0].currencyCode] || 1,
-        }),
+        blob,
         `${vendorObject[vendor].vendorDetails.id}.pdf`
       );
     }
@@ -177,13 +189,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
             purchaseStatus: "POISSUED",
           },
         });
-        for (const vendor in vendorObject) {
-          instance.post(`/purchase-orders`, {
-            vendor: vendorObject[vendor].vendorDetails.id,
-            job: job[0].id,
-          });
-        }
-        router.push("/dashboard/purchase");
+        // router.push("/dashboard/purchase");
         setLoading(false);
       })
       .catch((err) => {
@@ -235,20 +241,22 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       >
         Quote Comparison
       </Typography>
-      <QuoteCompareTable
-        mode="edit"
-        spareCols={spareCols as Mutable<typeof spareCols>}
-        companyCols={companyCols as Mutable<typeof companyCols>}
-        aggregateCols={aggregateCols as Mutable<typeof aggregateCols>}
-        //@ts-ignore
-        companies={companies}
-        aggregate={aggregate}
-        spares={spares}
-        onChange={(companies, spares) => {
-          setCompanies(companies);
-          setSpares(spares);
-        }}
-      />
+      <div className="overflow-x-auto">
+        <QuoteCompareTable
+          mode="edit"
+          spareCols={spareCols as Mutable<typeof spareCols>}
+          companyCols={companyCols as Mutable<typeof companyCols>}
+          aggregateCols={aggregateCols as Mutable<typeof aggregateCols>}
+          //@ts-ignore
+          companies={companies}
+          aggregate={aggregate}
+          spares={spares}
+          onChange={(companies, spares) => {
+            setCompanies(companies);
+            setSpares(spares);
+          }}
+        />
+      </div>
       <TextField
         multiline
         rows={4}
@@ -300,6 +308,7 @@ export default function QuoteComparisionPage({ rfqs, job }: PageProps) {
       <div className="flex justify-end mt-6">
         <LoadingButton
           variant="contained"
+          loading={loading}
           color="primary"
           className="bg-blue-500"
           onClick={handleSendPO}
