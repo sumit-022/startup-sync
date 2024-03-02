@@ -182,11 +182,7 @@ function RFQDetails({
       <View style={styles.detailCol}>
         <Text style={styles.boldText}>Supplier Details:</Text>
         <Text>{vendorName}</Text>
-        <Text>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Corrupti
-          reiciendis asperiores similique, ratione et earum incidunt consectetur
-          necessitatibus labore saepe!
-        </Text>
+        <Text>{vendorAddress}</Text>
       </View>
     </View>
   );
@@ -206,7 +202,7 @@ function RFQTable({
   };
 }) {
   return (
-    <View style={styles.table} wrap>
+    <View style={styles.table}>
       <View style={styles.tableHeader}>
         <Text style={styles.tableColSNo}>S/N</Text>
         <Text style={styles.tableColName}>Item Name</Text>
@@ -349,7 +345,7 @@ const RFQDocument = ({
   subtotal: number;
 }) => (
   <Document>
-    <Page size="A4" wrap style={styles.page}>
+    <Page size="A4" style={styles.page}>
       <RFQTemplate.Header />
       <Text style={styles.header}>Acknowledgement Requisition for Quote</Text>
       <Svg height="20" width="500">

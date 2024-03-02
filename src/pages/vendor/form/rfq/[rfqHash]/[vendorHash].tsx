@@ -107,8 +107,6 @@ export default function RfqHash(props: PageProps) {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");
 
-  const watchCurrency = watch("common.currency", "USD");
-
   const unitPrices = watch("rfqs", []).map((rfq) => rfq.unitPrice);
   const quantities = watch("rfqs", []).map((rfq) => rfq.spare.quantity);
   const discount = watch("common.discount", 0);

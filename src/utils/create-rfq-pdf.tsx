@@ -276,7 +276,7 @@ const RFQDocument = ({
   }[];
 }) => (
   <Document>
-    <Page size="A4" wrap style={styles.page}>
+    <Page size="A4" style={styles.page}>
       <RFQTemplate.Header />
       <Text style={styles.header}>Requisition for Quote</Text>
       <Svg height="20" width="500">
