@@ -45,6 +45,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
     "Remark",
   ] as const;
 
+  // console.log({ rfqs });
+
   const { companies: initCompanies, spares: initSpares } = rfqs.reduce(
     (acc, cur) => {
       const vendor = cur.vendor;
@@ -63,7 +65,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
               cur.unitPrice === null
                 ? null
                 : (cur.unitPrice * spare.quantity) / conversionRate,
-            unit: cur.unitPrice / conversionRate,
+            unit:
+              cur.unitPrice === null ? null : cur.unitPrice / conversionRate,
             selected: false,
           },
           currencyCode,
@@ -75,7 +78,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
             cur.unitPrice === null
               ? null
               : (cur.unitPrice * spare.quantity) / conversionRate,
-          unit: cur.unitPrice / conversionRate,
+          unit: cur.unitPrice === null ? null : cur.unitPrice / conversionRate,
         };
       }
       if (!acc.spares.find((s: any) => s.name === spare.title)) {
@@ -115,7 +118,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       }
     }
 
-    console.log({ selections, rfqs });
+    // console.log({ selections, rfqs });
 
     const vendorObject: any = {};
 
@@ -137,7 +140,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       })
     );
 
-    console.log({ oldSelections });
+    // console.log({ oldSelections });
 
     for (const spareName in oldSelections) {
       const sparesArray = oldSelections[spareName];
@@ -162,7 +165,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
         });
       }
     }
-    console.log("object", vendorObject);
+    // console.log("object", vendorObject);
 
     const vendors = [];
 
@@ -226,6 +229,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
   const [companies, setCompanies] = useState<any[]>(initCompanies);
   const [spares, setSpares] = useState<any[]>(initSpares);
+
+  // console.log({ companies, spares });
 
   const aggregate = rfqs.reduce((acc, cur) => {
     const rfqvendor = cur.vendor;
@@ -362,7 +367,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     return {
       notFound: true,
     };
-  console.log(rfqs[0]);
+  // console.log({ rfqs });
 
   const job = parseAttributes(
     (await instance.get(`/jobs?filters[spares][id]=${rfqs[0].spare.id}`)).data
