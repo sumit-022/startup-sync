@@ -6,7 +6,6 @@ import {
   Box,
   ToggleButton,
   ToggleButtonGroup,
-  Modal,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -18,10 +17,12 @@ import { MdAdd } from "react-icons/md";
 import RFQDialog from "@/components/atoms/button/job-rfq";
 import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
+import { RiFileDownloadFill } from "react-icons/ri";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
 import instance from "@/config/axios.config";
 import { useCurrency } from "@/context/CurrencyContext";
+import DownloadModal from "@/components/common/purchaseorder/modal/download";
 
 type PurchaseTableFilter = {
   status: string;
@@ -32,6 +33,7 @@ export default function Home() {
   const [filters, setFilters] = React.useState<PurchaseTableFilter>({
     status: "QUERYRECEIVED",
   });
+  const [loader, setLoader] = React.useState(false);
   const actions =
     filters.status == "QUERYRECEIVED"
       ? [
@@ -68,7 +70,8 @@ export default function Home() {
             className: "bg-green-500 hover:bg-green-600",
           },
         ]
-      : [
+      : filters.status == "POISSUED"
+      ? [
           {
             icon: <MdAdd />,
             name: "View Quotes",
@@ -80,11 +83,31 @@ export default function Home() {
             className: "bg-green-500 hover:bg-green-600",
           },
           {
+            icon: <RiFileDownloadFill />,
+            name: "Download PO",
+            onClick: (params: any) => {
+              const job = rows.data.find((el) => el.id == params.row.id);
+              job && setDownloadOpen({ open: true, id: job.id });
+            },
+          },
+          {
             icon: <IoMdEye />,
             name: "Mark Purchase Complete",
             onClick: (params: any) => {
               const job = rows.data.find((el) => el.id == params.row.id);
               job && setPurchaseCompleted({ open: true, id: `${job.id}` });
+            },
+            className: "bg-green-500 hover:bg-green-600",
+          },
+        ]
+      : [
+          {
+            icon: <MdAdd />,
+            name: "View Quotes",
+            onClick: (params: any) => {
+              router.push(
+                `/dashboard/purchase/quotes/view/RFQ-${params.row.jobCode}`
+              );
             },
             className: "bg-green-500 hover:bg-green-600",
           },
@@ -110,6 +133,13 @@ export default function Home() {
   const [RFQOpen, setRFQOpen] = React.useState(true);
   const [job, setJob] = React.useState<JobType | null>(null);
   const [updateOpen, setUpdateOpen] = React.useState(false);
+  const [downloadOpen, setDownloadOpen] = React.useState<{
+    open: boolean;
+    id: string | number | null;
+  }>({
+    open: false,
+    id: null,
+  });
   const [jobCode, setJobCode] = React.useState<string | null>(null);
   const [purchaseComplted, setPurchaseCompleted] = React.useState({
     open: false,
@@ -174,10 +204,20 @@ export default function Home() {
           refresh={refresh}
         />
       )}
+      {downloadOpen.open && (
+        <DownloadModal
+          open={downloadOpen.open}
+          onClose={() => setDownloadOpen({ open: false, id: null })}
+          id={downloadOpen.id}
+        />
+      )}
       {jobCode && (
         <UpdateModal
           open={updateOpen}
-          onClose={() => setUpdateOpen(false)}
+          onClose={() => {
+            setJobCode(null);
+            setUpdateOpen(false);
+          }}
           jobCode={jobCode}
         />
       )}

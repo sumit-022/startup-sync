@@ -97,133 +97,141 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
   );
 
   const handleSendPO = async () => {
-    setLoading(true);
-    const spareNames = (() => {
-      const { vendor, currencyCode, ...spares } = companies[0];
-      return Object.keys(spares);
-    })();
+    try {
+      setLoading(true);
+      const spareNames = (() => {
+        const { vendor, currencyCode, ...spares } = companies[0];
+        return Object.keys(spares);
+      })();
 
-    const selections: any = {};
-    for (const spare of spareNames) {
-      selections[spare] = [];
-      for (const company of companies) {
-        if (company[spare].selected) {
-          selections[spare].push({
-            vendor: company.vendor,
-            currencyCode: company.currencyCode,
-            ...aggregate[company.vendor.name],
-            ...company[spare],
+      const selections: any = {};
+      for (const spare of spareNames) {
+        selections[spare] = [];
+        for (const company of companies) {
+          if (company[spare].selected) {
+            selections[spare].push({
+              vendor: company.vendor,
+              currencyCode: company.currencyCode,
+              ...aggregate[company.vendor.name],
+              ...company[spare],
+            });
+          }
+        }
+      }
+
+      // console.log({ selections, rfqs });
+
+      const vendorObject: any = {};
+
+      // replace selections spare data with the og data from rfqs
+      const oldSelections = Object.fromEntries(
+        Object.keys(selections).map((spareName) => {
+          return [
+            spareName,
+            selections[spareName].map((data: any) => {
+              const vendorId = data.vendor.id;
+              const reqRfq = rfqs.find(
+                (rfq) =>
+                  rfq.spare.title === spareName && rfq.vendor.id === vendorId
+              );
+              const { spare, ...rest } = reqRfq;
+              return { ...rest, ...spare };
+            }),
+          ];
+        })
+      );
+
+      // console.log({ oldSelections });
+
+      for (const spareName in oldSelections) {
+        const sparesArray = oldSelections[spareName];
+
+        for (const spare of sparesArray) {
+          const vendorId = spare.vendor.id;
+
+          if (!vendorObject[vendorId]) {
+            vendorObject[vendorId] = {
+              vendorDetails: spare.vendor as VendorType,
+              spares: [],
+              currencyCode: spare.currencyCode,
+            };
+          }
+
+          vendorObject[vendorId].spares.push({
+            spareDetails: {
+              ...spares.find((s) => s.name === spare.title),
+              ...spare,
+              total: spare.unitPrice * spare.quantity,
+            },
           });
         }
       }
-    }
+      // console.log("object", vendorObject);
 
-    // console.log({ selections, rfqs });
+      const vendors = [];
 
-    const vendorObject: any = {};
-
-    // replace selections spare data with the og data from rfqs
-    const oldSelections = Object.fromEntries(
-      Object.keys(selections).map((spareName) => {
-        return [
-          spareName,
-          selections[spareName].map((data: any) => {
-            const vendorId = data.vendor.id;
-            const reqRfq = rfqs.find(
-              (rfq) =>
-                rfq.spare.title === spareName && rfq.vendor.id === vendorId
-            );
-            const { spare, ...rest } = reqRfq;
-            return { ...rest, ...spare };
-          }),
-        ];
-      })
-    );
-
-    // console.log({ oldSelections });
-
-    for (const spareName in oldSelections) {
-      const sparesArray = oldSelections[spareName];
-
-      for (const spare of sparesArray) {
-        const vendorId = spare.vendor.id;
-
-        if (!vendorObject[vendorId]) {
-          vendorObject[vendorId] = {
-            vendorDetails: spare.vendor as VendorType,
-            spares: [],
-            currencyCode: spare.currencyCode,
-          };
-        }
-
-        vendorObject[vendorId].spares.push({
-          spareDetails: {
-            ...spares.find((s) => s.name === spare.title),
-            ...spare,
-            total: spare.unitPrice * spare.quantity,
-          },
-        });
-      }
-    }
-    // console.log("object", vendorObject);
-
-    const vendors = [];
-
-    for (const vendor in vendorObject) {
-      vendors.push({
-        id: vendorObject[vendor].vendorDetails.id,
-        subject: ` P.O-${job[0].jobCode} - ${job[0].description}`,
-        attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
-        body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20
+      for (const vendor in vendorObject) {
+        vendors.push({
+          id: vendorObject[vendor].vendorDetails.id,
+          subject: ` P.O-${job[0].jobCode} - ${job[0].description}`,
+          attachment: `${vendorObject[vendor].vendorDetails.id}.pdf`,
+          body: `Dear Sir / Madam<br/>Good Day,<br/><br/>We are pleased to place the order for subject enquiry as per your quotes received under reference number PO-${job[0].jobCode}<br/><br/>We request to rechek the quantity ordered, price and other terms as per the attached PDF copy of Purchase Order.<br/><br/>Please note below for the submission of your invoices.<br/>•	Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.<br/>•	All the invoices shall only be addressed to accounts@shinpoengineering.com<br/>• Send only one invoice per email as a PDF file<br/>• Ensure that the purchase order no ,Job code no are clearly stated on the invoice<br/>• Ensure that full banking details are clearly stated on the invoice<br/>•	Ensure that vessel name, job description and pricing are clearly mentioned on the invoice<br/>• Ensure the copy of quotes is/are attached with the invoice<br/>• Ensure time sheets are attached and signed off by Shinpo representative<br/>• Ask your Shinpo Engineering representative for clarification if any doubt<br/><br/>We look forward for more business with you in future<br/><br/>Thanks with Regards<br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20
           The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
           </div></div>`,
-      });
-    }
-
-    const form = new FormData();
-    form.append("vendors", JSON.stringify(vendors));
-    for (const vendor in vendorObject) {
-      const blob = await createPO({
-        poNo: `PO-${job[0].jobCode}`,
-        vendor: vendorObject[vendor].vendorDetails,
-        aggregate: {
-          discount: vendorObject[vendor].spares[0].spareDetails.discount,
-          deliveryCharge: vendorObject[vendor].spares[0].spareDetails.delivery,
-        },
-        currencyCode: vendorObject[vendor].currencyCode,
-        spares: vendorObject[vendor].spares.map((s: any) => {
-          return {
-            ...s.spareDetails,
-          };
-        }),
-        deliveryAddress: deliveryAddress.address,
-        remarks,
-        vesselName: job[0].shipName,
-      });
-      form.append(
-        "attachments",
-        blob,
-        `${vendorObject[vendor].vendorDetails.id}.pdf`
-      );
-    }
-    await instance
-      .post(`/job/send-po`, form)
-      .then((res) => {
-        toast.success("Purchase Order Sent Successfully");
-        instance.put(`/jobs/${job[0].id}`, {
-          data: {
-            purchaseStatus: "POISSUED",
-          },
         });
-        router.push("/dashboard/purchase");
-        setLoading(false);
-      })
-      .catch((err) => {
-        toast.error("Error sending Purchase Order");
-      })
-      .finally(() => {
-        setLoading(false);
+      }
+
+      const blobs: { [x: string]: Blob } = {};
+
+      const form = new FormData();
+      form.append("vendors", JSON.stringify(vendors));
+      for (const vendor in vendorObject) {
+        const blob = await createPO({
+          poNo: `PO-${job[0].jobCode}`,
+          vendor: vendorObject[vendor].vendorDetails,
+          aggregate: {
+            discount: vendorObject[vendor].spares[0].spareDetails.discount,
+            deliveryCharge:
+              vendorObject[vendor].spares[0].spareDetails.delivery,
+          },
+          currencyCode: vendorObject[vendor].currencyCode,
+          spares: vendorObject[vendor].spares.map((s: any) => {
+            return {
+              ...s.spareDetails,
+            };
+          }),
+          deliveryAddress: deliveryAddress.address,
+          remarks,
+          vesselName: job[0].shipName,
+        });
+        blobs[vendorObject[vendor].vendorDetails.id] = blob;
+        form.append(
+          "attachments",
+          blob,
+          `${vendorObject[vendor].vendorDetails.id}.pdf`
+        );
+      }
+      const res = await instance.post(`/job/send-po`, form);
+      toast.success("Purchase Order Sent Successfully");
+      instance.put(`/jobs/${job[0].id}`, {
+        data: {
+          purchaseStatus: "POISSUED",
+        },
       });
+      const poSaves = await Promise.allSettled(
+        vendors.map((v) => {
+          const form = new FormData();
+          form.append("vendorId", v.id);
+          form.append("jobCode", job[0].jobCode);
+          form.append("attachments", blobs[v.id]);
+          return instance.post(`/purchase-order/save`, form);
+        })
+      );
+      console.log({ poSaves });
+      router.push("/dashboard/purchase");
+    } catch (err) {
+      toast.error("Failed to send purchase order");
+    }
     setLoading(false);
   };
 
