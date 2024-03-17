@@ -186,7 +186,7 @@ export default function RfqHash(props: PageProps) {
       formData.append("mailBody", mailBody);
 
       await instance.post(`/rfq/${props.rfqs[0].RFQNumber}/send-ack`, formData);
-      // router.push("/vendor/form/rfq/success");
+      router.push("/vendor/form/rfq/success");
     } catch (err) {
       console.error(err);
       toast.error("Failed to submit quotation");
