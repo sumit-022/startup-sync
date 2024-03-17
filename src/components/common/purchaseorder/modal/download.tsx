@@ -15,7 +15,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose, id }) => {
   useEffect(() => {
     instance
       .get(
-        `/purchase-orders?publicationState=preview&filters\[job\][id][$eq]=${id}&populate[0]=vendor&populate[1]=attachments`
+        `/purchase-orders?filters\[job\][id][$eq]=${id}&populate[0]=vendor&populate[1]=attachments`
       )
       .then((res) => {
         setPurchaseOrders(parseAttributes(res.data.data));

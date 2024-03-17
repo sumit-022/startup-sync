@@ -581,7 +581,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     const rfqs = parseAttributes(
       (
         await instance.get(
-          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&filters[filled][$ne]=true&populate[0]=spare.attachments&populate[1]=vendor`
+          `/rfqs?filters[RFQNumber][$eq]=${rfqNumber}&filters[vendor][id][$eq]=${vendorId}&filters[filled][$ne]=true&populate[0]=spare.attachments&populate[1]=vendor`
         )
       ).data
     );

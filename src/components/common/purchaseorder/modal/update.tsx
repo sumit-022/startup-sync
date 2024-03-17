@@ -41,7 +41,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
       try {
         setLoadVendor(true);
         const response = await instance.get(
-          `/rfqs?publicationState=preview&filters[RFQNumber][$eq]=${rfqNumber}&filters[filled]=false&populate=vendor`
+          `/rfqs?filters[RFQNumber][$eq]=${rfqNumber}&filters[filled]=false&populate=vendor`
         );
         const rfqs = parseAttributes(response.data);
         const vendors = rfqs.map((rfq: any) => rfq.vendor);
