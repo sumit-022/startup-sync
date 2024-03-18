@@ -32,7 +32,7 @@ export const sidebar: SidebarMenu[] = [
         notifications: false,
       },
       {
-        id: "3b",
+        id: "3c",
         type: "menu",
         title: "Logistics Dashboard",
         icon: rental,

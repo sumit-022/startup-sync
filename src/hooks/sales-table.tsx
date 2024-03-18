@@ -124,7 +124,9 @@ export default function useSalesTable({
           data: parseAttributes(res.data.data).map((el: any) =>
             Object.fromEntries(
               Object.entries(el).map(([x, y]: [string, any]) => {
-                if (x == "assignedTo") return [x, y.fullname];
+                if (x == "assignedTo") {
+                  if (y) return [x, y.fullname];
+                }
                 if (x == "company") return [x, y.name];
                 return [x, y];
               })
@@ -132,7 +134,7 @@ export default function useSalesTable({
           ),
           total: res.data.meta.pagination.total,
         });
-        console.log("rows", rows);
+        console.log({ rows });
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
