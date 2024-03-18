@@ -156,9 +156,6 @@ export default function Home() {
       });
   };
 
-  const myRate = useCurrency("AED");
-  console.log({ myRate });
-
   return (
     <DashboardLayout header sidebar>
       <Box sx={{ height: 400, width: "100%" }}>
@@ -178,6 +175,9 @@ export default function Home() {
           rows={rows.data}
           rowCount={rows.total}
           scrollbarSize={20}
+          columnVisibilityModel={{
+            response: filters.status === "QUERYRECEIVED" ? false : true,
+          }}
           columns={columns}
           loading={loading}
           disableRowSelectionOnClick

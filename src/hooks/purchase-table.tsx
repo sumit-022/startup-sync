@@ -3,7 +3,6 @@ import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
-import IconButton from "@/components/atoms/button/icon-button";
 import { useSearchParams } from "next/navigation";
 
 export default function usePurchaseTable({
@@ -74,6 +73,24 @@ export default function usePurchaseTable({
       flex: 0.5,
     },
     { field: "receivedAt", headerName: "Received Date", width: 150, flex: 0.3 },
+    {
+      field: "response",
+      headerName: "Responses",
+      width: 150,
+      flex: 0.3,
+      renderCell: (params) => {
+        const uniqueResponses = new Set(
+          params.row.rfqs.map((el: any) => el.vendor.name)
+        );
+        const uniqueFilledResponses = new Set(
+          params.row.rfqs
+            .filter((el: any) => el.filled)
+            .map((el: any) => el.vendor.name)
+        );
+        console.log({ uniqueResponses, jobCode: params.row.jobCode });
+        return `${uniqueFilledResponses.size} / ${uniqueResponses.size}`;
+      },
+    },
     { field: "type", headerName: "Type", width: 150, flex: 0.3 },
     { field: "assignedTo", headerName: "Assigned To", width: 150, flex: 0.3 },
     {
