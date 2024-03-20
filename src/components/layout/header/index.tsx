@@ -45,7 +45,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
             <h1 className="text-lg font-semibold">Dashboard</h1>
             <p className="text-sm text-primary-cool-grey">
               Welcome back {user?.fullname.split(" ")[0]}👋, Let’s get back to
-              managing your properties.
+              managing your jobs.
             </p>
           </div>
         </div>

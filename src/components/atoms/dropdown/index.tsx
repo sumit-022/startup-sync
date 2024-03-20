@@ -23,17 +23,17 @@ const Dropdown = ({ children, activeCondition }: DropdownProperties) => {
     }
   };
 
-  useEffect(() => {
-    if (open) {
-      document.addEventListener("click", handleOutsideClick);
-    } else {
-      document.removeEventListener("click", handleOutsideClick);
-    }
+  // useEffect(() => {
+  //   if (open) {
+  //     document.addEventListener("click", handleOutsideClick);
+  //   } else {
+  //     document.removeEventListener("click", handleOutsideClick);
+  //   }
 
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, [open]);
+  //   return () => {
+  //     document.removeEventListener("click", handleOutsideClick);
+  //   };
+  // }, [open]);
 
   return (
     <li className="list-none" ref={dropdownRef}>
