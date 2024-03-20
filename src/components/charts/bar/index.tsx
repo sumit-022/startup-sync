@@ -24,6 +24,7 @@ const options: ChartOptions<"bar"> = {
       stacked: true,
     },
   },
+  responsive: true,
 };
 
 export default function BarChart({

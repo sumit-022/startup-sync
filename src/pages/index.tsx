@@ -3,10 +3,8 @@ import DashboardLayout from "@/components/layout";
 import AuthContext from "@/context/AuthContext";
 import { Truculenta } from "next/font/google";
 import clsx from "clsx";
-import LineChart from "@/components/charts/orderconversion";
 import BarChart from "@/components/charts/bar";
 import PieChart from "@/components/charts/pie";
-import useStats from "@/hooks/useStats";
 import instance from "@/config/axios.config";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });
