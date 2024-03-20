@@ -1,36 +1,43 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
+import { ChartOptions } from "chart.js/auto";
 import { Card, CardContent, CardHeader } from "@mui/material";
+interface Dataset {
+  label: string;
+  data: number[];
+  backgroundColor: string;
+  borderColor: string;
+  borderWidth: number;
+}
 
-const data = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-  datasets: [
-    {
-      label: "Sales",
-      data: [3, 2, 2, 1, 5, 4, 7],
-      fill: false,
-      backgroundColor: "rgb(75, 192, 192)",
-      borderColor: "rgba(75, 192, 192, 0.2)",
-    },
-  ],
-};
+interface ChartData {
+  labels: string[];
+  datasets: Dataset[];
+}
 
-const options = {
+const options: ChartOptions<"bar"> = {
   scales: {
+    x: {
+      stacked: true,
+    },
     y: {
-      beginAtZero: true,
+      stacked: true,
     },
   },
-  responsive: true,
-  maintainAspectRatio: false,
 };
 
-export default function BarChart() {
+export default function BarChart({
+  data,
+  title,
+}: {
+  data: ChartData;
+  title: string;
+}) {
   return (
     <Card>
-      <CardHeader title="Sales" />
+      <CardHeader title={title} />
       <CardContent>
-        <Bar data={data} options={options} height={400} />
+        <Bar data={data} options={options} height={100} />
       </CardContent>
     </Card>
   );

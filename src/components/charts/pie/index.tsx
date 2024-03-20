@@ -28,7 +28,7 @@ const options = {
 
 export default function PieChart({ className }: { className?: string }) {
   return (
-    <Card className={clsx(className, "w-96")}>
+    <Card className={clsx(className)}>
       <CardHeader title="Sales" />
       <CardContent>
         <Pie data={data} options={options} />
