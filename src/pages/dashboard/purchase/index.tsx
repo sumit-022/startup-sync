@@ -21,7 +21,6 @@ import { RiFileDownloadFill } from "react-icons/ri";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
 import instance from "@/config/axios.config";
-import { useCurrency } from "@/context/CurrencyContext";
 import DownloadModal from "@/components/common/purchaseorder/modal/download";
 
 type PurchaseTableFilter = {
@@ -50,6 +49,17 @@ export default function Home() {
         ]
       : filters.status == "RFQSENT"
       ? [
+          {
+            icon: <MdAdd />,
+            name: "Send RFQ Again",
+            onClick: (params: any) => {
+              setRFQOpen(true);
+              setAgain(true);
+              const job = rows.data.find((el) => el.id == params.row.id);
+              job && setJob(job);
+            },
+            className: "bg-green-500 hover:bg-green-600",
+          },
           {
             icon: <MdAdd />,
             name: "Update Quotes",
@@ -131,6 +141,7 @@ export default function Home() {
   };
 
   const [RFQOpen, setRFQOpen] = React.useState(true);
+  const [again, setAgain] = React.useState(false);
   const [job, setJob] = React.useState<JobType | null>(null);
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [downloadOpen, setDownloadOpen] = React.useState<{
@@ -158,7 +169,7 @@ export default function Home() {
 
   return (
     <DashboardLayout header sidebar>
-      <Box sx={{ height: 400, width: "100%" }}>
+      <Box sx={{ height: 600, width: "100%" }}>
         <ToggleButtonGroup
           sx={{ mb: 2 }}
           color="primary"
@@ -199,6 +210,8 @@ export default function Home() {
       {job && (
         <RFQDialog
           open={RFQOpen}
+          setAgain={setAgain}
+          again={again}
           setOpen={setRFQOpen}
           job={job}
           refresh={refresh}

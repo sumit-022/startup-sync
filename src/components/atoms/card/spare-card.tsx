@@ -8,6 +8,7 @@ interface SpareCardProps {
   title?: string;
   description?: string;
   quantity?: number | string | null;
+  disableActions?: boolean;
   onSpareDelete: () => void;
   onSpareAdd: () => void;
   onSpareEdit: () => void;
@@ -26,29 +27,31 @@ const SpareCard: React.FC<SpareCardProps> = (props) => {
           </p>
         </div>
       </div>
-      <div className="flex gap-1">
-        <IconButton
-          className="text-white"
-          size="small"
-          onClick={props.onSpareDelete}
-        >
-          <MdDelete />
-        </IconButton>
-        <IconButton
-          className="text-white"
-          size="small"
-          onClick={props.onSpareEdit}
-        >
-          <BiPencil />
-        </IconButton>
-        <IconButton
-          className="text-white"
-          size="small"
-          onClick={props.onSpareAdd}
-        >
-          <MdAdd />
-        </IconButton>
-      </div>
+      {!props.disableActions && (
+        <div className="flex gap-1">
+          <IconButton
+            className="text-white"
+            size="small"
+            onClick={props.onSpareDelete}
+          >
+            <MdDelete />
+          </IconButton>
+          <IconButton
+            className="text-white"
+            size="small"
+            onClick={props.onSpareEdit}
+          >
+            <BiPencil />
+          </IconButton>
+          <IconButton
+            className="text-white"
+            size="small"
+            onClick={props.onSpareAdd}
+          >
+            <MdAdd />
+          </IconButton>
+        </div>
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { IoMdCloudUpload } from "react-icons/io";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, set } from "react-hook-form";
 import React, {
   ChangeEvent,
   useContext,
@@ -25,7 +25,6 @@ import { MdDelete, MdAdd, MdEdit } from "react-icons/md";
 import logo from "@/assets/image/logo.jpg";
 import Image from "next/image";
 import createRfqPdf from "@/utils/create-rfq-pdf";
-import qs from "qs";
 import { toast } from "react-toastify";
 import SpareCard from "@/components/atoms/card/spare-card";
 import MultiFileInput from "@/components/atoms/input/multiple-file";
@@ -33,14 +32,20 @@ import AuthContext from "@/context/AuthContext";
 
 const RFQForm = ({
   job,
+  again,
   setModalOpen,
   refresh,
 }: {
+  again?: boolean;
   job: JobType;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   refresh: () => void;
 }) => {
   const [vendors, setVendors] = React.useState<VendorType[]>([]);
+  const [selectedVendors, setSelectedVendors] = React.useState<VendorType[]>(
+    []
+  );
+  const [spares, setSpares] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [spareDetails, setSpareDetails] = React.useState<SpareType>({
@@ -74,10 +79,43 @@ const RFQForm = ({
       });
   }, []);
 
+  useEffect(() => {
+    instance.get(`/jobs/${job.id}?populate=rfqs`).then((res) => {
+      const data = parseAttributes(res.data.data);
+      console.log({ data });
+      const filteredVendors = data.rfqs.filter(
+        (rfq: any, index: number, self: any) =>
+          index ===
+          self.findIndex(
+            (t: any) => t.vendor.id === rfq.vendor.id && t.vendor.name
+          )
+      );
+      setSelectedVendors(filteredVendors.map((rfq: any) => rfq.vendor));
+    });
+  }, []);
+
+  console.log({ selectedVendors });
+
   const { fields, append, remove, update } = useFieldArray({
     name: "spareDetails",
     control,
   });
+
+  useEffect(() => {
+    instance.get(`/jobs/${job.id}?populate=spares.attachments`).then((res) => {
+      const data = parseAttributes(res.data.data);
+      console.log("spares", data.spares);
+      setSpares(data.spares);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (spares.length == 0) return;
+    const sparesToAppend = spares.filter(
+      (spare: any) => !fields.find((field) => field.title == spare.title)
+    );
+    append(sparesToAppend);
+  }, [spares]);
 
   const onSubmit = async (data: RFQFormType) => {
     setLoading(true);
@@ -119,27 +157,31 @@ const RFQForm = ({
         form.append("vendorAttachments", attachment, `${id}.pdf`);
       }
     });
-    form.append(
-      "spareDetails",
-      JSON.stringify(
-        data.spareDetails.map(({ attachments, ...spare }) => ({
-          attachments: attachments
-            ? Array.from(attachments).map((attachment) => attachment.name)
-            : undefined,
-          ...spare,
-        }))
-      )
-    );
-    data.spareDetails.forEach(({ attachments }) => {
-      if (attachments) {
-        Array.from(attachments).forEach((attachment) => {
-          form.append("spareAttachments", attachment, attachment.name);
-        });
-      }
-    });
+    if (!again) {
+      form.append(
+        "spareDetails",
+        JSON.stringify(
+          data.spareDetails.map(({ attachments, ...spare }) => ({
+            attachments: attachments
+              ? Array.from(attachments).map((attachment) => attachment.name)
+              : undefined,
+            ...spare,
+          }))
+        )
+      );
+    }
+    if (!again) {
+      data.spareDetails.forEach(({ attachments }) => {
+        if (attachments) {
+          Array.from(attachments).forEach((attachment) => {
+            form.append("spareAttachments", attachment, attachment.name);
+          });
+        }
+      });
+    }
 
     try {
-      const res = await instance.post("/job/send-rfq", form);
+      await instance.post("/job/send-rfq", form);
       toast.success("RFQ Sent");
       setModalOpen(false);
       refresh();
@@ -189,10 +231,11 @@ const RFQForm = ({
           isOptionEqualToValue={(option, value) => option.id === value.id}
           title="vendors"
           label="Vendors"
-          options={vendors.map((vendor) => ({
-            id: vendor.id,
-            title: vendor.name,
-          }))}
+          options={vendors
+            .filter(
+              (vendor) => !selectedVendors.find((v) => v.id === vendor.id)
+            )
+            .map((vendor) => ({ id: vendor.id, title: vendor.name }))}
         />
         <FormInputText
           control={control}
@@ -215,6 +258,7 @@ const RFQForm = ({
           fields.map((field, index) => (
             <SpareCard
               key={index}
+              disableActions={again}
               description={field.description}
               quantity={field.quantity}
               title={field.title}
@@ -280,6 +324,7 @@ const RFQForm = ({
           <TextField
             name="spareDetails.title"
             label="Item name"
+            required
             value={spareDetails.title}
             onChange={(e) => {
               setSpareDetails((prev) => ({
@@ -292,6 +337,7 @@ const RFQForm = ({
             name="spareDetails.description"
             multiline
             rows={4}
+            required
             value={spareDetails.description}
             label="Remarks / Drawing No. / Part No."
             onChange={(e) => {
@@ -304,6 +350,7 @@ const RFQForm = ({
           <TextField
             type="number"
             name="spareDetails.quantity"
+            required
             value={spareDetails.quantity}
             label="Quantity"
             onChange={(e) => {
@@ -337,6 +384,11 @@ const RFQForm = ({
                   attachments: null,
                 });
               }}
+              disabled={
+                !spareDetails.title ||
+                !spareDetails.description ||
+                !spareDetails.quantity
+              }
             >
               <MdAdd />
               Add

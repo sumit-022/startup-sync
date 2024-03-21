@@ -12,6 +12,7 @@ const FormInputAutoComplete = ({
   isOptionEqualToValue,
   className,
   disabled,
+  defaultValue,
 }: {
   title: string;
   label: string;
@@ -25,6 +26,7 @@ const FormInputAutoComplete = ({
     "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
   >;
   required?: boolean;
+  defaultValue?: any;
   isOptionEqualToValue?: (
     option: {
       id: any;
@@ -52,6 +54,7 @@ const FormInputAutoComplete = ({
             disabled={disabled}
             loading={options.length === 0}
             multiple
+            defaultValue={defaultValue}
             options={options}
             disableCloseOnSelect
             value={value}

@@ -87,7 +87,6 @@ export default function usePurchaseTable({
             .filter((el: any) => el.filled)
             .map((el: any) => el.vendor.name)
         );
-        console.log({ uniqueResponses, jobCode: params.row.jobCode });
         return `${uniqueFilledResponses.size} / ${uniqueResponses.size}`;
       },
     },

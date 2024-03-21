@@ -4,7 +4,6 @@ import AuthContext from "@/context/AuthContext";
 import { Truculenta } from "next/font/google";
 import clsx from "clsx";
 import BarChart from "@/components/charts/bar";
-import PieChart from "@/components/charts/pie";
 import instance from "@/config/axios.config";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });

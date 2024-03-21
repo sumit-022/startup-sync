@@ -1,9 +1,7 @@
 import { Box, Dialog, Slide, Typography, IconButton } from "@mui/material";
 import React from "react";
-import { MdAdd } from "react-icons/md";
 import { TransitionProps } from "@mui/material/transitions";
 import RFQForm from "@/components/common/joborder/form/job-rfq";
-import { IoCreate } from "react-icons/io5";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -19,10 +17,14 @@ const RFQDialog = ({
   open,
   setOpen,
   refresh,
+  again,
+  setAgain,
 }: {
+  again?: boolean;
   job: JobType;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setAgain: React.Dispatch<React.SetStateAction<boolean>>;
   refresh: () => void;
 }) => {
   return (
@@ -33,7 +35,6 @@ const RFQDialog = ({
         sx={{
           "& .MuiDialog-paper": {
             display: "flex",
-            justifyContent: "center",
             p: 4,
           },
         }}
@@ -49,11 +50,22 @@ const RFQDialog = ({
           }}
         >
           <div className="absolute top-2 right-1">
-            <button className="text-3xl" onClick={() => setOpen(false)}>
+            <button
+              className="text-3xl"
+              onClick={() => {
+                setOpen(false);
+                setAgain(false);
+              }}
+            >
               &times;
             </button>
           </div>
-          <RFQForm job={job} setModalOpen={setOpen} refresh={refresh} />
+          <RFQForm
+            again={again}
+            job={job}
+            setModalOpen={setOpen}
+            refresh={refresh}
+          />
         </Box>
       </Dialog>
     </>
