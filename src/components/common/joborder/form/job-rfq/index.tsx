@@ -65,21 +65,12 @@ const RFQForm = ({
 
   const vendorsWatch = watch("vendors");
 
-  const apiRoute = qs.stringify({
-    filters: {
-      services: {
-        id: {
-          $containsi: job.services.map((service) => service.id),
-        },
-      },
-    },
-  });
-
   useEffect(() => {
     instance
-      .get(`/vendors?${apiRoute}&pagination[page]=1&pagination[pageSize]=1000`)
+      .get(`/vendors?pagination[page]=1&pagination[pageSize]=1000`)
       .then((res) => {
-        setVendors(parseAttributes(res.data.data));
+        const data = parseAttributes(res.data.data);
+        setVendors(data.filter((vendor: VendorType) => vendor.name));
       });
   }, []);
 
@@ -288,7 +279,7 @@ const RFQForm = ({
           </Typography>
           <TextField
             name="spareDetails.title"
-            label="Title"
+            label="Item name"
             value={spareDetails.title}
             onChange={(e) => {
               setSpareDetails((prev) => ({
@@ -302,7 +293,7 @@ const RFQForm = ({
             multiline
             rows={4}
             value={spareDetails.description}
-            label="Description"
+            label="Remarks / Drawing No. / Part No."
             onChange={(e) => {
               setSpareDetails((prev) => ({
                 ...prev,
