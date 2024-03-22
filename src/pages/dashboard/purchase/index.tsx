@@ -14,6 +14,7 @@ import {
   Button,
 } from "@mui/material";
 import { MdAdd } from "react-icons/md";
+import Search from "../../../components/common/joborder/joborder-search";
 import RFQDialog from "@/components/atoms/button/job-rfq";
 import { useRouter } from "next/router";
 import { IoMdEye } from "react-icons/io";
@@ -25,12 +26,14 @@ import DownloadModal from "@/components/common/purchaseorder/modal/download";
 
 type PurchaseTableFilter = {
   status: string;
+  search: string;
 };
 
 export default function Home() {
   const router = useRouter();
   const [filters, setFilters] = React.useState<PurchaseTableFilter>({
     status: "QUERYRECEIVED",
+    search: "",
   });
   const [loader, setLoader] = React.useState(false);
   const actions =
@@ -126,6 +129,7 @@ export default function Home() {
     <LongMenu options={actions} params={params} />
   );
   const { columns, rows, loading, page, refresh } = usePurchaseTable({
+    search: filters.search,
     renderActions,
     status: filters.status,
   });
@@ -182,6 +186,16 @@ export default function Home() {
           <ToggleButton value="POISSUED">PO Issued</ToggleButton>
           <ToggleButton value="COMPLETED">Completed</ToggleButton>
         </ToggleButtonGroup>
+        <Search
+          placeholder="Enter Job Code to search.."
+          onChange={(e) =>
+            setFilters((filters) => ({
+              ...filters,
+              search: e.target.value,
+            }))
+          }
+          className="mb-4"
+        />
         <DataGrid
           rows={rows.data}
           rowCount={rows.total}

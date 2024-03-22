@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import instance from "@/config/axios.config";
 import { decrypt } from "@/utils/crypt";
 import { GetServerSideProps } from "next";
@@ -13,8 +13,6 @@ import { useRouter } from "next/router";
 import createAckPDF from "@/utils/create-rfq-ack";
 import downloadBlob from "@/utils/download-utils";
 import FormInputSelect from "@/components/atoms/input/select";
-import { useCurrency } from "@/context/CurrencyContext";
-import AuthContext from "@/context/AuthContext";
 
 type PageProps = {
   rfqs: any[];
@@ -104,8 +102,6 @@ export default function RfqHash(props: PageProps) {
       })),
     },
   });
-
-  const { user } = useContext(AuthContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [referenceNumber, setReferenceNumber] = React.useState<string>("");

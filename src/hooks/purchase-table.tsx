@@ -8,9 +8,11 @@ import { useSearchParams } from "next/navigation";
 export default function usePurchaseTable({
   status,
   renderActions,
+  search,
 }: {
   status: string | null;
   renderActions?: (params: any) => React.ReactNode;
+  search: string;
 }) {
   const [rows, setRows] = useState<{
     total: number;
@@ -29,6 +31,24 @@ export default function usePurchaseTable({
         purchaseStatus: {
           $eq: status,
         },
+        ...(search
+          ? {
+              $or: [
+                { jobCode: { $contains: search } },
+                { description: { $containsi: search } },
+                { shipName: { $containsi: search } },
+                { targetPort: { $containsi: search } },
+                { type: { $containsi: search } },
+                {
+                  company: {
+                    name: {
+                      $containsi: search,
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
       },
       pagination: {
         page,
@@ -40,7 +60,7 @@ export default function usePurchaseTable({
 
   useEffect(() => {
     refresh();
-  }, [status, page]);
+  }, [status, page, search]);
   const refresh = async () => {
     const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
     setLoading(true);
