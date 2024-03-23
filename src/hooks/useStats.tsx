@@ -1,46 +1,32 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import instance from "@/config/axios.config";
-import { AxiosError } from "axios";
-import parseAttributes from "@/utils/parse-data";
 
-export default function useStats(
-  startDate: Date,
-  endDate: Date,
-  userId?: number
-) {
-  const [stats, setStats] = useState<{
-    data: any;
-    loading: boolean;
-    error: string | null;
-  }>({
-    data: null,
-    loading: true,
-    error: null,
-  });
+export default function useStats({
+  startDate,
+  endDate,
+  userId,
+}: {
+  startDate: string;
+  endDate: string;
+  userId: string | number;
+}) {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const updateStats = async () => {
+  const fetchStats = async () => {
+    setLoading(true);
     try {
       const res = await instance.get(
-        `/jobs/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&userId=${userId}&aggregate=month`
+        `/jobs/stats?startDate=${startDate}&endDate=${endDate}&userId=${userId}`
       );
-      setStats({
-        data: res.data,
-        loading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      setStats({
-        data: null,
-        loading: false,
-        error: (error as AxiosError).message,
-      });
+      setStats(res.data);
+    } catch (err: any) {
+      setError(err);
     } finally {
-      setStats((prev) => ({ ...prev, loading: false }));
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    updateStats();
-  }, []);
 
-  return stats;
+  return { stats, loading, error, fetchStats };
 }
