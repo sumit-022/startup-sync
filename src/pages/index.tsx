@@ -15,13 +15,13 @@ const HomePage = () => {
     endDate: new Date("2024-12-31").toISOString(),
   });
 
-  const { stats: UserStats, loading: userStatsLoading } = useStats({
+  const { stats: userStats, loading: userStatsLoading } = useStats({
     startDate: new Date("2024-01-01").toISOString(),
     endDate: new Date("2024-12-31").toISOString(),
     userId: user?.id,
   });
 
-  console.log({ overallStats, UserStats });
+  console.log({ overallStats, UserStats: userStats });
 
   const time = new Date().getHours();
   return (
@@ -32,39 +32,43 @@ const HomePage = () => {
         user?.fullname.split(" ")[0]
       }`}</h1>
       <div className="mt-8">
-        <BarChart
-          data={{
-            labels: [
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ],
-            datasets: [
-              {
-                label: "Overall Stats",
-                data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 5, 1],
-              },
-              {
-                label: "Cordinator Stats",
-                data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
-              },
-              {
-                label: "User Stats",
-                data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
-              },
-            ],
-          }}
-          title="Overall Stats"
-        />
+        {!userStatsLoading && (
+          <BarChart
+            data={{
+              labels: [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ],
+              datasets: [
+                {
+                  label: "Order Created",
+                  data: Object.values(userStats.aggregate).map(
+                    (el: any) => el.created
+                  ),
+                },
+                {
+                  label: "Order Quoted",
+                  data: [0, 12, 19, 3, 5, 2, 3, 4, 5, 6, 7, 8, 9],
+                },
+                {
+                  label: "Order Confirmed",
+                  data: [0, 12, 19, 3, 5, 2, 3, 4, 5, 6, 7, 8, 9],
+                },
+              ],
+            }}
+            title="Overall Stats"
+          />
+        )}
       </div>
     </DashboardLayout>
   );

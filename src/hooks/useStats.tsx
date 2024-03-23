@@ -24,7 +24,7 @@ export default function useStats({
         throw new Error("Please provide user id");
       }
       const res = await instance.get(
-        `/jobs/stats?startDate=${startDate}&endDate=${endDate}&userId=${userId}`
+        `/jobs/stats?startDate=${startDate}&endDate=${endDate}&userId=${userId}&aggregate=month`
       );
       setStats(res.data);
     } catch (err: any) {
