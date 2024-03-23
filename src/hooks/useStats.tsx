@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import instance from "@/config/axios.config";
 
 export default function useStats({
@@ -8,7 +8,7 @@ export default function useStats({
 }: {
   startDate: string;
   endDate: string;
-  userId: string | number;
+  userId?: string | number | undefined;
 }) {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -17,6 +17,12 @@ export default function useStats({
   const fetchStats = async () => {
     setLoading(true);
     try {
+      if (!startDate || !endDate) {
+        throw new Error("Please provide start and end date");
+      }
+      if (userId === undefined) {
+        throw new Error("Please provide user id");
+      }
       const res = await instance.get(
         `/jobs/stats?startDate=${startDate}&endDate=${endDate}&userId=${userId}`
       );
@@ -27,6 +33,10 @@ export default function useStats({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchStats();
+  }, [startDate, endDate, userId]);
 
   return { stats, loading, error, fetchStats };
 }

@@ -5,9 +5,6 @@ import { Card, CardContent, CardHeader } from "@mui/material";
 interface Dataset {
   label: string;
   data: number[];
-  backgroundColor: string;
-  borderColor: string;
-  borderWidth: number;
 }
 
 interface ChartData {
