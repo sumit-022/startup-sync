@@ -154,8 +154,7 @@ export default function RfqHash(props: PageProps) {
           },
         });
       }
-      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>Team Shinpo
-      <div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/>`;
+      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>Team Shinpo`;
       const subject = `Acknowledgement of Quotes - ${props.job.jobCode}`;
       const pdf = await createAckPDF({
         shipName: props.job.shipName,
