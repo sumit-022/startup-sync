@@ -13,6 +13,7 @@ const HomePage = () => {
   const { stats: overallStats, loading: overallStatsLoading } = useStats({
     startDate: new Date("2024-01-01").toISOString(),
     endDate: new Date("2024-12-31").toISOString(),
+    all: true,
   });
 
   const { stats: userStats, loading: userStatsLoading } = useStats({
@@ -21,8 +22,20 @@ const HomePage = () => {
     userId: user?.id,
   });
 
-  console.log({ overallStats, UserStats: userStats });
-
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const time = new Date().getHours();
   return (
     <DashboardLayout header sidebar>
@@ -32,37 +45,74 @@ const HomePage = () => {
         user?.fullname.split(" ")[0]
       }`}</h1>
       <div className="mt-8">
-        {!userStatsLoading && (
+        {!userStatsLoading && userStats && (
           <BarChart
             data={{
-              labels: [
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
-              ],
+              labels: months,
               datasets: [
                 {
                   label: "Order Created",
-                  data: Object.values(userStats.aggregate).map(
-                    (el: any) => el.created
-                  ),
+                  data: [
+                    0,
+                    ...Object.keys(userStats.aggregate).map(
+                      (key) => userStats.aggregate[key].created
+                    ),
+                  ],
                 },
                 {
                   label: "Order Quoted",
-                  data: [0, 12, 19, 3, 5, 2, 3, 4, 5, 6, 7, 8, 9],
+                  data: [
+                    0,
+                    ...Object.keys(userStats.aggregate).map(
+                      (key) => userStats.aggregate[key].quoted
+                    ),
+                  ],
                 },
                 {
                   label: "Order Confirmed",
-                  data: [0, 12, 19, 3, 5, 2, 3, 4, 5, 6, 7, 8, 9],
+                  data: [
+                    0,
+                    ...Object.keys(userStats.aggregate).map(
+                      (key) => userStats.aggregate[key].confirmed
+                    ),
+                  ],
+                },
+              ],
+            }}
+            title="Personalized Stats"
+          />
+        )}
+        {!overallStatsLoading && overallStats && (
+          <BarChart
+            data={{
+              labels: months,
+              datasets: [
+                {
+                  label: "Order Created",
+                  data: [
+                    0,
+                    ...Object.keys(overallStats.aggregate).map(
+                      (key) => overallStats.aggregate[key].created
+                    ),
+                  ],
+                },
+                {
+                  label: "Order Quoted",
+                  data: [
+                    0,
+                    ...Object.keys(overallStats.aggregate).map(
+                      (key) => overallStats.aggregate[key].quoted
+                    ),
+                  ],
+                },
+                {
+                  label: "Order Confirmed",
+                  data: [
+                    0,
+                    ...Object.keys(overallStats.aggregate).map(
+                      (key) => overallStats.aggregate[key].confirmed
+                    ),
+                  ],
                 },
               ],
             }}
