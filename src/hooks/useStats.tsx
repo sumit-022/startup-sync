@@ -13,12 +13,11 @@ export default function useStats({
   all?: boolean;
 }) {
   const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState(null);
 
   const fetchStats = async () => {
     try {
-      setLoading(true);
       if (!startDate || !endDate) {
         throw new Error("Please provide start and end date");
       }

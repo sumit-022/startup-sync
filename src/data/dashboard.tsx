@@ -1,21 +1,33 @@
-import dashboard from "../assets/svg/dashboard/dashboard.svg";
-import generalAccounting from "../assets/svg/dashboard/general-accounting.svg";
-import members from "../assets/svg/dashboard/members.svg";
-import rental from "../assets/svg/dashboard/rental.svg";
+import { BiSolidDashboard } from "react-icons/bi";
+import { IoBag } from "react-icons/io5";
+import { BiSolidPurchaseTag } from "react-icons/bi";
+import { FaTruck } from "react-icons/fa";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { IoHome } from "react-icons/io5";
 
 export const sidebar: SidebarMenu[] = [
   {
     id: 0,
+    type: "menu",
+    title: "Home",
+    icon: <IoHome />,
+    slug: "/",
+    children: [],
+    api: "",
+    notifications: false,
+  },
+  {
+    id: 1,
     type: "dropdown",
     title: "Dashboard",
-    icon: dashboard,
+    icon: <BiSolidDashboard />,
     slug: "/dashboard",
     children: [
       {
         id: "3a",
         type: "menu",
         title: "Purchase Dashboard",
-        icon: generalAccounting,
+        icon: <BiSolidPurchaseTag />,
         slug: "/purchase",
         children: [],
         api: "",
@@ -25,7 +37,7 @@ export const sidebar: SidebarMenu[] = [
         id: "3b",
         type: "menu",
         title: "Sales Dashboard",
-        icon: rental,
+        icon: <IoBag />,
         slug: "/sales",
         children: [],
         api: "",
@@ -35,7 +47,7 @@ export const sidebar: SidebarMenu[] = [
         id: "3c",
         type: "menu",
         title: "Logistics Dashboard",
-        icon: rental,
+        icon: <FaTruck />,
         slug: "/logistics",
         children: [],
         api: "",
@@ -46,10 +58,10 @@ export const sidebar: SidebarMenu[] = [
     notifications: false,
   },
   {
-    id: 1,
+    id: 2,
     type: "menu",
     title: "Vendor Management",
-    icon: members,
+    icon: <FaPeopleGroup className="text-xl" />,
     slug: "/vendor",
     children: [],
     api: "",

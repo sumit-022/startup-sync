@@ -2,7 +2,7 @@ declare interface SidebarMenu {
   id: number | string;
   type: "menu" | "dropdown" | "item";
   title: string;
-  icon: any;
+  icon: React.ReactNode | string;
   slug: string;
   children: SidebarMenu[];
   api: string;

@@ -93,14 +93,18 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                 return (
                   <li key={menu.id} className="list-none">
                     <Link
-                      href={`/${menu.slug}`}
+                      href={`${menu.slug}`}
                       className={`relative flex items-center justify-between rounded-lg px-4 py-3 text-base font-light tracking-wide text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-bright-blue/80 hover:text-primary-white ${
                         pathname.includes(menu.slug) &&
                         "bg-primary-bright-blue text-primary-white"
                       }`}
                     >
-                      <div className="flex gap-2.5">
-                        <Image src={menu.icon} alt="" />
+                      <div className="flex items-center gap-2.5">
+                        {typeof menu.icon === "string" ? (
+                          <Image src={menu.icon} alt="" />
+                        ) : (
+                          menu.icon
+                        )}
                         {menu.title}
                       </div>
                       {menu.notifications && (
@@ -121,7 +125,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                       return (
                         <React.Fragment>
                           <Link
-                            href={`/${menu.slug}`}
+                            href={`${menu.slug}`}
                             className={`group relative flex items-center gap-2.5 rounded-lg px-4 py-2 text-base font-light tracking-wide text-primary-cool-grey duration-300 ease-in-out hover:bg-primary-bright-blue/80 hover:text-primary-white ${
                               pathname.includes(menu.slug)
                                 ? " bg-primary-bright-blue text-primary-white"
@@ -136,7 +140,11 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                                 : setSidebarExpanded(true);
                             }}
                           >
-                            <Image src={menu.icon} alt="" />
+                            {typeof menu.icon === "string" ? (
+                              <Image src={menu.icon} alt="" />
+                            ) : (
+                              menu.icon
+                            )}
                             {menu.title}
                             <Image
                               src={arrowRight}
@@ -180,7 +188,11 @@ const DashboardSidebar: React.FC<DashboardSidebarProperties> = ({
                                           : "")
                                       }
                                     >
-                                      <Image src={submenu.icon} alt={""} />
+                                      {typeof submenu.icon === "string" ? (
+                                        <Image src={submenu.icon} alt="" />
+                                      ) : (
+                                        submenu.icon
+                                      )}
                                       {submenu.title}
                                     </Link>
                                   </li>
