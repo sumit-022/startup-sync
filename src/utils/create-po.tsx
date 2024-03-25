@@ -197,7 +197,10 @@ function POHeader({
   return (
     <View>
       <View style={styles.header}>
-        {/* <Image src={logo.src} style={styles.logo} /> */}
+        <Image
+          src="https://jobs.shinpoengineering.com/logo.png"
+          style={styles.logo}
+        />
         <Text style={styles.boldText}>Purchase Order</Text>
       </View>
       <Text style={styles.companyName}>Shinpo Engineering PTE. LTD.</Text>

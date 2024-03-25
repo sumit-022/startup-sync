@@ -138,7 +138,10 @@ function RFQHeader() {
         </Link>
         <Text>GST Registration No. : 202215215M</Text>
       </View>
-      {/* <Image src={logo.src} style={styles.logo} /> */}
+      <Image
+        src="https://jobs.shinpoengineering.com/logo.png"
+        style={styles.logo}
+      />
     </View>
   );
 }
