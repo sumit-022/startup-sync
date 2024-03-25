@@ -12,7 +12,6 @@ import {
   Line,
   Svg,
 } from "@react-pdf/renderer";
-import logo from "@/assets/image/logo.jpg";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -139,7 +138,7 @@ function RFQHeader() {
         </Link>
         <Text>GST Registration No. : 202215215M</Text>
       </View>
-      <Image src={logo.src} style={styles.logo} />
+      {/* <Image src={logo.src} style={styles.logo} /> */}
     </View>
   );
 }

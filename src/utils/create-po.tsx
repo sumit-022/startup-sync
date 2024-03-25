@@ -12,7 +12,6 @@ import {
   Line,
   Svg,
 } from "@react-pdf/renderer";
-import logo from "@/assets/image/logo.jpg";
 
 type POType = {
   currencyCode: string;
@@ -198,7 +197,7 @@ function POHeader({
   return (
     <View>
       <View style={styles.header}>
-        <Image src={logo.src} style={styles.logo} />
+        {/* <Image src={logo.src} style={styles.logo} /> */}
         <Text style={styles.boldText}>Purchase Order</Text>
       </View>
       <Text style={styles.companyName}>Shinpo Engineering PTE. LTD.</Text>
