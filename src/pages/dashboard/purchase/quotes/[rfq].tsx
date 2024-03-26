@@ -368,7 +368,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     };
   const rfqs = parseAttributes(
     await instance.get(
-      `/rfqs?filters[RFQNumber][$eq]=${rfqNumber}&filters[filled]=true&populate[0]=spare.attachments&populate[1]=vendor&populate[2]=quantity`
+      `/rfqs?filters[RFQNumber][$eq]=${rfqNumber}&filters[filled]=true&populate[0]=spare.attachments&populate[1]=vendor&populate[2]=quantity&pagination[page]=1&pagination[pageSize]=1000`
     )
   );
   if (rfqs.length === 0)
@@ -399,6 +399,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
       notFound: true,
     };
   }
+
+  // Clean the spare names
+  rfqs.forEach((rfq: any) => {
+    const spare = rfq.spare;
+    spare.title = spare.title.trim();
+  });
 
   return {
     props: {
