@@ -171,10 +171,6 @@ function RFQDetails({
           <Text>{rfqNumber}</Text>
         </View>
         <View style={styles.detail}>
-          <Text style={styles.boldText}>Vessel Name:</Text>
-          <Text>{vesselName}</Text>
-        </View>
-        <View style={styles.detail}>
           <Text style={styles.boldText}>Job Description:</Text>
           <Text>{jobDescription}</Text>
         </View>
