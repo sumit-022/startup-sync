@@ -38,7 +38,7 @@ export default function useSalesTable({
       data: parseAttributes(res.data.data).map((el: any) =>
         Object.fromEntries(
           Object.entries(el).map(([x, y]: [string, any]) => {
-            if (x == "assignedTo") return [x, y.fullname || ""];
+            if (x == "assignedTo") return [x, y?.fullname || ""];
             if (x == "company") return [x, y.name];
             return [x, y];
           })
@@ -125,7 +125,7 @@ export default function useSalesTable({
             Object.fromEntries(
               Object.entries(el).map(([x, y]: [string, any]) => {
                 if (x == "assignedTo") {
-                  if (y) return [x, y.fullname];
+                  if (y) return [x, y?.fullname];
                 }
                 if (x == "company") return [x, y.name];
                 return [x, y];
