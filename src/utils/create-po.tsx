@@ -213,10 +213,6 @@ function POHeader({
           <Text style={styles.heading}>Order Date</Text>
           <Text style={styles.value}>{new Date().toLocaleDateString()}</Text>
         </View>
-        <View style={styles.poDetail}>
-          <Text style={styles.heading}>Vessel Name</Text>
-          <Text style={styles.value}>{shipName}</Text>
-        </View>
       </View>
     </View>
   );
