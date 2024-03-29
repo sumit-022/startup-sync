@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AuthContext from "@/context/AuthContext";
 import FormHeading from "@/components/atoms/heading/form-heading";
+import { idID } from "@mui/material/locale";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -45,8 +46,6 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
     "Remark",
   ] as const;
 
-  // console.log({ rfqs });
-
   const { companies: initCompanies, spares: initSpares } = rfqs.reduce(
     (acc, cur) => {
       const vendor = cur.vendor;
@@ -59,7 +58,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       if (!company) {
         acc.companies.push({
           vendor,
-          [spare.title]: {
+          [spare.id]: {
             ...spare,
             total:
               cur.unitPrice === null
@@ -72,7 +71,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           currencyCode,
         });
       } else {
-        company[spare.title] = {
+        company[spare.id] = {
           ...spare,
           total:
             cur.unitPrice === null
@@ -81,8 +80,10 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           unit: cur.unitPrice === null ? null : cur.unitPrice / conversionRate,
         };
       }
-      if (!acc.spares.find((s: any) => s.name === spare.title)) {
+
+      if (!acc.spares.find((s: any) => s.id === spare.id)) {
         acc.spares.push({
+          id: spare.id,
           name: spare.title,
           "Supply Qty": spare.quantity,
           orderQty: spare.quantity,
@@ -119,29 +120,21 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
         }
       }
 
-      // console.log({ selections, rfqs });
-
       const vendorObject: any = {};
 
       // replace selections spare data with the og data from rfqs
-      const oldSelections = Object.fromEntries(
-        Object.keys(selections).map((spareName) => {
-          return [
-            spareName,
-            selections[spareName].map((data: any) => {
-              const vendorId = data.vendor.id;
-              const reqRfq = rfqs.find(
-                (rfq) =>
-                  rfq.spare.title === spareName && rfq.vendor.id === vendorId
-              );
-              const { spare, ...rest } = reqRfq;
-              return { ...rest, ...spare };
-            }),
-          ];
-        })
-      );
-
-      // console.log({ oldSelections });
+      const oldSelections: any = {};
+      for (const spare of spareNames) {
+        oldSelections[spare] = selections[spare].map((s: any) => {
+          const rfq = rfqs.find(
+            (r) => r.spare.id === s.id && r.vendor.id === s.vendor.id
+          );
+          return {
+            ...rfq,
+            ...s,
+          };
+        });
+      }
 
       for (const spareName in oldSelections) {
         const sparesArray = oldSelections[spareName];
@@ -159,14 +152,13 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
           vendorObject[vendorId].spares.push({
             spareDetails: {
-              ...spares.find((s) => s.name === spare.title),
+              ...spares.find((s) => s.id === spare.id),
               ...spare,
               total: spare.unitPrice * spare.quantity,
             },
           });
         }
       }
-      // console.log("object", vendorObject);
 
       const vendors = [];
 
@@ -211,7 +203,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           `${vendorObject[vendor].vendorDetails.id}.pdf`
         );
       }
-      const res = await instance.post(`/job/send-po`, form);
+      await instance.post(`/job/send-po`, form);
       toast.success("Purchase Order Sent Successfully");
       instance.put(`/jobs/${job[0].id}`, {
         data: {
@@ -227,8 +219,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           return instance.post(`/purchase-order/save`, form);
         })
       );
-      console.log({ poSaves });
       router.push("/dashboard/purchase");
+      return;
     } catch (err) {
       toast.error("Failed to send purchase order");
     }
@@ -237,8 +229,6 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
   const [companies, setCompanies] = useState<any[]>(initCompanies);
   const [spares, setSpares] = useState<any[]>(initSpares);
-
-  // console.log({ companies, spares });
 
   const aggregate = rfqs.reduce((acc, cur) => {
     const rfqvendor = cur.vendor;
@@ -375,7 +365,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     return {
       notFound: true,
     };
-  // console.log({ rfqs });
 
   const job = parseAttributes(
     (await instance.get(`/jobs?filters[spares][id]=${rfqs[0].spare.id}`)).data
@@ -394,7 +383,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   );
 
   if (!job || job.length === 0) {
-    console.log("job not found");
     return {
       notFound: true,
     };

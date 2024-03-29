@@ -32,9 +32,9 @@ export default function QuoteCompareTable<
   aggregateCols: A;
   spares: ({
     [x in S[number]]: string;
-  } & { name: string; orderQty: number; unit: number | null })[];
+  } & { name: string; orderQty: number; unit: number | null; id: number })[];
   companies: ({
-    [s in (typeof spares)[number]["name"]]: { [x in C[number]]: string } & {
+    [s in (typeof spares)[number]["id"]]: { [x in C[number]]: string } & {
       selected: boolean;
       total: number;
     };
@@ -50,28 +50,20 @@ export default function QuoteCompareTable<
   onChange?: (c: typeof companies, s: typeof spares) => void;
   mode?: "view" | "edit";
 }) {
-  console.log({
-    spareCols,
-    companyCols,
-    spares,
-    companies,
-    aggregateCols,
-    aggregate,
-  });
   const totals = Object.fromEntries(
     companies.map((company) => [
       company.vendor.name,
       (() => {
         const { vendor, currencyCode, ...s } = company;
         return Object.keys(s).reduce((acc, cur) => {
-          const spare = company[cur as (typeof spares)[number]["name"]];
+          const spare = company[cur as (typeof spares)[number]["id"]];
           return spare.total === null || acc === null
             ? null
             : acc + spare.total;
         }, 0);
       })(),
     ])
-  ) as { [x in (typeof companies)[number]["name"]]: number };
+  ) as { [x in (typeof companies)[number]["id"]]: number };
 
   const sortedTotals = (Object.entries(totals) as [string, number][])
     .sort(([, a], [, b]) => a - b)
@@ -79,20 +71,24 @@ export default function QuoteCompareTable<
 
   const minCompanyForEachSpare = spares.map((spare) => {
     const spareName = spare.name as (typeof spares)[number]["name"];
+    const spareId = spare.id;
     const min = companies.reduce(
       (acc, cur) => {
-        const spareData = cur[spareName];
-        if (spareData.total === null) return acc;
+        const spareData = cur[spareId];
+        if (spareData.total === null) {
+          return acc;
+        }
         if (spareData?.total < acc.total) {
           return {
             name: cur.vendor.name,
             total: spareData.total,
+            id: spareData.id,
             spareName,
           };
         }
         return acc;
       },
-      { name: "", total: Infinity, spareName: "" }
+      { name: "", total: Infinity, spareName: "", id: 0 }
     );
     return min;
   });
@@ -147,7 +143,7 @@ export default function QuoteCompareTable<
                   checked={(() => {
                     const { vendor, currencyCode, ...s } = company;
                     return (
-                      Object.keys(s) as (typeof spares)[number]["name"][]
+                      Object.keys(s) as (typeof spares)[number]["id"][]
                     ).reduce((acc, cur) => acc && company[cur].selected, true);
                   })()}
                   onChange={(ev) => {
@@ -185,8 +181,7 @@ export default function QuoteCompareTable<
                 const orderQty = parseInt(ev.target.value || "0");
                 spares[idx].orderQty = orderQty;
                 companies.forEach((company) => {
-                  const spareName =
-                    spare.name as (typeof spares)[number]["name"];
+                  const spareName = spare.id as (typeof spares)[number]["id"];
                   const spareData = company[spareName];
                   spareData.total =
                     spareData.unit === null ? null : spareData.unit * orderQty;
@@ -196,7 +191,7 @@ export default function QuoteCompareTable<
             />
           </td>
           {companies.map((company, idx) => {
-            const spareName = spare.name as (typeof spares)[number]["name"];
+            const spareName = spare.id as (typeof spares)[number]["name"];
             const spareData = company[spareName];
             return (
               <>
@@ -210,7 +205,7 @@ export default function QuoteCompareTable<
                         minCompanyForEachSpare.find(
                           (min) =>
                             min.name === company.vendor.name &&
-                            min.spareName === spareName
+                            min.id === spareName
                         )
                           ? styles.highligted
                           : ""
