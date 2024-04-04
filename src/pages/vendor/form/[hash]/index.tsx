@@ -49,7 +49,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
   const onSubmit = (data: any) => {
     setLoading(true);
     instance
-      .put(`/vendors/form/${hash}`, {
+      .put(`/vendors/form/update/${hash}`, {
         ...data,
         salescontact: {
           name: data.salesname,
