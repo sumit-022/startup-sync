@@ -62,12 +62,15 @@ export default function usePurchaseTable({
     refresh();
   }, [status, page, search]);
   const refresh = async () => {
-    const route = status ? `/jobs?${query}&populate=*` : "/jobs?populate=*";
+    const route = status
+      ? `/jobs?${query}&populate[0]=rfqs&populate[1]=assignedTo&populate[2]=company&populate[3]=spares.attachments`
+      : "/jobs?populate[0]=rfqs&populate[1]=assignedTo&populate[2]=company&populate[3]=spares.attachments";
     setLoading(true);
     instance
       .get(route)
       .then((res: any) => {
         console.log(res);
+        console.log(parseAttributes(res.data.data));
 
         setRows({
           total: res.data.meta.pagination.total,

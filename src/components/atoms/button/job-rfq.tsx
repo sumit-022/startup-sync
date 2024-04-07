@@ -19,10 +19,12 @@ const RFQDialog = ({
   refresh,
   again,
   setAgain,
+  onClose,
 }: {
   again?: boolean;
   job: JobType;
   open: boolean;
+  onClose: () => void;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setAgain: React.Dispatch<React.SetStateAction<boolean>>;
   refresh: () => void;
@@ -38,7 +40,10 @@ const RFQDialog = ({
             p: 4,
           },
         }}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          onClose();
+        }}
         TransitionComponent={Transition}
       >
         <Box
