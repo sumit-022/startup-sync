@@ -184,6 +184,7 @@ export default function SalesDashboard() {
           exclusive
           onChange={(e, value) => {
             if (value) setMainTab(value);
+            if (value === "live") setSubTab("queryreceived");
           }}
         >
           {mainTabs.map((tab) => (
