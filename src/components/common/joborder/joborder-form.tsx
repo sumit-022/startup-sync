@@ -191,7 +191,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           .post("/jobs", {
             services: data.services.map((service: any) => service.id),
             ...data,
-            jobCompleted: false,
           })
           .then((res) => {
             toast.success("Job Created Successfully", {
@@ -211,18 +210,18 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     } else if (mode === "edit") {
       setLoading("edit");
       let jobstatus = "QUERYRECEIVED";
-      let jobCompleted = false;
+      let jobClosedStatus = undefined;
       if (data.quotedAt) jobstatus = "QUOTEDTOCLIENT";
       if (data.poNumber) jobstatus = "ORDERCONFIRMED";
-      if (data.invoiceDate) jobCompleted = true;
-      if (data.serviceReport) jobstatus = "JOBCOMPLETED";
+      if (data.serviceReport) jobstatus = "INVOICEAWAITED";
+      if (data.invoiceDate) jobClosedStatus = "JOBCOMPLETED";
       instance
         .put(`/jobs/${data.id}`, {
           data: {
             ...data,
             services: data.services.map((service: any) => service.id),
             status: jobstatus,
-            jobCompleted,
+            jobClosedStatus,
           },
         })
         .then((res) => {
@@ -290,7 +289,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     instance
       .put(`/jobs/${data.id}`, {
         data: {
-          status: "JOBCOMPLETED",
+          status: "INVOICEAWAITED",
         },
       })
       .then(() => {
@@ -505,7 +504,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       {mode === "edit" &&
         (data?.status === "PODAWAITED" ||
           data?.status === "ORDERCONFIRMED" ||
-          data?.status === "JOBCOMPLETED") && (
+          data?.status === "INVOICEAWAITED") && (
           <FormInputFile
             label="Upload Service Report Here"
             onChange={async (e) => {
@@ -529,7 +528,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             file={upload}
           />
         )}
-      {data?.status === "JOBCOMPLETED" && mode === "edit" && (
+      {data?.status === "INVOICEAWAITED" && mode === "edit" && (
         <FormInputDate
           name="invoiceDate"
           label="INVOICE DATE"

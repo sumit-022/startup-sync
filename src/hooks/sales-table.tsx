@@ -94,10 +94,10 @@ export default function useSalesTable({
               ],
             }
           : {}),
-        ...(filters.jobCompleted
-          ? { jobCompleted: filters.jobCompleted }
+        ...(filters.jobClosedStatus
+          ? { jobClosedStatus: filters.jobClosedStatus }
           : {
-              jobCompleted: false,
+              jobClosedStatus: undefined,
             }),
       },
       pagination: {

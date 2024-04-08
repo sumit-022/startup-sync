@@ -21,7 +21,7 @@ const Tabs: React.FC<Props> = ({ callback, data }) => {
         counts.quoted++;
       } else if (item.status === "ORDERCONFIRMED") {
         counts.order++;
-      } else if (item.status === "JOBCOMPLETED") {
+      } else if (item.status === "INVOICEAWAITED") {
         counts.completed++;
       }
     });
@@ -60,7 +60,7 @@ const Tabs: React.FC<Props> = ({ callback, data }) => {
     },
     {
       name: "Job Completed",
-      value: "JOBCOMPLETED",
+      value: "INVOICEAWAITED",
       count: counts.completed,
     },
   ];

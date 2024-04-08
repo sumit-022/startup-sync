@@ -21,7 +21,7 @@ declare interface JobType {
   poNumber: string | undefined;
   status: JobStatus;
   type: JobNature | undefined;
-  jobCompleted: boolean;
+  jobClosedStatus: "JOBCOMPLETED" | "JOBCANCELLED" | undefined;
   services: ServiceType[];
   invoiceDate: Date | undefined;
   targetPort: string;
@@ -39,11 +39,9 @@ declare interface JobType {
 
 declare type JobStatus =
   | "QUERYRECEIVED"
-  | "QUOTEDTOVENDOR"
-  | "QUOTERECEIVED"
   | "QUOTEDTOCLIENT"
   | "ORDERCONFIRMED"
-  | "JOBCOMPLETED"
+  | "INVOICEAWAITED"
   | "JOBCANCELLED"
   | "PODAWAITED";
 

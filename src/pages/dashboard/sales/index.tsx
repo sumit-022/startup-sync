@@ -40,7 +40,7 @@ export default function SalesDashboard() {
     quotedUpto: null,
     type: null,
     assignedTo: null,
-    jobCompleted: false,
+    jobClosedStatus: null,
   });
 
   const [downloadSubroutine, setDownloadSubroutine] = useState<any>(null);
@@ -50,19 +50,19 @@ export default function SalesDashboard() {
       setFilters((f) => ({
         ...f,
         status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
-        jobCompleted: false,
+        jobClosedStatus: null,
       }));
     } else if (maintab === "cancelled") {
       setFilters((filters) => ({
         ...filters,
-        status: "JOBCANCELLED",
-        jobCompleted: false,
+        status: null,
+        jobClosedStatus: "JOBCANCELLED",
       }));
     } else if (maintab === "history") {
       setFilters((filters) => ({
         ...filters,
-        jobCompleted: true,
-        status: "JOBCOMPLETED",
+        status: null,
+        jobClosedStatus: "JOBCOMPLETED",
       }));
     }
   }, [maintab]);
@@ -77,31 +77,29 @@ export default function SalesDashboard() {
       setFilters((filters) => ({
         ...filters,
         status: "QUERYRECEIVED",
-        jobCompleted: false,
       }));
     } else if (subtab === "quotedtoclient") {
       setFilters((filters) => ({
         ...filters,
         status: "QUOTEDTOCLIENT",
-        jobCompleted: false,
       }));
     } else if (subtab === "orderconfirmed") {
       setFilters((filters) => ({
         ...filters,
         status: "ORDERCONFIRMED",
-        jobCompleted: false,
       }));
     } else if (subtab === "jobcompleted") {
       setFilters((filters) => ({
         ...filters,
-        status: "JOBCOMPLETED",
-        jobCompleted: false,
+        status: "INVOICEAWAITED",
+        jobClosedStatus: {
+          $null: true,
+        },
       }));
     } else if (subtab === "podawaited") {
       setFilters((filters) => ({
         ...filters,
         status: "PODAWAITED",
-        jobCompleted: false,
       }));
     }
   }, [subtab]);

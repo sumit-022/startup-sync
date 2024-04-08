@@ -7,7 +7,7 @@ const status = (status: string) => {
         className={`w-3 h-3 rounded-full ${
           status === "JOBCANCELLED"
             ? "bg-red-600"
-            : status === "JOBCOMPLETED"
+            : status === "INVOICEAWAITED"
             ? "bg-green-600"
             : "bg-yellow-600"
         }`}

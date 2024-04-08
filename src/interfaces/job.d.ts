@@ -24,5 +24,5 @@ interface FilterType {
   search: string;
   status: JobStatus[] | JobStatus | null;
   type: JobType["type"] | null;
-  jobCompleted: boolean;
+  jobClosedStatus: "JOBCOMPLETED" | "JOBCANCELLED" | null | any;
 }
