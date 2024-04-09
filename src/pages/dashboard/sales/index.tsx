@@ -40,7 +40,9 @@ export default function SalesDashboard() {
     quotedUpto: null,
     type: null,
     assignedTo: null,
-    jobClosedStatus: null,
+    jobClosedStatus: {
+      $null: true,
+    },
   });
 
   const [downloadSubroutine, setDownloadSubroutine] = useState<any>(null);
@@ -50,7 +52,9 @@ export default function SalesDashboard() {
       setFilters((f) => ({
         ...f,
         status: ["QUERYRECEIVED", "QUOTEDTOCLIENT", "ORDERCONFIRMED"],
-        jobClosedStatus: null,
+        jobClosedStatus: {
+          $null: true,
+        },
       }));
     } else if (maintab === "cancelled") {
       setFilters((filters) => ({
