@@ -324,7 +324,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     instance
       .put(`/jobs/${id}`, {
         data: {
-          status: "JOBCANCELLED",
+          jobClosedStatus: "JOBCANCELLED",
         },
       })
       .then(() => {
