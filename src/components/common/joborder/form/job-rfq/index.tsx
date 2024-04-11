@@ -120,7 +120,6 @@ const RFQForm = ({
 
   const onSubmit = async (data: RFQFormType) => {
     setLoading(true);
-    console.log({ data });
     for (let i = 0; i < data.vendors.length; i++) {
       const vendor = vendors.find((vendor) => vendor.id == data.vendors[i].id);
       if (!vendor) continue;
@@ -156,9 +155,77 @@ const RFQForm = ({
       
       Kindly note attached requisition, please advise best price and availability of the requested parts.<br/><br/>
       
-      Port: ${job.targetPort ?? "Singapore"}<br/>
-      ETA: ${job.vesselETA ?? "16th Feb 2024"}<br/><br/>
-      
+      <table style="width:80%;">
+      <tr>
+      <th style="padding: 8px;text-align: left;">RFQ Number:</th>
+      <td style="style="padding: 8px;text-align: left;">RFQ-${job.jobCode}</td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Job Description:</th>
+      <td style="style="padding: 8px;text-align: left;">${job.description}</td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Port of Delivery:</th>
+      <td style="style="padding: 8px;text-align: left;">${job.targetPort}</td>
+      </tr>
+      <th style="padding: 8px;text-align: left;">ETA:</th>
+      <td style="style="padding: 8px;text-align: left;">${job.vesselETA}</td>
+      </tr>
+      </table> <br/><br/>
+      <table style="width: 100%; border-collapse: collapse;">
+  <tr>
+    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Sl No.</th>
+    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Item Name</th>
+    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Description</th>
+    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Quantity</th>
+  </tr>
+  ${data.spareDetails
+    .map(
+      (spare, index) => `
+  <tr>
+    <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
+      index + 1
+    }</td>
+    <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
+      spare.title
+    }</td>
+    <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
+      spare.description
+    }</td>
+    <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
+      spare.quantity
+    }</td>
+  </tr>
+  `
+    )
+    .join("")}
+      </table> <br/><br/>
+      <table style="width:80%;">
+      <tr>
+      <th style="padding: 8px;text-align: left;">Your Reference:</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Discount:</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Delivery Charge</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Delivery Time:</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Connect Port</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Remarks:</th>
+      <td style="style="padding: 8px;text-align: left;"></td>
+      </tr>
+      </table> <br/><br/>
       Please place your offer online on <a href="${link}">this link</a>.<br/>
       In case you are not able to open above link, please find attached RFQ in PDF format, kindly quote accordingly.
       We are looking forward to your offer and like to thank you for your assistance.`,
