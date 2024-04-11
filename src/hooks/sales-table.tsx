@@ -153,6 +153,11 @@ export default function useSalesTable({
     { field: "receivedAt", headerName: "Received Date", width: 150 },
     { field: "type", headerName: "Type", width: 150 },
     { field: "assignedTo", headerName: "Assigned To", width: 150 },
+    {
+      field: "clientReferenceNumber",
+      headerName: "Reference Number",
+      width: 150,
+    },
     { field: "targetPort", headerName: "Target Port", width: 150 },
     {
       field: "Action",

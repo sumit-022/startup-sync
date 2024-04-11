@@ -61,8 +61,6 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     Record<string, any> | undefined
   >(data?.serviceReport);
 
-  console.log({ data });
-
   const handleUploadDelete = async () => {
     setUploadLoader(true);
     if (!uploadedData) {
@@ -390,6 +388,11 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           />
         )}
       </InputGroup>
+      <FormInputText
+        name="clientReferenceNumber"
+        label="CLIENT REFERENCE NUMBER"
+        control={control}
+      />
       <InputGroup inputs={2}>
         <FormInputText
           name="shipName"

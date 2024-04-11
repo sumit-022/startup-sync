@@ -1,6 +1,7 @@
 interface JobFormType {
   id: string;
   jobCode: string;
+  clientReferenceNumber: string | null;
   receivedAt: Date | string | null;
   quotedAt: Date | string | null;
   shipName: string;

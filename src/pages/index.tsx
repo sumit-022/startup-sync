@@ -30,8 +30,6 @@ const HomePage = () => {
     userId: filters.userId ?? undefined,
   });
 
-  console.log({ stats, loading });
-
   const months = [
     "January",
     "February",
