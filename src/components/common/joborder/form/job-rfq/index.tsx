@@ -243,11 +243,9 @@ const RFQForm = ({
 
     const form = new FormData();
 
-    const mailFooter = ``;
     form.append("jobId", data.jobId);
     form.append("description", data.description);
     form.append("shipName", data.shipName);
-    form.append("mailFooter", mailFooter);
     form.append(
       "vendors",
       JSON.stringify(vs.map((v) => (v.status === "fulfilled" ? v.value : "")))
