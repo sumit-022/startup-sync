@@ -9,7 +9,7 @@ export default function useStats({
 }: {
   startDate: string;
   endDate: string;
-  userId?: string | number | undefined;
+  userId?: string | number;
   all?: boolean;
 }) {
   const [stats, setStats] = useState<any>(null);

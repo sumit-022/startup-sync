@@ -3,24 +3,34 @@ import DashboardLayout from "@/components/layout";
 import AuthContext from "@/context/AuthContext";
 import { Truculenta } from "next/font/google";
 import clsx from "clsx";
-import BarChart from "@/components/charts/bar";
+import BarChart from "@/components/charts/bar/service-cordinators";
 import useStats from "@/hooks/useStats";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });
 
 const HomePage = () => {
+  const serviceCoordinators = [13];
+
   const { user } = useContext(AuthContext);
-  const { stats: overallStats, loading: overallStatsLoading } = useStats({
+
+  const [filters, setFilters] = useState<{
+    startDate: string;
+    endDate: string;
+    userId: number | null;
+  }>({
     startDate: new Date("2024-01-01").toISOString(),
     endDate: new Date("2024-12-31").toISOString(),
-    all: true,
+    userId: 0,
   });
 
-  const { stats: userStats, loading: userStatsLoading } = useStats({
-    startDate: new Date("2024-01-01").toISOString(),
-    endDate: new Date("2024-12-31").toISOString(),
-    userId: user?.id,
+  const { stats, loading } = useStats({
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    all: filters.userId === 0,
+    userId: filters.userId ?? undefined,
   });
+
+  console.log({ stats, loading });
 
   const months = [
     "January",
@@ -45,7 +55,9 @@ const HomePage = () => {
         user?.fullname.split(" ")[0]
       }`}</h1>
       <div className="mt-8">
-        {!userStatsLoading && userStats && (
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           <BarChart
             data={{
               labels: months,
@@ -54,8 +66,8 @@ const HomePage = () => {
                   label: "Order Created",
                   data: [
                     0,
-                    ...Object.keys(userStats.aggregate).map(
-                      (key) => userStats.aggregate[key].created
+                    ...Object.keys(stats.aggregate).map(
+                      (key) => stats.aggregate[key].created
                     ),
                   ],
                 },
@@ -63,8 +75,8 @@ const HomePage = () => {
                   label: "Order Quoted",
                   data: [
                     0,
-                    ...Object.keys(userStats.aggregate).map(
-                      (key) => userStats.aggregate[key].quoted
+                    ...Object.keys(stats.aggregate).map(
+                      (key) => stats.aggregate[key].quoted
                     ),
                   ],
                 },
@@ -72,51 +84,22 @@ const HomePage = () => {
                   label: "Order Confirmed",
                   data: [
                     0,
-                    ...Object.keys(userStats.aggregate).map(
-                      (key) => userStats.aggregate[key].confirmed
+                    ...Object.keys(stats.aggregate).map(
+                      (key) => stats.aggregate[key].confirmed
                     ),
                   ],
                 },
               ],
             }}
-            title="Personalized Stats"
-          />
-        )}
-        {!overallStatsLoading && overallStats && (
-          <BarChart
-            data={{
-              labels: months,
-              datasets: [
-                {
-                  label: "Order Created",
-                  data: [
-                    0,
-                    ...Object.keys(overallStats.aggregate).map(
-                      (key) => overallStats.aggregate[key].created
-                    ),
-                  ],
-                },
-                {
-                  label: "Order Quoted",
-                  data: [
-                    0,
-                    ...Object.keys(overallStats.aggregate).map(
-                      (key) => overallStats.aggregate[key].quoted
-                    ),
-                  ],
-                },
-                {
-                  label: "Order Confirmed",
-                  data: [
-                    0,
-                    ...Object.keys(overallStats.aggregate).map(
-                      (key) => overallStats.aggregate[key].confirmed
-                    ),
-                  ],
-                },
-              ],
+            title="Stats for Service Coordinators"
+            onChange={(year, userId) => {
+              setFilters({
+                ...filters,
+                startDate: new Date(`${year}-01-01`).toISOString(),
+                endDate: new Date(`${year}-12-31`).toISOString(),
+                userId,
+              });
             }}
-            title="Overall Stats"
           />
         )}
       </div>
