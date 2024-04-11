@@ -139,7 +139,7 @@ const RFQForm = ({
     const getLink = async (vendorId: number, rfqNumber: string) => {
       const { data } = await axios.post(`${baseUrl}/api/rfq-form-link`, {
         rfqNumber,
-        vendorId,
+        vendorId: `${vendorId}`,
       });
       return data.link;
     };
