@@ -228,16 +228,22 @@ const RFQForm = ({
       </table> <br/><br/>
       Please place your offer online on <a href="${link}">this link</a>.<br/>
       In case you are not able to open above link, please find attached RFQ in PDF format, kindly quote accordingly.
-      We are looking forward to your offer and like to thank you for your assistance.`,
+      We are looking forward to your offer and like to thank you for your assistance.<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${
+        user?.fullname
+      }</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${
+            user?.designation
+          }</p><p style="margin:0;padding:0">${
+            user?.phone
+          }</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
+      The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
+      </div></div>`,
         };
       })
     );
 
     const form = new FormData();
 
-    const mailFooter = `<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
-    The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
-    </div></div>`;
+    const mailFooter = ``;
     form.append("jobId", data.jobId);
     form.append("description", data.description);
     form.append("shipName", data.shipName);
