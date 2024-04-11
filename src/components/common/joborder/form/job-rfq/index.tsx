@@ -29,6 +29,7 @@ import { toast } from "react-toastify";
 import SpareCard from "@/components/atoms/card/spare-card";
 import MultiFileInput from "@/components/atoms/input/multiple-file";
 import AuthContext from "@/context/AuthContext";
+import axios from "axios";
 
 const RFQForm = ({
   job,
@@ -94,8 +95,6 @@ const RFQForm = ({
     });
   }, []);
 
-  console.log({ selectedVendors });
-
   const { fields, append, remove, update } = useFieldArray({
     name: "spareDetails",
     control,
@@ -116,6 +115,8 @@ const RFQForm = ({
     );
     append(sparesToAppend);
   }, [spares]);
+  const baseUrl = location.origin;
+  console.log({ baseUrl });
 
   const onSubmit = async (data: RFQFormType) => {
     setLoading(true);
@@ -136,6 +137,7 @@ const RFQForm = ({
     }
 
     const form = new FormData();
+
     const mailFooter = `<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20 
     The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
     </div></div>`;
@@ -157,6 +159,12 @@ const RFQForm = ({
         form.append("vendorAttachments", attachment, `${id}.pdf`);
       }
     });
+    //data.vendors.map(async ({ id }) => {
+    // const { link } = await axios.post(`${baseUrl}/api/rfq-form-link`, {
+    // rfqNumber: `RFQ-${job.jobCode}`,
+    //vendorId: id,
+    //});
+    //});
     if (!again) {
       form.append(
         "spareDetails",
