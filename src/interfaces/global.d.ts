@@ -56,5 +56,6 @@ interface SpareType {
   title: string;
   description: string;
   quantity: string;
+  quantityUnit?: string;
   attachments?: FileList | null;
 }

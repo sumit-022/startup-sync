@@ -67,6 +67,8 @@ const RFQForm = ({
       description: job.description,
       vendors: [],
       shipName: job.shipName,
+      make: job.spares[0].make,
+      model: job.spares[0].model,
       spareDetails: [],
     },
   });
@@ -178,8 +180,17 @@ const RFQForm = ({
       <th style="padding: 8px;text-align: left;">Port of Delivery:</th>
       <td style="style="padding: 8px;text-align: left;">${job.targetPort}</td>
       </tr>
+      <tr>
       <th style="padding: 8px;text-align: left;">ETA:</th>
       <td style="style="padding: 8px;text-align: left;">${job.vesselETA}</td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Maker:</th>
+      <td style="style="padding: 8px;text-align: left;">${data.make}</td>
+      </tr>
+      <tr>
+      <th style="padding: 8px;text-align: left;">Model:</th>
+      <td style="style="padding: 8px;text-align: left;">${data.model}</td>
       </tr>
       </table> <br/><br/>
       <table style="width: 100%; border-collapse: collapse;">
@@ -204,12 +215,14 @@ const RFQForm = ({
     }</td>
     <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
       spare.quantity
-    }</td>
+    } ${spare.quantityUnit}</td>
   </tr>
   `
     )
     .join("")}
       </table> <br/><br/>
+      Please place your offer online on <a href="${link}">this link</a>.<br/>
+      In case you are hesitant in quoting through link or not able to open above link, kindly quote by replying this mail<br/><br/>
       <table style="width:80%;">
       <tr>
       <th style="padding: 8px;text-align: left;">Your Reference:</th>
@@ -236,8 +249,6 @@ const RFQForm = ({
       <td style="style="padding: 8px;text-align: left;"></td>
       </tr>
       </table> <br/><br/>
-      Please place your offer online on <a href="${link}">this link</a>.<br/>
-      In case you are not able to open above link, please find attached RFQ in PDF format, kindly quote accordingly.
       We are looking forward to your offer and like to thank you for your assistance.<br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${
         user?.fullname
       }</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${
@@ -269,6 +280,8 @@ const RFQForm = ({
               ? Array.from(attachments).map((attachment) => attachment.name)
               : undefined,
             ...spare,
+            make: data.make,
+            model: data.model,
           }))
         )
       );
@@ -351,8 +364,18 @@ const RFQForm = ({
           label="Ship Name"
           disabled
         />
-        {/* <FormInputText control={control} name="make" label="Maker" />
-        <FormInputText control={control} name="model" label="Model" /> */}
+        <FormInputText
+          control={control}
+          name="make"
+          label="Maker"
+          disabled={again}
+        />
+        <FormInputText
+          control={control}
+          name="model"
+          label="Model"
+          disabled={again}
+        />
         <div className="flex w-max items-center">
           <Checkbox
             checked={showVesselName}
@@ -373,6 +396,7 @@ const RFQForm = ({
               disableActions={again}
               description={field.description}
               quantity={field.quantity}
+              quantityUnit={field.quantityUnit}
               title={field.title}
               onSpareDelete={() => remove(index)}
               onSpareAdd={() => {
@@ -384,6 +408,7 @@ const RFQForm = ({
                   title: field.title,
                   description: field.description,
                   quantity: field.quantity,
+                  quantityUnit: field.quantityUnit,
                   attachments: field.attachments,
                 });
                 setOpen(true);
@@ -410,6 +435,7 @@ const RFQForm = ({
             title: "",
             description: "",
             quantity: "",
+            quantityUnit: "",
             attachments: null,
           });
         }}
@@ -469,6 +495,17 @@ const RFQForm = ({
               setSpareDetails((prev) => ({
                 ...prev,
                 quantity: e.target.value,
+              }));
+            }}
+          />
+          <TextField
+            name="spareDetails.quantityUnit"
+            value={spareDetails.quantityUnit}
+            label="Quantity Unit"
+            onChange={(e) => {
+              setSpareDetails((prev) => ({
+                ...prev,
+                quantityUnit: e.target.value,
               }));
             }}
           />

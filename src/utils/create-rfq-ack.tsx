@@ -194,6 +194,7 @@ function RFQTable({
     spares: {
       name: string;
       quantity: number;
+      quantityUnit?: string;
       description: string;
       unitPrice?: number | null;
     }[];
@@ -215,7 +216,9 @@ function RFQTable({
         >
           <Text style={styles.tableColSNo}>{index + 1}</Text>
           <Text style={styles.tableColName}>{item.name}</Text>
-          <Text style={styles.tableColQuantity}>{item.quantity}</Text>
+          <Text style={styles.tableColQuantity}>
+            {item.quantity} {item.quantityUnit}
+          </Text>
           <Text style={styles.tableColDescription}>{item.description}</Text>
           <Text style={styles.tableColUnitPrice}>
             {item.unitPrice
@@ -391,6 +394,7 @@ type RFQAckPdfType = {
     title?: string;
     description?: string;
     quantity?: string;
+    quantityUnit?: string;
     unitPrice?: number | null;
   }[];
   vendor: VendorType;
@@ -422,6 +426,7 @@ export default async function createAckPDF(data: RFQAckPdfType) {
       spares={data.spareDetails.map((spare) => ({
         name: parseText(spare.title),
         quantity: parseInt(spare.quantity || "0"),
+        quantityUnit: parseText(spare.quantityUnit || ""),
         description: parseText(spare.description),
         unitPrice: spare?.unitPrice,
       }))}

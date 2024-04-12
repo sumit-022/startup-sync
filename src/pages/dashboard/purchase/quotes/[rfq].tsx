@@ -86,6 +86,7 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           name: spare.title,
           "Supply Qty": spare.quantity,
           orderQty: spare.quantity,
+          qtyUnit: spare.quantityUnit || "",
         });
       }
       return acc;
@@ -161,6 +162,8 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
       const vendors = [];
 
+      console.log({ vendorObject });
+
       for (const vendor in vendorObject) {
         vendors.push({
           id: vendorObject[vendor].vendorDetails.id,
@@ -204,12 +207,12 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
       }
       await instance.post(`/job/send-po`, form);
       toast.success("Purchase Order Sent Successfully");
-      instance.put(`/jobs/${job[0].id}`, {
+      await instance.put(`/jobs/${job[0].id}`, {
         data: {
           purchaseStatus: "POISSUED",
         },
       });
-      const poSaves = await Promise.allSettled(
+      await Promise.allSettled(
         vendors.map((v) => {
           const form = new FormData();
           form.append("vendorId", v.id);

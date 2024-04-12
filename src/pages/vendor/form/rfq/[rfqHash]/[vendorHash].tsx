@@ -33,6 +33,7 @@ type RFQReplyFormType = {
       description: string;
       attachments: any[];
       quantity: number;
+      quantityUnit: string;
     };
     total: number;
     vendor: VendorType;
@@ -97,6 +98,7 @@ export default function RfqHash(props: PageProps) {
           description: rfq.spare.description,
           attachments: rfq.spare.attachments,
           quantity: rfq.spare.quantity,
+          quantityUnit: rfq.spare.quantityUnit,
         },
         vendor: rfq.vendor,
       })),
@@ -162,6 +164,7 @@ export default function RfqHash(props: PageProps) {
           title: rfq.spare.title,
           description: rfq.spare.description,
           quantity: `${rfq.spare.quantity}`,
+          quantityUnit: `${rfq.spare.quantityUnit}`,
           unitPrice: rfq.unitPrice,
         })),
         jobCode: props.job.jobCode,
@@ -233,6 +236,18 @@ export default function RfqHash(props: PageProps) {
               <td className="py-4 font-bold">Port Of Delivery:</td>
               <td className="py-4">{props.job.targetPort}</td>
             </tr>
+            {props.rfqs[0].spare.make && (
+              <tr className="text-gray-500">
+                <td className="py-4 font-bold">Make:</td>
+                <td className="py-4">{props.rfqs[0].spare.make}</td>
+              </tr>
+            )}
+            {props.rfqs[0].spare.model && (
+              <tr className="text-gray-500">
+                <td className="py-4 font-bold">Make:</td>
+                <td className="py-4">{props.rfqs[0].spare.model}</td>
+              </tr>
+            )}
           </tbody>
         </table>
         <table className="table-auto w-full mt-8">
@@ -263,7 +278,9 @@ export default function RfqHash(props: PageProps) {
                     Download Attatchments
                   </Button>
                 </td>
-                <td className="py-4 w-[8%]">{rfq.spare.quantity}</td>
+                <td className="py-4 w-[8%]">
+                  {rfq.spare.quantity} {rfq.spare.quantityUnit || ""}
+                </td>
                 <td className="py-4 w-[10%]">
                   <TextField
                     variant="outlined"

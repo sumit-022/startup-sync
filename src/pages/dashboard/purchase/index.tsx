@@ -23,6 +23,7 @@ import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
 import instance from "@/config/axios.config";
 import DownloadModal from "@/components/common/purchaseorder/modal/download";
+import NotifyModal from "@/components/common/purchaseorder/modal/notify";
 import UpdateSpareModal from "@/components/common/purchaseorder/modal/update-spare";
 import getUnique from "@/utils/unique";
 import AuthContext from "@/context/AuthContext";
@@ -41,36 +42,6 @@ export default function Home() {
     search: "",
   });
   const [loader, setLoader] = React.useState(false);
-  const handleNotifyVendors = async (rfqs: any[], subject: string) => {
-    try {
-      toast.loading("Processing...");
-      const uniqueRfqs = getUnique(
-        rfqs,
-        (rfq) => rfq.vendor.id,
-        (rfq) => !rfq.filled
-      );
-      const bodies = uniqueRfqs.reduce((acc, rfq) => {
-        const body = `Dear ${rfq.vendor.name},<br/><br/>I hope this email finds you well.<br/><br/>We wanted to kindly remind you that we are still awaiting your quotation for our subject enquiry. Your participation in this query is pivotal to us, and we highly value your prompt response.<br/><br/>Please let us know if you require any further information or assistance to proceed with your quotation submission.<br/><br/>Thank you for your attention to this matter, and we look forward to receiving your quotes soon.<br/>Warm regards,<br/><br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${user?.fullname}</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${user?.designation}</p><p style="margin:0;padding:0">${user?.phone}</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20
-      The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
-      </div></div>`;
-        return {
-          ...acc,
-          [rfq.vendor.id]: {
-            body,
-            subject: `Reminder: ${subject}`,
-          },
-        };
-      }, {});
-      await instance.post("/job/notify-vendors", {
-        bodies,
-      });
-      toast.dismiss();
-      toast.success("Vendors Notified");
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-    }
-  };
   const actions =
     filters.status == "QUERYRECEIVED"
       ? [
@@ -102,8 +73,7 @@ export default function Home() {
             icon: <MdAdd />,
             name: "Notify Vendors",
             onClick: (params: any) => {
-              console.log(params.row);
-              handleNotifyVendors(params.row.rfqs, params.row.description);
+              setNotifyOpen({ open: true, job: params.row });
             },
           },
           {
@@ -190,6 +160,13 @@ export default function Home() {
   const [RFQOpen, setRFQOpen] = React.useState(true);
   const [again, setAgain] = React.useState(false);
   const [job, setJob] = React.useState<JobType | null>(null);
+  const [notifyOpen, setNotifyOpen] = React.useState<{
+    open: boolean;
+    job: JobType | null;
+  }>({
+    open: false,
+    job: null,
+  });
   const [updateOpen, setUpdateOpen] = React.useState(false);
   const [updateSpareOpen, setUpdateSpareOpen] = React.useState<{
     open: boolean;
@@ -299,6 +276,13 @@ export default function Home() {
           open={downloadOpen.open}
           onClose={() => setDownloadOpen({ open: false, id: null })}
           id={downloadOpen.id}
+        />
+      )}
+      {notifyOpen.open && notifyOpen.job && (
+        <NotifyModal
+          open={notifyOpen.open}
+          onClose={() => setNotifyOpen({ open: false, job: null })}
+          job={notifyOpen.job}
         />
       )}
       {jobCode && (

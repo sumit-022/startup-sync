@@ -21,6 +21,7 @@ type POType = {
     name: string;
     description: string;
     quantity: number;
+    qtyUnit: string;
     unitPrice: number;
     total: number;
   }[];
@@ -278,6 +279,7 @@ function POTable({
       name: string;
       description?: string;
       quantity: number;
+      qtyUnit: string;
       unitPrice: number;
       total: number;
     }[];
@@ -303,7 +305,9 @@ function POTable({
           <Text style={styles.tableColDescription}>
             {item.description || "No Description Available"}
           </Text>
-          <Text style={styles.tableColQuantity}>{item.quantity}</Text>
+          <Text style={styles.tableColQuantity}>
+            {item.quantity} {item.qtyUnit}
+          </Text>
           <Text style={styles.tableColUnitPrice}>
             {data.currencyCode} {item.unitPrice}
           </Text>

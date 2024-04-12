@@ -170,25 +170,37 @@ export default function QuoteCompareTable<
         <tr key={idx}>
           <td>{idx + 1}</td>
           <td>{spare.name}</td>
-          {spareCols.map((col, i) => (
-            <td key={i}>{displayNum(spare[col as S[number]])}</td>
-          ))}
+          {spareCols.map((col, i) => {
+            return (
+              <td key={i}>
+                {col === "Supply Qty"
+                  ? displayNum(spare[col as S[number]]) +
+                    " " +
+                    (spare.qtyUnit || "")
+                  : displayNum(spare[col as S[number]])}
+              </td>
+            );
+          })}
           <td>
-            <input
-              value={spare.orderQty}
-              className={styles["order-qty-inp"]}
-              onChange={(ev) => {
-                const orderQty = parseInt(ev.target.value || "0");
-                spares[idx].orderQty = orderQty;
-                companies.forEach((company) => {
-                  const spareName = spare.id as (typeof spares)[number]["id"];
-                  const spareData = company[spareName];
-                  spareData.total =
-                    spareData.unit === null ? null : spareData.unit * orderQty;
-                });
-                onChange?.([...companies], [...spares]);
-              }}
-            />
+            <div className="flex">
+              <input
+                value={spare.orderQty}
+                className={styles["order-qty-inp"]}
+                onChange={(ev) => {
+                  const orderQty = parseInt(ev.target.value || "0");
+                  spares[idx].orderQty = orderQty;
+                  companies.forEach((company) => {
+                    const spareName = spare.id as (typeof spares)[number]["id"];
+                    const spareData = company[spareName];
+                    spareData.total =
+                      spareData.unit === null
+                        ? null
+                        : spareData.unit * orderQty;
+                  });
+                  onChange?.([...companies], [...spares]);
+                }}
+              />
+            </div>
           </td>
           {companies.map((company, idx) => {
             const spareName = spare.id as (typeof spares)[number]["name"];

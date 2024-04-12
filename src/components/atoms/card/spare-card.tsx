@@ -8,6 +8,7 @@ interface SpareCardProps {
   title?: string;
   description?: string;
   quantity?: number | string | null;
+  quantityUnit?: string;
   disableActions?: boolean;
   onSpareDelete: () => void;
   onSpareAdd: () => void;
@@ -23,7 +24,7 @@ const SpareCard: React.FC<SpareCardProps> = (props) => {
           <h3 className="text-white text-xl">{props.title}</h3>
           <p className="text-white text-sm line-clamp-2">{props.description}</p>
           <p className="text-gray-200 mt-1 text-sm">
-            Quantity: {props.quantity}
+            Quantity: {props.quantity} {props.quantityUnit}
           </p>
         </div>
       </div>
