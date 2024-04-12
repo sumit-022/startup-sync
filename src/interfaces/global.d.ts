@@ -48,6 +48,8 @@ interface RFQFormType {
   }[];
   shipName: string;
   spareDetails: SpareType[];
+  make: string;
+  model: string;
 }
 
 interface SpareType {

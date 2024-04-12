@@ -2,6 +2,7 @@ import FormInputAutoComplete from "@/components/atoms/input/auto-complete";
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   Modal,
   TextField,
@@ -49,6 +50,7 @@ const RFQForm = ({
   const [spares, setSpares] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [showVesselName, setShowVesselName] = React.useState(false);
   const [spareDetails, setSpareDetails] = React.useState<SpareType>({
     title: "",
     description: "",
@@ -164,6 +166,14 @@ const RFQForm = ({
       <th style="padding: 8px;text-align: left;">Job Description:</th>
       <td style="style="padding: 8px;text-align: left;">${job.description}</td>
       </tr>
+      ${
+        showVesselName
+          ? `<tr>
+      <th style="padding: 8px;text-align: left;">Vessel Name:</th>
+      <td style="style="padding: 8px;text-align: left;">${job.shipName}</td>
+      </tr>`
+          : ""
+      }
       <tr>
       <th style="padding: 8px;text-align: left;">Port of Delivery:</th>
       <td style="style="padding: 8px;text-align: left;">${job.targetPort}</td>
@@ -250,11 +260,6 @@ const RFQForm = ({
       "vendors",
       JSON.stringify(vs.map((v) => (v.status === "fulfilled" ? v.value : "")))
     );
-    data.vendors.forEach(({ attachment, id }) => {
-      if (attachment) {
-        form.append("vendorAttachments", attachment, `${id}.pdf`);
-      }
-    });
     if (!again) {
       form.append(
         "spareDetails",
@@ -343,9 +348,18 @@ const RFQForm = ({
         <FormInputText
           control={control}
           name="shipName"
-          disabled
           label="Ship Name"
+          disabled
         />
+        {/* <FormInputText control={control} name="make" label="Maker" />
+        <FormInputText control={control} name="model" label="Model" /> */}
+        <div className="flex w-max items-center">
+          <Checkbox
+            checked={showVesselName}
+            onChange={(e) => setShowVesselName(e.target.checked)}
+          />
+          <Typography>Show Vessel Name</Typography>
+        </div>
         <FormHeading heading="Item Details" />
         {fields.length == 0 ? (
           <Button onClick={() => setOpen(true)}>
