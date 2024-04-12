@@ -67,8 +67,8 @@ const RFQForm = ({
       description: job.description,
       vendors: [],
       shipName: job.shipName,
-      make: job.spares[0].make,
-      model: job.spares[0].model,
+      make: job.spares[0]?.make || "",
+      model: job.spares[0]?.model || "",
       spareDetails: [],
     },
   });
@@ -184,14 +184,22 @@ const RFQForm = ({
       <th style="padding: 8px;text-align: left;">ETA:</th>
       <td style="style="padding: 8px;text-align: left;">${job.vesselETA}</td>
       </tr>
-      <tr>
+      ${
+        data.make
+          ? `<tr> 
       <th style="padding: 8px;text-align: left;">Maker:</th>
       <td style="style="padding: 8px;text-align: left;">${data.make}</td>
-      </tr>
-      <tr>
+      </tr>`
+          : ""
+      }
+      ${
+        data.model
+          ? `<tr>
       <th style="padding: 8px;text-align: left;">Model:</th>
       <td style="style="padding: 8px;text-align: left;">${data.model}</td>
-      </tr>
+      </tr>`
+          : ""
+      }
       </table> <br/><br/>
       <table style="width: 100%; border-collapse: collapse;">
   <tr>
@@ -215,7 +223,7 @@ const RFQForm = ({
     }</td>
     <td style="padding: 8px; text-align: left; border: 1px solid #ddd;">${
       spare.quantity
-    } ${spare.quantityUnit}</td>
+    } ${spare.quantityUnit || ""}</td>
   </tr>
   `
     )
