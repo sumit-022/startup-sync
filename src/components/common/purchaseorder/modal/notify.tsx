@@ -42,7 +42,7 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, job }) => {
           ...acc,
           [vendor.id]: {
             body,
-            subject: `Re: RFQ-${job?.jobCode} - ${job?.description}`,
+            subject: `RE: RFQ-${job?.jobCode} - ${job?.description}`,
           },
         };
       }, {});
