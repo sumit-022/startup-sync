@@ -334,6 +334,10 @@ const RFQForm = ({
   const handleCSVUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
+    if (file.type !== "text/csv") {
+      toast.error("Invalid file format. Please upload a CSV file");
+      return;
+    }
     console.log({ file });
     const reader = new FileReader();
     reader.onload = async (e) => {
