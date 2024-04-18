@@ -417,22 +417,24 @@ const RFQForm = ({
         </div>
         <div>
           <FormHeading heading="Item Details" />
-          <div className="flex justify-end">
-            <input
-              className="sr-only"
-              id="file"
-              type="file"
-              accept=".csv"
-              onChange={handleCSVUpload}
-            />
-            <label htmlFor="file">
-              <Tooltip title="Upload CSV or Excel file">
-                <IconButton component="span">
-                  <IoMdCloudUpload />
-                </IconButton>
-              </Tooltip>
-            </label>
-          </div>
+          {!again && (
+            <div className="flex justify-end">
+              <input
+                className="sr-only"
+                id="file"
+                type="file"
+                accept=".csv"
+                onChange={handleCSVUpload}
+              />
+              <label htmlFor="file">
+                <Tooltip title="Upload CSV File">
+                  <IconButton component="span">
+                    <IoMdCloudUpload />
+                  </IconButton>
+                </Tooltip>
+              </label>
+            </div>
+          )}
         </div>
         {fields.length == 0 ? (
           <Button onClick={() => setOpen(true)}>
