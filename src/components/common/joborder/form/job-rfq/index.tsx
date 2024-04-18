@@ -4,11 +4,14 @@ import {
   Button,
   Checkbox,
   FormControl,
+  IconButton,
   Modal,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { IoMdCloudUpload } from "react-icons/io";
+import { parse } from "csv-parse";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useForm, useFieldArray, set } from "react-hook-form";
 import React, {
@@ -328,6 +331,35 @@ const RFQForm = ({
     }));
   };
 
+  const handleCSVUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const file = e.target.files[0];
+    console.log({ file });
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const csv = e.target?.result as string;
+      const records = await new Promise<Array<any>>((resolve, reject) => {
+        parse(csv, { columns: true }, (err, records) => {
+          if (err) {
+            reject(err);
+            console.log(err);
+          }
+          resolve(records);
+        });
+      });
+      console.log({ records });
+
+      const spares = records.map((record: any) => ({
+        title: record["Spare Name"],
+        description: record["Spare Description"],
+        quantity: record["Quantity"],
+        quantityUnit: record["Quantity Unit"],
+      }));
+      append(spares);
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <>
       <FormControl
@@ -363,11 +395,6 @@ const RFQForm = ({
         />
         <FormInputText
           control={control}
-          name="description"
-          label="Description"
-        />
-        <FormInputText
-          control={control}
           name="shipName"
           label="Ship Name"
           disabled
@@ -391,7 +418,25 @@ const RFQForm = ({
           />
           <Typography>Show Vessel Name</Typography>
         </div>
-        <FormHeading heading="Item Details" />
+        <div>
+          <FormHeading heading="Item Details" />
+          <div className="flex justify-end">
+            <input
+              className="sr-only"
+              id="file"
+              type="file"
+              accept=".csv"
+              onChange={handleCSVUpload}
+            />
+            <label htmlFor="file">
+              <Tooltip title="Upload CSV or Excel file">
+                <IconButton component="span">
+                  <IoMdCloudUpload />
+                </IconButton>
+              </Tooltip>
+            </label>
+          </div>
+        </div>
         {fields.length == 0 ? (
           <Button onClick={() => setOpen(true)}>
             <IoMdCloudUpload />

@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import DashboardLayout from "@/components/layout";
 import { DataGrid } from "@mui/x-data-grid";
 import usePurchaseTable from "@/hooks/purchase-table";
@@ -199,137 +200,144 @@ export default function Home() {
   };
 
   return (
-    <DashboardLayout header sidebar>
-      <Box sx={{ height: 600, width: "100%" }}>
-        <ToggleButtonGroup
-          sx={{ mb: 2 }}
-          color="primary"
-          value={filters.status}
-          exclusive
-          onChange={handleFilter}
-        >
-          <ToggleButton value="QUERYRECEIVED">Query</ToggleButton>
-          <ToggleButton value="RFQSENT">RFQ Sent</ToggleButton>
-          <ToggleButton value="POISSUED">PO Issued</ToggleButton>
-          <ToggleButton value="COMPLETED">Completed</ToggleButton>
-        </ToggleButtonGroup>
-        <Search
-          placeholder="Enter Job Code to search.."
-          onChange={(e) =>
-            setFilters((filters) => ({
-              ...filters,
-              search: e.target.value,
-            }))
-          }
-          className="mb-4"
-        />
-        <DataGrid
-          rows={rows.data}
-          rowCount={rows.total}
-          scrollbarSize={20}
-          columnVisibilityModel={{
-            response: filters.status === "QUERYRECEIVED" ? false : true,
-          }}
-          columns={columns}
-          loading={loading}
-          disableRowSelectionOnClick
-          paginationModel={{
-            page: page - 1,
-            pageSize: 10,
-          }}
-          pageSizeOptions={[10]}
-          onPaginationModelChange={(params) => {
-            router.push({
-              pathname: router.pathname,
-              query: { page: params.page + 1 },
-            });
-          }}
-          pagination
-          paginationMode="server"
-        />
-      </Box>
-      {job && RFQOpen && (
-        <RFQDialog
-          open={RFQOpen}
-          onClose={() => {
-            setJob(null);
-            setRFQOpen(false);
-          }}
-          setAgain={setAgain}
-          again={again}
-          setOpen={setRFQOpen}
-          job={job}
-          refresh={refresh}
-        />
-      )}
-      {updateSpareOpen && updateSpareOpen.job && (
-        <UpdateSpareModal
-          open={updateSpareOpen.open}
-          job={updateSpareOpen.job}
-          onClose={() => {
-            setUpdateSpareOpen({ open: false, job: null });
-          }}
-        />
-      )}
-      {downloadOpen.open && (
-        <DownloadModal
-          open={downloadOpen.open}
-          onClose={() => setDownloadOpen({ open: false, id: null })}
-          id={downloadOpen.id}
-        />
-      )}
-      {notifyOpen.open && notifyOpen.job && (
-        <NotifyModal
-          open={notifyOpen.open}
-          onClose={() => setNotifyOpen({ open: false, job: null })}
-          job={notifyOpen.job}
-        />
-      )}
-      {jobCode && (
-        <UpdateModal
-          open={updateOpen}
-          onClose={() => {
-            setJobCode(null);
-            setUpdateOpen(false);
-          }}
-          jobCode={jobCode}
-        />
-      )}
-      {purchaseComplted && (
-        <Dialog
-          open={purchaseComplted.open}
-          onClose={() => setPurchaseCompleted({ open: false, id: "" })}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Mark Purchase as Completed?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Are you sure you want to mark this purchase as completed?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setPurchaseCompleted({ open: false, id: "" });
-              }}
-            >
-              Disagree
-            </Button>
-            <Button
-              onClick={() => {
-                handlePurchaseComplete(purchaseComplted.id);
-                setPurchaseCompleted({ open: false, id: "" });
-              }}
-              autoFocus
-            >
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-    </DashboardLayout>
+    <>
+      <Head>
+        <title>Purchase Dashboard</title>
+        <meta name="description" content="Sales Dashboard" />
+        <link rel="icon" href="/logo.png" />
+      </Head>
+      <DashboardLayout header sidebar>
+        <Box sx={{ height: 600, width: "100%" }}>
+          <ToggleButtonGroup
+            sx={{ mb: 2 }}
+            color="primary"
+            value={filters.status}
+            exclusive
+            onChange={handleFilter}
+          >
+            <ToggleButton value="QUERYRECEIVED">Query</ToggleButton>
+            <ToggleButton value="RFQSENT">RFQ Sent</ToggleButton>
+            <ToggleButton value="POISSUED">PO Issued</ToggleButton>
+            <ToggleButton value="COMPLETED">Completed</ToggleButton>
+          </ToggleButtonGroup>
+          <Search
+            placeholder="Enter Job Code to search.."
+            onChange={(e) =>
+              setFilters((filters) => ({
+                ...filters,
+                search: e.target.value,
+              }))
+            }
+            className="mb-4"
+          />
+          <DataGrid
+            rows={rows.data}
+            rowCount={rows.total}
+            scrollbarSize={20}
+            columnVisibilityModel={{
+              response: filters.status === "QUERYRECEIVED" ? false : true,
+            }}
+            columns={columns}
+            loading={loading}
+            disableRowSelectionOnClick
+            paginationModel={{
+              page: page - 1,
+              pageSize: 10,
+            }}
+            pageSizeOptions={[10]}
+            onPaginationModelChange={(params) => {
+              router.push({
+                pathname: router.pathname,
+                query: { page: params.page + 1 },
+              });
+            }}
+            pagination
+            paginationMode="server"
+          />
+        </Box>
+        {job && RFQOpen && (
+          <RFQDialog
+            open={RFQOpen}
+            onClose={() => {
+              setJob(null);
+              setRFQOpen(false);
+            }}
+            setAgain={setAgain}
+            again={again}
+            setOpen={setRFQOpen}
+            job={job}
+            refresh={refresh}
+          />
+        )}
+        {updateSpareOpen && updateSpareOpen.job && (
+          <UpdateSpareModal
+            open={updateSpareOpen.open}
+            job={updateSpareOpen.job}
+            onClose={() => {
+              setUpdateSpareOpen({ open: false, job: null });
+            }}
+          />
+        )}
+        {downloadOpen.open && (
+          <DownloadModal
+            open={downloadOpen.open}
+            onClose={() => setDownloadOpen({ open: false, id: null })}
+            id={downloadOpen.id}
+          />
+        )}
+        {notifyOpen.open && notifyOpen.job && (
+          <NotifyModal
+            open={notifyOpen.open}
+            onClose={() => setNotifyOpen({ open: false, job: null })}
+            job={notifyOpen.job}
+          />
+        )}
+        {jobCode && (
+          <UpdateModal
+            open={updateOpen}
+            onClose={() => {
+              setJobCode(null);
+              setUpdateOpen(false);
+            }}
+            jobCode={jobCode}
+          />
+        )}
+        {purchaseComplted && (
+          <Dialog
+            open={purchaseComplted.open}
+            onClose={() => setPurchaseCompleted({ open: false, id: "" })}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Mark Purchase as Completed?"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to mark this purchase as completed?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setPurchaseCompleted({ open: false, id: "" });
+                }}
+              >
+                Disagree
+              </Button>
+              <Button
+                onClick={() => {
+                  handlePurchaseComplete(purchaseComplted.id);
+                  setPurchaseCompleted({ open: false, id: "" });
+                }}
+                autoFocus
+              >
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
+      </DashboardLayout>
+    </>
   );
 }

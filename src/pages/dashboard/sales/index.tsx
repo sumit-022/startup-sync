@@ -1,3 +1,4 @@
+import Head from "next/head";
 import DashboardLayout from "@/components/layout";
 import React, { useContext, useEffect, useState } from "react";
 import { mainTabs, subTabs } from "@/data/sales";
@@ -173,160 +174,169 @@ export default function SalesDashboard() {
   };
 
   return (
-    <DashboardLayout header sidebar>
-      <div className="flex gap-4">
-        <IconButton
-          onClick={() => {
-            setModal("create");
-          }}
-        >
-          <MdAdd />
-        </IconButton>
-        <ToggleButtonGroup
-          color="primary"
-          value={maintab}
-          exclusive
-          onChange={(e, value) => {
-            if (value) setMainTab(value);
-            if (value === "live") setSubTab("queryreceived");
-          }}
-        >
-          {mainTabs.map((tab) => (
-            <ToggleButton value={tab.value} key={tab.value}>
-              {tab.name}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-      </div>
-      <div className="my-4 flex flex-col gap-3">
-        <Search
-          placeholder="Enter Job Code to search.."
-          onChange={(e) =>
-            setFilters((filters) => ({
-              ...filters,
-              search: e.target.value,
-            }))
-          }
-        />
-        {maintab === "live" && (
-          <ToggleButtonGroup
-            color="primary"
-            value={subtab}
-            exclusive
-            onChange={(e, value) => {
-              setSubTab(value);
+    <>
+      <Head>
+        <title>Sales Dashboard</title>
+        <meta name="description" content="Sales Dashboard" />
+        <link rel="icon" href="/logo.png" />
+      </Head>
+      <DashboardLayout header sidebar>
+        <div className="flex gap-4">
+          <IconButton
+            onClick={() => {
+              setModal("create");
             }}
           >
-            {subTabs.map((tab) => (
+            <MdAdd />
+          </IconButton>
+          <ToggleButtonGroup
+            color="primary"
+            value={maintab}
+            exclusive
+            onChange={(e, value) => {
+              if (value) setMainTab(value);
+              if (value === "live") setSubTab("queryreceived");
+            }}
+          >
+            {mainTabs.map((tab) => (
               <ToggleButton value={tab.value} key={tab.value}>
                 {tab.name}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
-        )}
-      </div>
-      <div className="mb-4">
-        <Filters
-          setFilters={setFilters}
-          onDownload={() => {
-            startDownload().then(({ rows }) => {
-              downloadTable(rows.data);
-            });
-          }}
-          onPrint={() =>
-            apiRef.current.exportDataAsPrint({
-              fileName: "Job Orders",
-            })
-          }
-        />
-      </div>
-      <DataGrid
-        apiRef={apiRef}
-        initialState={
-          downloadSubroutine === null
-            ? undefined
-            : {
-                pagination: {
-                  paginationModel: {
-                    page: 1,
-                    pageSize: 10,
+        </div>
+        <div className="my-4 flex flex-col gap-3">
+          <Search
+            placeholder="Enter Job Code to search.."
+            onChange={(e) =>
+              setFilters((filters) => ({
+                ...filters,
+                search: e.target.value,
+              }))
+            }
+          />
+          {maintab === "live" && (
+            <ToggleButtonGroup
+              color="primary"
+              value={subtab}
+              exclusive
+              onChange={(e, value) => {
+                setSubTab(value);
+              }}
+            >
+              {subTabs.map((tab) => (
+                <ToggleButton value={tab.value} key={tab.value}>
+                  {tab.name}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          )}
+        </div>
+        <div className="mb-4">
+          <Filters
+            setFilters={setFilters}
+            onDownload={() => {
+              startDownload().then(({ rows }) => {
+                downloadTable(rows.data);
+              });
+            }}
+            onPrint={() =>
+              apiRef.current.exportDataAsPrint({
+                fileName: "Job Orders",
+              })
+            }
+          />
+        </div>
+        <DataGrid
+          apiRef={apiRef}
+          initialState={
+            downloadSubroutine === null
+              ? undefined
+              : {
+                  pagination: {
+                    paginationModel: {
+                      page: 1,
+                      pageSize: 10,
+                    },
                   },
-                },
-              }
-        }
-        rows={
-          downloadSubroutine === null ? rows.data : downloadSubroutine.rows.data
-        }
-        columnVisibilityModel={{
-          quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
-          targetPort: false,
-        }}
-        rowCount={
-          downloadSubroutine === null
-            ? rows.total
-            : downloadSubroutine.rows.total
-        }
-        columns={columns}
-        loading={loading}
-        disableRowSelectionOnClick
-        paginationModel={
-          downloadSubroutine === null
-            ? {
-                page: page - 1,
-                pageSize: 10,
-              }
-            : undefined
-        }
-        pageSizeOptions={[10]}
-        onPaginationModelChange={
-          downloadSubroutine === null
-            ? (params) => {
-                router.push({
-                  pathname: router.pathname,
-                  query: { page: params.page + 1 },
-                });
-              }
-            : undefined
-        }
-        pagination
-        paginationMode={downloadSubroutine === null ? "server" : "client"}
-      />
-      <Modal open={Boolean(modal)} onClose={() => setModal(null)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            height: "80%",
-            overflow: "scroll",
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
+                }
+          }
+          rows={
+            downloadSubroutine === null
+              ? rows.data
+              : downloadSubroutine.rows.data
+          }
+          columnVisibilityModel={{
+            quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
+            targetPort: false,
           }}
-        >
-          {modal === "create" && (
-            <JobOrderForm
-              callback={refresh}
-              authData={user}
-              mode="create"
-              onClose={() => setModal(null)}
-            />
-          )}
-          {modal === "edit" && job && (
-            <JobOrderForm
-              callback={refresh}
-              authData={user}
-              mode="edit"
-              onClose={() => setModal(null)}
-              data={job}
-            />
-          )}
-          {modal === "view" && job && <JobOrderView data={job} />}
-          {modal === "flag" && job && <FlagForm job={job} />}
-        </Box>
-      </Modal>
-    </DashboardLayout>
+          rowCount={
+            downloadSubroutine === null
+              ? rows.total
+              : downloadSubroutine.rows.total
+          }
+          columns={columns}
+          loading={loading}
+          disableRowSelectionOnClick
+          paginationModel={
+            downloadSubroutine === null
+              ? {
+                  page: page - 1,
+                  pageSize: 10,
+                }
+              : undefined
+          }
+          pageSizeOptions={[10]}
+          onPaginationModelChange={
+            downloadSubroutine === null
+              ? (params) => {
+                  router.push({
+                    pathname: router.pathname,
+                    query: { page: params.page + 1 },
+                  });
+                }
+              : undefined
+          }
+          pagination
+          paginationMode={downloadSubroutine === null ? "server" : "client"}
+        />
+        <Modal open={Boolean(modal)} onClose={() => setModal(null)}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "80%",
+              height: "80%",
+              overflow: "scroll",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            {modal === "create" && (
+              <JobOrderForm
+                callback={refresh}
+                authData={user}
+                mode="create"
+                onClose={() => setModal(null)}
+              />
+            )}
+            {modal === "edit" && job && (
+              <JobOrderForm
+                callback={refresh}
+                authData={user}
+                mode="edit"
+                onClose={() => setModal(null)}
+                data={job}
+              />
+            )}
+            {modal === "view" && job && <JobOrderView data={job} />}
+            {modal === "flag" && job && <FlagForm job={job} />}
+          </Box>
+        </Modal>
+      </DashboardLayout>
+    </>
   );
 }
