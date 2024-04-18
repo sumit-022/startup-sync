@@ -24,7 +24,6 @@ import LongMenu from "@/components/atoms/dropdown/menu";
 import UpdateModal from "@/components/common/purchaseorder/modal/update";
 import instance from "@/config/axios.config";
 import DownloadModal from "@/components/common/purchaseorder/modal/download";
-import NotifyModal from "@/components/common/purchaseorder/modal/notify";
 import UpdateSpareModal from "@/components/common/purchaseorder/modal/update-spare";
 import getUnique from "@/utils/unique";
 import AuthContext from "@/context/AuthContext";
@@ -42,7 +41,6 @@ export default function Home() {
     status: "QUERYRECEIVED",
     search: "",
   });
-  const [loader, setLoader] = React.useState(false);
   const handleNotifyVendors = async (rfqs: any[], job: JobType) => {
     try {
       toast.loading("Processing...");

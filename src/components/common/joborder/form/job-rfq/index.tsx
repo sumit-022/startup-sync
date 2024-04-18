@@ -92,7 +92,6 @@ const RFQForm = ({
   useEffect(() => {
     instance.get(`/jobs/${job.id}?populate=rfqs`).then((res) => {
       const data = parseAttributes(res.data.data);
-      console.log({ data });
       const filteredVendors = data.rfqs.filter(
         (rfq: any, index: number, self: any) =>
           index ===

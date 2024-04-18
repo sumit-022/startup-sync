@@ -80,7 +80,6 @@ const downloadAttachments = async (spare: any) => {
 };
 
 export default function RfqHash(props: PageProps) {
-  console.log(props.rfqs);
   const {
     register,
     control,

@@ -162,8 +162,6 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
 
       const vendors = [];
 
-      console.log({ vendorObject });
-
       for (const vendor in vendorObject) {
         vendors.push({
           id: vendorObject[vendor].vendorDetails.id,

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { IoMdCloudUpload } from "react-icons/io";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFile } from "react-icons/fa";
 import { Button } from "@mui/material";
 import { ClipLoader } from "react-spinners";
 
@@ -11,10 +11,12 @@ interface Props {
   file?: File | null;
   handleRemove: () => void;
   fileData: any;
+  id: string;
 }
 
 const FormInputFile = ({
   onChange,
+  id,
   fileData,
   label,
   loading,
@@ -22,7 +24,7 @@ const FormInputFile = ({
   handleRemove,
 }: Props) => {
   return (
-    <label className="flex flex-col gap-2" htmlFor="upload">
+    <label className="flex flex-col gap-2" htmlFor={id}>
       <div className="border-2 border-gray-400 cursor-pointer h-36 w-full border-dotted flex flex-col items-center justify-center">
         {loading ? (
           <div className="absolute bg-white bg-opacity-50 h-full w-full flex items-center justify-center">
@@ -35,22 +37,21 @@ const FormInputFile = ({
             <input
               className="sr-only"
               type="file"
-              id="upload"
+              id={id}
               onChange={onChange}
-              accept="application/pdf"
             />
           </>
         ) : (
           <>
-            <FaFilePdf className="text-3xl text-[#ff0000]" />
-            <p className="text-sm">{(file ? file : fileData).name}</p>
+            <FaFile className="text-3xl text-[#ff0000]" />
+            <p className="text-sm">{(file ? file : fileData[0]).name}</p>
             <div className="flex mt-2 gap-4 items-center">
               <Button
                 variant="contained"
                 color="primary"
                 className="bg-primary-bright-blue"
                 onClick={() => {
-                  window.open(fileData.url, "_blank");
+                  window.open(fileData[0].url, "_blank");
                 }}
               >
                 View

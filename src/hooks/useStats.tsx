@@ -29,7 +29,6 @@ export default function useStats({
           ? `/jobs/stats?startDate=${startDate}&endDate=${endDate}&userId=${userId}&aggregate=month`
           : `/jobs/stats?startDate=${startDate}&endDate=${endDate}&aggregate=month`
       );
-      console.log(res.data);
       setStats(res.data);
     } catch (err: any) {
       setError(err);

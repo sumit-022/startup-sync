@@ -332,7 +332,6 @@ const VendorPage = () => {
           onChange={(event, newVendorStatus) => {
             if (!newVendorStatus) return;
             setVendorStatus(newVendorStatus);
-            console.log({ filters });
           }}
         >
           <ToggleButton value="APPROVED">Approved</ToggleButton>

@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogContent,
   DialogActions,
+  Stack,
 } from "@mui/material";
 import clsx from "clsx";
 import InputGroup from "@/components/atoms/input/input-group";
@@ -52,6 +53,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     null
   );
   const [upload, setUpload] = React.useState<File | null>(null);
+  const [clientPO, setClientPO] = React.useState<File | null>(null);
   const [companies, setCompanies] = React.useState([]);
   const [cancelReason, setCancellationReason] = useState<string>("");
   const [loading, setLoading] = useState<"create" | "edit" | "cancel" | null>(
@@ -61,6 +63,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   const [uploadedData, setUploadedData] = useState<
     Record<string, any> | undefined
   >(data?.serviceReport);
+  const [clientPOData, setClientPOData] = useState<
+    Record<string, any> | undefined
+  >(data?.clientPO);
+  const [clientPOLoader, setClientPOLoader] = useState(false);
 
   const handleUploadDelete = async () => {
     setUploadLoader(true);
@@ -75,7 +81,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       return null;
     }
     instance
-      .delete(`/upload/files/${uploadedData.id}`)
+      .delete(`/upload/files/${uploadedData[0].id}`)
       .then(() => {
         toast.success("Upload Deleted Successfully", {
           position: "top-right",
@@ -102,6 +108,46 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       });
   };
 
+  const handleClientPODelete = async () => {
+    setClientPOLoader(true);
+    if (!clientPOData) {
+      toast.error("No file to delete", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setClientPOLoader(false);
+      return null;
+    }
+    instance
+      .delete(`/upload/files/${clientPOData[0].id}`)
+      .then(() => {
+        toast.success("Upload Deleted Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setClientPOLoader(false);
+        setClientPOData(undefined);
+        setClientPO(null);
+        callback && callback();
+      })
+      .catch(() => {
+        toast.error("Upload Deletion Failed", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          pauseOnHover: true,
+        });
+        setClientPOLoader(false);
+        setModal(null);
+        onClose && onClose();
+        callback && callback();
+      });
+  };
+
   const handleUpload = async (upload: File | null) => {
     setUploadLoader(true);
     if (!upload) {
@@ -120,8 +166,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
     f.append("refId", data.id);
     f.append("ref", "api::job.job");
     f.append("field", "serviceReport");
+
     try {
       const data = await instance.post("/upload", f);
+
       toast.success("Upload Successful", {
         position: "top-right",
         autoClose: 3000,
@@ -130,7 +178,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       });
       setUploadLoader(false);
       callback && callback();
-      return data.data[0];
+      return data.data;
     } catch (err) {
       toast.error("Upload Failed", {
         position: "top-right",
@@ -139,6 +187,51 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         pauseOnHover: true,
       });
       setUploadLoader(false);
+      setModal(null);
+      onClose && onClose();
+      callback && callback();
+      return null;
+    }
+  };
+
+  const handleClientPOUpload = async (upload: File | null) => {
+    setClientPOLoader(true);
+    if (!upload) {
+      toast.error("No file selected", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setClientPOLoader(false);
+      return null;
+    }
+
+    const f = new FormData();
+    f.append("files", upload);
+    f.append("refId", data.id);
+    f.append("ref", "api::job.job");
+    f.append("field", "clientPO");
+    try {
+      const data = await instance.post("/upload", f);
+      console.log({ data });
+      toast.success("Upload Successful", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setClientPOLoader(false);
+      callback && callback();
+      return data.data;
+    } catch (err) {
+      toast.error("Upload Failed", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        pauseOnHover: true,
+      });
+      setClientPOLoader(false);
       setModal(null);
       onClose && onClose();
       callback && callback();
@@ -214,6 +307,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       if (data.poNumber) jobstatus = "ORDERCONFIRMED";
       if (data.serviceReport) jobstatus = "INVOICEAWAITED";
       if (data.invoiceDate) jobClosedStatus = "JOBCOMPLETED";
+
+      delete data.clientPO;
+      delete data.serviceReport;
+
       instance
         .put(`/jobs/${data.id}`, {
           data: {
@@ -438,7 +535,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         }))}
         disabled
       />
-      <div className="flex gap-4">
+      <Stack direction="row" spacing={4}>
         {mode === "edit" && (
           <FormInputText name="poNumber" label="PO NUMBER" control={control} />
         )}
@@ -453,7 +550,22 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             },
           }}
         />
-      </div>
+      </Stack>
+      <FormInputFile
+        id="clientPO"
+        label="Attach Client PO Here"
+        onChange={async (e) => {
+          if (!e.target.files) return;
+          setClientPO(e.target.files[0]);
+          const uploadedData = await handleClientPOUpload(e.target.files[0]);
+
+          if (uploadedData) setClientPOData(uploadedData);
+        }}
+        fileData={clientPOData}
+        handleRemove={() => handleClientPODelete()}
+        loading={clientPOLoader}
+        file={clientPO}
+      />
       <FormInputDate
         name="vesselETA"
         label="VESSEL ETA"
@@ -511,18 +623,10 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           data?.status === "ORDERCONFIRMED" ||
           data?.status === "INVOICEAWAITED") && (
           <FormInputFile
+            id="serviceReport"
             label="Upload Service Report Here"
             onChange={async (e) => {
               if (!e.target.files) return;
-              if (e.target.files[0].type !== "application/pdf") {
-                toast.error("Please upload a PDF file", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  theme: "colored",
-                  pauseOnHover: true,
-                });
-                return;
-              }
               setUpload(e.target.files[0]);
               const uploadedData = await handleUpload(e.target.files[0]);
               if (uploadedData) setUploadedData(uploadedData);
