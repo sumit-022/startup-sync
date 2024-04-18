@@ -47,15 +47,18 @@ interface RFQFormType {
     attachment: File | Blob | null;
   }[];
   shipName: string;
-  spareDetails: SpareType[];
+  spareDetails: Omit<SpareType, "id">[];
   make: string;
   model: string;
 }
 
 interface SpareType {
+  id: number;
   title: string;
   description: string;
   quantity: string;
   quantityUnit?: string;
   attachments?: FileList | null;
+  make?: string;
+  model?: string;
 }

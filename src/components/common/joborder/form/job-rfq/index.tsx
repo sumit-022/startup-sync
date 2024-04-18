@@ -54,12 +54,14 @@ const RFQForm = ({
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [showVesselName, setShowVesselName] = React.useState(false);
-  const [spareDetails, setSpareDetails] = React.useState<SpareType>({
-    title: "",
-    description: "",
-    quantity: "",
-    attachments: null,
-  });
+  const [spareDetails, setSpareDetails] = React.useState<Omit<SpareType, "id">>(
+    {
+      title: "",
+      description: "",
+      quantity: "",
+      attachments: null,
+    }
+  );
   const editing = useRef<number | null>(null);
 
   const { user } = useContext(AuthContext);
