@@ -321,10 +321,6 @@ const RFQForm = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    if (e.target.files.length > 2) {
-      toast.error("Cannot upload more than 2 files");
-      return;
-    }
     setSpareDetails((prev) => ({
       ...prev,
       attachments: e.target.files,
@@ -338,7 +334,6 @@ const RFQForm = ({
       toast.error("Invalid file format. Please upload a CSV file");
       return;
     }
-    console.log({ file });
     const reader = new FileReader();
     reader.onload = async (e) => {
       const csv = e.target?.result as string;
@@ -351,8 +346,6 @@ const RFQForm = ({
           resolve(records);
         });
       });
-      console.log({ records });
-
       const spares = records.map((record: any) => ({
         title: record["Spare Name"],
         description: record["Spare Description"],
