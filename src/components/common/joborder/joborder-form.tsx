@@ -53,6 +53,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
   );
   const [upload, setUpload] = React.useState<File | null>(null);
   const [companies, setCompanies] = React.useState([]);
+  const [cancelReason, setCancellationReason] = useState<string>("");
   const [loading, setLoading] = useState<"create" | "edit" | "cancel" | null>(
     null
   );
@@ -323,6 +324,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       .put(`/jobs/${id}`, {
         data: {
           jobClosedStatus: "JOBCANCELLED",
+          cancelReason,
         },
       })
       .then(() => {
@@ -584,14 +586,14 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       )}
       <Dialog
         open={Boolean(modal)}
-        maxWidth="xs"
+        maxWidth={modal === "cancel" ? "lg" : "xs"}
         onClose={() => setModal(null)}
         aria-labelledby="job-completed-dialog-title"
       >
         <DialogTitle id="job-completed-dialog-title">
           {modal === "confirmation"
             ? "Mark Job as Completed"
-            : "Cancel Job Confirmation"}
+            : "Reason for Cancellation"}
         </DialogTitle>
         <DialogContent>
           {!uploadedData && modal === "confirmation" && (
@@ -606,13 +608,47 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
             </DialogContentText>
           )}
           {modal === "cancel" && (
-            <DialogContentText>
-              Are you sure you want to cancel this job?
-            </DialogContentText>
+            <DialogContent
+              sx={{
+                width: "400px",
+                p: 0,
+              }}
+            >
+              <TextField
+                autoFocus
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    "&.Mui-focused": {
+                      color: "red",
+                    },
+                  },
+                }}
+                multiline
+                rows={4}
+                margin="dense"
+                id="reason"
+                label="Reason"
+                type="text"
+                fullWidth
+                onChange={(e) => setCancellationReason(e.target.value)}
+              />
+            </DialogContent>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setModal(null)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setModal(null);
+              setCancellationReason("");
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             onClick={
               modal === "confirmation"

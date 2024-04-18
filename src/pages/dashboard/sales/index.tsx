@@ -269,6 +269,8 @@ export default function SalesDashboard() {
           columnVisibilityModel={{
             quotedAt: filters.status === "QUERYRECEIVED" ? false : true,
             targetPort: false,
+            cancelReason:
+              filters.jobClosedStatus === "JOBCANCELLED" ? true : false,
           }}
           rowCount={
             downloadSubroutine === null

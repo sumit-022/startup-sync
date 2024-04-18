@@ -158,6 +158,7 @@ export default function useSalesTable({
       headerName: "Reference Number",
       width: 150,
     },
+    { field: "cancelReason", headerName: "Cancel Reason", width: 300 },
     { field: "targetPort", headerName: "Target Port", width: 150 },
     {
       field: "Action",
