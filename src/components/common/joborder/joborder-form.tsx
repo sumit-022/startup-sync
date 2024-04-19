@@ -48,7 +48,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       title: string;
     }[]
   >([]);
-  const [engineers, setEngineers] = React.useState([]);
+  const [engineers, setEngineers] = React.useState<any[]>([]);
   const [modal, setModal] = React.useState<"confirmation" | "cancel" | null>(
     null
   );
