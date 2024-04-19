@@ -4,6 +4,7 @@ import {
   Menu,
   Button,
   MenuItem,
+  IconButton,
   Box,
   Autocomplete,
   TextField,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IoFilter } from "react-icons/io5";
+import { PiFileCsv } from "react-icons/pi";
 import { getEngineers } from "@/utils/getEngineers";
 import getServices from "@/utils/getServices";
 import dayjs from "dayjs";
@@ -285,6 +287,24 @@ const TableHeader = ({ onCSVDownload, onFilterChange }: TableHeaderProps) => {
           </Button>
         </div>
       </Menu>
+      <IconButton
+        onClick={onCSVDownload}
+        sx={{
+          color: "black",
+          borderColor: "black",
+          borderRadius: "5px",
+          padding: "5px 10px",
+          fontSize: "14px",
+          fontWeight: "bold",
+          textTransform: "none",
+          "&:hover": {
+            backgroundColor: "black",
+            color: "white",
+          },
+        }}
+      >
+        <PiFileCsv size={25} />
+      </IconButton>
     </div>
   );
 };
