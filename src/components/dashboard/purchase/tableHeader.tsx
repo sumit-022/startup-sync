@@ -13,6 +13,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { IoFilter } from "react-icons/io5";
 import { getEngineers } from "@/utils/getEngineers";
 import getServices from "@/utils/getServices";
+import dayjs from "dayjs";
 
 interface TableHeaderProps {
   onCSVDownload: () => void;
@@ -204,13 +205,20 @@ const TableHeader = ({ onCSVDownload, onFilterChange }: TableHeaderProps) => {
             <DatePicker
               format="DD/MM/YYYY"
               value={filterState.queriedFrom}
-              onChange={(date) =>
-                setFilterState({ ...filterState, queriedFrom: date })
-              }
               slotProps={{
                 textField: {
                   size: "small",
                 },
+              }}
+              {...(filterState.queriedFrom && {
+                value: dayjs(filterState.queriedFrom as Date),
+              })}
+              onChange={(value: any) => {
+                if (!value)
+                  return setFilterState({ ...filterState, queriedFrom: null });
+                const os = value.$d.getTimezoneOffset() * 60 * 1000;
+                const date = new Date(value.$d.getTime() - os);
+                setFilterState({ ...filterState, queriedFrom: date });
               }}
             />
           </FilterSection>
@@ -218,9 +226,16 @@ const TableHeader = ({ onCSVDownload, onFilterChange }: TableHeaderProps) => {
             <DatePicker
               format="DD/MM/YYYY"
               value={filterState.queriedUpto}
-              onChange={(date) =>
-                setFilterState({ ...filterState, queriedUpto: date })
-              }
+              {...(filterState.queriedUpto && {
+                value: dayjs(filterState.queriedUpto as Date),
+              })}
+              onChange={(value: any) => {
+                if (!value)
+                  return setFilterState({ ...filterState, queriedUpto: null });
+                const os = value.$d.getTimezoneOffset() * 60 * 1000;
+                const date = new Date(value.$d.getTime() - os);
+                setFilterState({ ...filterState, queriedUpto: date });
+              }}
               slotProps={{
                 textField: {
                   size: "small",

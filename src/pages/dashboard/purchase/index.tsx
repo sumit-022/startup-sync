@@ -30,7 +30,7 @@ import AuthContext from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import TableHeader from "@/components/dashboard/purchase/tableHeader";
 
-type PurchaseTableFilter = {
+export type PurchaseTableFilter = {
   status: PurchaseStatus | null;
   search: string;
   assignedTo: number | null;
@@ -219,9 +219,8 @@ export default function Home() {
     <LongMenu options={actions} params={params} />
   );
   const { columns, rows, loading, page, refresh } = usePurchaseTable({
-    search: filters.search,
     renderActions,
-    status: filters.status,
+    filters,
   });
   const handleFilter = (
     event: React.MouseEvent<HTMLElement>,
@@ -301,7 +300,12 @@ export default function Home() {
           />
           <TableHeader
             onCSVDownload={() => {}}
-            onFilterChange={(filter) => {}}
+            onFilterChange={(filter) => {
+              setFilters((filters) => ({
+                ...filters,
+                ...filter,
+              }));
+            }}
           />
           <DataGrid
             rows={rows.data}

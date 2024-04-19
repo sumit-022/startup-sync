@@ -4,15 +4,14 @@ import parseAttributes from "@/utils/parse-data";
 import { GridColDef } from "@mui/x-data-grid";
 import qs from "qs";
 import { useSearchParams } from "next/navigation";
+import { PurchaseTableFilter } from "@/pages/dashboard/purchase";
 
 export default function usePurchaseTable({
-  status,
   renderActions,
-  search,
+  filters,
 }: {
-  status: string | null;
   renderActions?: (params: any) => React.ReactNode;
-  search: string;
+  filters: PurchaseTableFilter;
 }) {
   const [rows, setRows] = useState<{
     total: number;
@@ -24,12 +23,13 @@ export default function usePurchaseTable({
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
+  const { search } = filters;
   const query = qs.stringify(
     {
       sort: "jobCode:desc",
       filters: {
         purchaseStatus: {
-          $eq: status,
+          $eq: filters.status,
         },
         ...(search
           ? {
@@ -49,6 +49,28 @@ export default function usePurchaseTable({
               ],
             }
           : {}),
+        ...(filters.assignedTo ? { assignedTo: filters.assignedTo } : {}),
+        ...(filters.queriedFrom || filters.queriedUpto
+          ? {
+              receivedAt: {
+                ...(filters.queriedFrom
+                  ? { $gte: filters.queriedFrom.toISOString() }
+                  : {}),
+                ...(filters.queriedUpto
+                  ? { $lte: filters.queriedUpto.toISOString() }
+                  : {}),
+              },
+            }
+          : {}),
+        ...(filters.services.length > 0
+          ? {
+              services: {
+                id: {
+                  $in: filters.services,
+                },
+              },
+            }
+          : {}),
       },
       pagination: {
         page,
@@ -60,18 +82,15 @@ export default function usePurchaseTable({
 
   useEffect(() => {
     refresh();
-  }, [status, page, search]);
+  }, [filters, page]);
   const refresh = async () => {
-    const route = status
+    const route = filters.status
       ? `/jobs?${query}&populate[0]=rfqs&populate[1]=assignedTo&populate[2]=company&populate[3]=spares.attachments`
       : "/jobs?populate[0]=rfqs&populate[1]=assignedTo&populate[2]=company&populate[3]=spares.attachments";
     setLoading(true);
     instance
       .get(route)
       .then((res: any) => {
-        console.log(res);
-        console.log(parseAttributes(res.data.data));
-
         setRows({
           total: res.data.meta.pagination.total,
           data: parseAttributes(res.data.data).map((el: any) =>
