@@ -29,6 +29,7 @@ import getUnique from "@/utils/unique";
 import AuthContext from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import TableHeader from "@/components/dashboard/purchase/tableHeader";
+import downloadTable from "@/utils/download-table";
 
 export type PurchaseTableFilter = {
   status: PurchaseStatus | null;
@@ -50,6 +51,7 @@ export default function Home() {
     queriedFrom: null,
     queriedUpto: null,
   });
+
   const handleNotifyVendors = async (rfqs: any[], job: JobType) => {
     try {
       toast.loading("Processing...");
@@ -218,10 +220,11 @@ export default function Home() {
   const renderActions = (params: any) => (
     <LongMenu options={actions} params={params} />
   );
-  const { columns, rows, loading, page, refresh } = usePurchaseTable({
-    renderActions,
-    filters,
-  });
+  const { columns, rows, loading, page, refresh, getAllRows } =
+    usePurchaseTable({
+      renderActions,
+      filters,
+    });
   const handleFilter = (
     event: React.MouseEvent<HTMLElement>,
     newFilter: any
@@ -231,6 +234,12 @@ export default function Home() {
       ...filters,
       status: newFilter,
     });
+  };
+
+  const startDownload = async () => {
+    const { data, rows } = await getAllRows();
+    console.log("Download Subroutine", { data, rows });
+    return { data, rows };
   };
 
   const [RFQOpen, setRFQOpen] = React.useState(true);
@@ -299,7 +308,11 @@ export default function Home() {
             className="mb-4"
           />
           <TableHeader
-            onCSVDownload={() => {}}
+            onCSVDownload={() => {
+              startDownload().then(({ data, rows }) => {
+                downloadTable(rows.data);
+              });
+            }}
             onFilterChange={(filter) => {
               setFilters((filters) => ({
                 ...filters,

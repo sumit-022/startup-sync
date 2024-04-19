@@ -1,16 +1,26 @@
+// Chakri did this
 const convertToCSV = (objArray: any) => {
+  console.log({ objArray });
   const array = typeof objArray != "object" ? JSON.parse(objArray) : objArray;
   let str = "";
-  const cols = Object.keys(array[0]).toSorted();
 
-  str += cols.join(",") + "\r\n";
+  // Get only the cols that have non-object values
+  const cols = Object.keys(array[0])
+    .filter((key) =>
+      array.every(
+        (item: any) => item[key] === null || typeof item[key] !== "object"
+      )
+    )
+    .toSorted();
+
+  str += cols.map((col) => `"${col}"`).join(",") + "\r\n";
 
   for (let i = 0; i < array.length; i++) {
     let line = "";
     for (let index in cols) {
       if (line != "") line += ",";
 
-      line += array[i][cols[index]];
+      line += `"${array[i][cols[index]]}"`;
     }
 
     str += line + "\r\n";

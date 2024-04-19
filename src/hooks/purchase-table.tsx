@@ -148,5 +148,30 @@ export default function usePurchaseTable({
     },
   ];
 
-  return { columns, rows, loading, page, refresh };
+  const getAllRows = async () => {
+    const searchParams = new URLSearchParams(query);
+    // Remove pagination from query
+    searchParams.delete("pagination[page]");
+    searchParams.delete("pagination[pageSize]");
+    const res = await instance.get(
+      `/jobs?populate=*&pagination[page]=1&${searchParams.toString()}&pagination[pageSize]=1000`
+    );
+    const data = parseAttributes(res.data.data);
+    const rows = {
+      data: parseAttributes(res.data.data).map((el: any) =>
+        Object.fromEntries(
+          Object.entries(el).map(([x, y]: [string, any]) => {
+            if (x == "assignedTo") return [x, y?.fullname || ""];
+            if (x == "company") return [x, y.name];
+            return [x, y];
+          })
+        )
+      ),
+      total: res.data.meta.pagination.total,
+    };
+
+    return { rows, data };
+  };
+
+  return { columns, rows, loading, page, refresh, getAllRows };
 }
