@@ -28,10 +28,15 @@ import UpdateSpareModal from "@/components/common/purchaseorder/modal/update-spa
 import getUnique from "@/utils/unique";
 import AuthContext from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import TableHeader from "@/components/dashboard/purchase/tableHeader";
 
 type PurchaseTableFilter = {
-  status: string;
+  status: PurchaseStatus | null;
   search: string;
+  assignedTo: number | null;
+  services: number[];
+  queriedFrom: Date | null;
+  queriedUpto: Date | null;
 };
 
 export default function Home() {
@@ -40,6 +45,10 @@ export default function Home() {
   const [filters, setFilters] = React.useState<PurchaseTableFilter>({
     status: "QUERYRECEIVED",
     search: "",
+    assignedTo: null,
+    services: [],
+    queriedFrom: null,
+    queriedUpto: null,
   });
   const handleNotifyVendors = async (rfqs: any[], job: JobType) => {
     try {
@@ -289,6 +298,10 @@ export default function Home() {
               }))
             }
             className="mb-4"
+          />
+          <TableHeader
+            onCSVDownload={() => {}}
+            onFilterChange={(filter) => {}}
           />
           <DataGrid
             rows={rows.data}

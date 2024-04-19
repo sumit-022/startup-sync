@@ -21,6 +21,7 @@ declare interface JobType {
   assignedTo: ServiceCoordinatorType;
   poNumber: string | undefined;
   status: JobStatus;
+  purchaseStatus: PurchaseStatus;
   type: JobNature | undefined;
   jobClosedStatus: "JOBCOMPLETED" | "JOBCANCELLED" | undefined;
   services: ServiceType[];
@@ -45,6 +46,12 @@ declare type JobStatus =
   | "INVOICEAWAITED"
   | "JOBCANCELLED"
   | "PODAWAITED";
+
+declare type PurchaseStatus =
+  | "QUERYRECEIVED"
+  | "RFQSENT"
+  | "POISSUED"
+  | "COMPLETED";
 
 declare type JobNature = "SPARES SUPPLY" | "SERVICES";
 
