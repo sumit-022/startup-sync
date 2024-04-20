@@ -22,11 +22,12 @@ import { IoMdEye } from "react-icons/io";
 import LongMenu from "@/components/atoms/dropdown/menu";
 import JobOrderView from "@/components/common/joborder/joborder-view";
 import FlagForm from "@/components/common/joborder/form/flag";
+import QuotationForm from "@/components/common/joborder/form/quote";
 import downloadTable from "@/utils/download-table";
 
 export default function SalesDashboard() {
   const [modal, setModal] = useState<
-    "create" | "edit" | "view" | "flag" | null
+    "create" | "edit" | "view" | "flag" | "quote" | null
   >(null);
   const [job, setJob] = useState<JobType | null>();
   const [maintab, setMainTab] = useState("live");
@@ -128,6 +129,16 @@ export default function SalesDashboard() {
         },
       },
     ];
+    if (params.row.status === "QUERYRECEIVED") {
+      actions.push({
+        icon: <BiPencil />,
+        name: "Generate Quote",
+        onClick: (params: any) => {
+          setJob(realData.find((item) => item.id === params.id));
+          setModal("quote");
+        },
+      });
+    }
     if (
       params.row.status === "ORDERCONFIRMED" ||
       params.row.status === "QUOTEDTOCLIENT"
@@ -336,6 +347,7 @@ export default function SalesDashboard() {
             )}
             {modal === "view" && job && <JobOrderView data={job} />}
             {modal === "flag" && job && <FlagForm job={job} />}
+            {modal === "quote" && job && <QuotationForm job={job} />}
           </Box>
         </Modal>
       </DashboardLayout>

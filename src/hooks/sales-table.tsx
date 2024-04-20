@@ -134,7 +134,6 @@ export default function useSalesTable({
           ),
           total: res.data.meta.pagination.total,
         });
-        console.log({ rows });
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
