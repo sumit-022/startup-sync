@@ -13,6 +13,7 @@ import {
   Button,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 import instance from "@/config/axios.config";
@@ -62,6 +63,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
   const { control, register, handleSubmit, watch, setValue } = useForm<{
     items: ItemType[];
     deliveryTime: number;
+    deliveryCharges: number;
     connectPort: string;
     remarks?: string;
   }>({
@@ -83,6 +85,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
     }[];
     currencyCode: string;
     deliveryTime: number;
+    deliveryCharges: number;
     connectPort: string;
     remarks?: string;
   }) => {
@@ -219,6 +222,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
   const f = watch("items");
   const remarks = watch("remarks");
   const deliveryTime = watch("deliveryTime");
+  const deliveryCharges = watch("deliveryCharges");
   const connectPort = watch("connectPort");
 
   useEffect(() => {
@@ -364,7 +368,18 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
           }}
           {...register("deliveryTime")}
         />
-        <TextField label="Connect Port" {...register("connectPort")} />
+        <TextField
+          label="Delivery Charges"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {selectedCurrency}
+              </InputAdornment>
+            ),
+          }}
+          {...register("deliveryCharges")}
+        />
+        <TextField label="Ex Works" {...register("connectPort")} />
         <TextField
           label="Remarks"
           multiline
@@ -388,6 +403,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
               deliveryTime,
               connectPort,
               currencyCode: selectedCurrency,
+              deliveryCharges: deliveryCharges || 0,
             });
           }}
         >
