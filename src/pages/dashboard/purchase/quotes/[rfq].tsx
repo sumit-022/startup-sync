@@ -340,6 +340,24 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
           loading={loading}
           className="bg-blue-500"
           onClick={handleSendPO}
+          disabled={(() => {
+            const spareNames = (() => {
+              const { vendor, currencyCode, ...spares } = companies[0];
+              return Object.keys(spares);
+            })();
+
+            let numSelections = 0;
+            for (const spare of spareNames) {
+              for (const company of companies) {
+                if (company[spare].selected) {
+                  numSelections++;
+                }
+              }
+            }
+
+            if (numSelections === 0) return true;
+            return false;
+          })()}
         >
           Generate Purchase Order
         </LoadingButton>
