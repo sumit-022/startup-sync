@@ -25,6 +25,7 @@ type QuotePDFProps = {
   remarks?: string;
   deliveryTime: number;
   deliveryCharges: number;
+  spareQuality: string;
 };
 
 const styles = StyleSheet.create({
@@ -313,12 +314,14 @@ function DeliveryDetails({
   currencyCode,
   remarks,
   connectPort,
+  spareQuality,
 }: {
   deliveryTime: number;
   currencyCode: string;
   deliveryCharges: number;
   remarks?: string;
   connectPort: string;
+  spareQuality: string;
 }) {
   return (
     <View style={styles.deliveryDetailSection}>
@@ -334,6 +337,10 @@ function DeliveryDetails({
       <View style={styles.deliveryRow}>
         <Text style={styles.deliveryHeader}>Ex Works:</Text>
         <Text>{connectPort}</Text>
+      </View>
+      <View style={styles.deliveryRow}>
+        <Text style={styles.deliveryHeader}>Spare Quality</Text>
+        <Text>{spareQuality}</Text>
       </View>
       <View style={styles.deliveryRow}>
         <Text style={styles.deliveryHeader}>Remarks:</Text>
@@ -375,6 +382,7 @@ const QuoteDocument = ({
   deliveryTime,
   deliveryCharges,
   remarks,
+  spareQuality,
 }: QuotePDFProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -384,13 +392,13 @@ const QuoteDocument = ({
       <Details job={job} />
       <QuoteTable items={items} currencyCode={currencyCode} />
       <DeliveryDetails
+        spareQuality={spareQuality}
         deliveryTime={deliveryTime}
         deliveryCharges={deliveryCharges}
         remarks={remarks}
         connectPort={connectPort}
         currencyCode={currencyCode}
       />
-      <BankDetails />
     </Page>
   </Document>
 );
@@ -403,6 +411,7 @@ export default async function createQuotePDF({
   deliveryTime,
   remarks,
   deliveryCharges,
+  spareQuality,
 }: QuotePDFProps) {
   return await pdf(
     <QuoteDocument
@@ -413,6 +422,7 @@ export default async function createQuotePDF({
       deliveryTime={deliveryTime}
       remarks={remarks}
       deliveryCharges={deliveryCharges}
+      spareQuality={spareQuality}
     />
   ).toBlob();
 }

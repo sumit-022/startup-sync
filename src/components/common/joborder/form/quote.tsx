@@ -40,6 +40,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
   const [lowestPriceRFQs, setLowestPriceRFQs] = React.useState<any[]>([]);
   const [selectedCurrency, setSelectedCurrency] = React.useState<string>("USD");
   const [conversionRate, setConversionRate] = React.useState<any>(1);
+  const [selectedQuality, setSelectedQuality] = React.useState<string>("");
 
   const finalPrices = useRef<{
     [id: number]: {
@@ -88,6 +89,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
     deliveryCharges: number;
     connectPort: string;
     remarks?: string;
+    spareQuality: string;
   }) => {
     const pdfDownloadLink = createQuotePDF(data);
     pdfDownloadLink.then((blob) => {
@@ -154,6 +156,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
         fields[idx].unitPrice = rfq.unitPrice;
       }
     });
+    setSelectedQuality(lowestPriceRFQs[0]?.quality || "");
   }, [lowestPriceRFQs]);
 
   const handleMarginRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,6 +227,17 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
   const deliveryTime = watch("deliveryTime");
   const deliveryCharges = watch("deliveryCharges");
   const connectPort = watch("connectPort");
+
+  const spareQualities = [
+    "OEM-JAPAN",
+    "OEM-KOREA",
+    "OEM-CHINA",
+    "OTHER OEM",
+    "GENUINE",
+    "MAKERS",
+    "REPLACEMENT",
+    "COMPATIBLE",
+  ];
 
   useEffect(() => {
     updatePrices();
@@ -380,6 +394,16 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
           {...register("deliveryCharges")}
         />
         <TextField label="Ex Works" {...register("connectPort")} />
+        <Select
+          value={selectedQuality}
+          onChange={(e) => setSelectedQuality(e.target.value)}
+        >
+          {spareQualities.map((quality) => (
+            <MenuItem key={quality} value={quality}>
+              {quality}
+            </MenuItem>
+          ))}
+        </Select>
         <TextField
           label="Remarks"
           multiline
@@ -389,7 +413,14 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
       </div>
       <div className="flex justify-end mt-4">
         <Button
-          disabled={f.length === 0}
+          disabled={
+            f.length === 0 ||
+            !job ||
+            !deliveryTime ||
+            !connectPort ||
+            !selectedQuality ||
+            !selectedCurrency
+          }
           variant="outlined"
           onClick={() => {
             const data = f.map((item) => ({
@@ -404,6 +435,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
               connectPort,
               currencyCode: selectedCurrency,
               deliveryCharges: deliveryCharges || 0,
+              spareQuality: selectedQuality,
             });
           }}
         >
