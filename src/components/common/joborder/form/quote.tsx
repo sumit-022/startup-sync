@@ -394,16 +394,28 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
           {...register("deliveryCharges")}
         />
         <TextField label="Ex Works" {...register("connectPort")} />
-        <Select
-          value={selectedQuality}
-          onChange={(e) => setSelectedQuality(e.target.value)}
-        >
-          {spareQualities.map((quality) => (
-            <MenuItem key={quality} value={quality}>
-              {quality}
-            </MenuItem>
-          ))}
-        </Select>
+        <div className="flex flex-col">
+          <Typography variant="caption">Spare Quality</Typography>
+          <Select
+            value={selectedQuality}
+            onChange={(e) => setSelectedQuality(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-notchedOutline": {
+                "& legend": {
+                  "& span": {
+                    color: "black",
+                  },
+                },
+              },
+            }}
+          >
+            {spareQualities.map((quality) => (
+              <MenuItem key={quality} value={quality}>
+                {quality}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
         <TextField
           label="Remarks"
           multiline
