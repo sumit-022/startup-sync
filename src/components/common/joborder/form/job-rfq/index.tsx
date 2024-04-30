@@ -363,7 +363,7 @@ const RFQForm = ({
         }}
       >
         <div className="flex justify-between items-center border-b-2 pb-2">
-          <Image src={logo} alt="logo" width={100} height={100} />
+          <Image src={logo} alt="logo" width={60} height={60} />
           <Typography variant="h5" sx={{ color: "#1bb1d8" }}>
             Vendor Requisition Form
             <small className="block text-sm">
