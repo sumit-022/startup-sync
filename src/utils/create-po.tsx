@@ -199,7 +199,7 @@ function POHeader({
     <View>
       <View style={styles.header}>
         <Image
-          src="https://jobs.shinpoengineering.com/logo.png"
+          src="https://jobs.shinpoengineering.com/logo.svg"
           style={styles.logo}
         />
         <Text style={styles.boldText}>Purchase Order</Text>

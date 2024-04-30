@@ -4,7 +4,7 @@ import { RiMenu2Line } from "react-icons/ri";
 
 import HelpIcon from "../../../assets/svg/icon/help.svg";
 import NotificationIcon from "../../../assets/svg/icon/notification.svg";
-import logo from "@/assets/image/logo.jpg";
+import logo from "@/assets/svg/logo.svg";
 import Link from "next/link";
 import { NotificationContext } from "@/context/NotificationContext";
 import Dropdown from "@/components/atoms/dropdown";
@@ -24,7 +24,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
   return (
     <header className="drop-shadow-1 sticky top-0 z-20 flex w-full border-b-2 border-b-[#E7EDFC] bg-white shadow-sm">
       <div className="shadow-2 flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-5">
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
             <button
               aria-controls="sidebar"
@@ -39,7 +39,7 @@ const DashboardHeader: React.FC<DashboardHeaderProperties> = ({
             </button>
           </div>
           <Link href="/">
-            <Image src={logo} alt="logo" width={90} height={90} />
+            <Image src={logo} alt="logo" width={40} height={40} />
           </Link>
           <div className="hidden sm:block">
             <h1 className="text-lg font-semibold">Dashboard</h1>

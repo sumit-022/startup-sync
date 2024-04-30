@@ -76,7 +76,7 @@ export default function HomePage() {
       <Head>
         <title>Home Page</title>
         <meta name="description" content="Home Page" />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <DashboardLayout header sidebar>
         <h1

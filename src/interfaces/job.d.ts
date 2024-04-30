@@ -4,6 +4,7 @@ interface JobFormType {
   clientReferenceNumber: string | null;
   receivedAt: Date | string | null;
   quotedAt: Date | string | null;
+  amount: number | null;
   shipName: string;
   company: number | null;
   assignedTo: { id: number; name: string } | null;

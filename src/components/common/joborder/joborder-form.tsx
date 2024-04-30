@@ -488,6 +488,18 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         )}
       </InputGroup>
       <FormInputText
+        name="amount"
+        label="QUOTATION AMOUNT"
+        control={control}
+        endAdornment="USD"
+        rules={{
+          required: {
+            value: true,
+            message: "Please enter a quotation amount",
+          },
+        }}
+      />
+      <FormInputText
         name="clientReferenceNumber"
         label="CLIENT REFERENCE NUMBER"
         control={control}

@@ -14,19 +14,13 @@ import { IoMdCloudUpload } from "react-icons/io";
 import { parse } from "csv-parse";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useForm, useFieldArray, set } from "react-hook-form";
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useContext, useEffect, useRef } from "react";
 import instance from "@/config/axios.config";
 import parseAttributes from "@/utils/parse-data";
 import FormInputText from "@/components/atoms/input/text";
 import FormHeading from "@/components/atoms/heading/form-heading";
 import { MdDelete, MdAdd, MdEdit } from "react-icons/md";
-import logo from "@/assets/image/logo.jpg";
+import logo from "@/assets/svg/logo.svg";
 import Image from "next/image";
 import createRfqPdf from "@/utils/create-rfq-pdf";
 import { toast } from "react-toastify";

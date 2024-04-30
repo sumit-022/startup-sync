@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "@/assets/image/logo.jpg";
+import logo from "@/assets/svg/logo.svg";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import HelpIcon from "@/assets/svg/icon/help.svg";
