@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@mui/material";
-import logo from "@/assets/image/logo.jpg";
+import logo from "@/assets/svg/logo.svg";
 import Image from "next/image";
 import instance from "@/config/axios.config";
 import { toast } from "react-toastify";
@@ -33,7 +33,7 @@ const LoginForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex bg-white w-1/2 p-8 rounded-md flex-col gap-4 justify-center items-center text-black"
     >
-      <Image src={logo} width={200} height={200} alt="logo" className="" />
+      <Image src={logo} width={100} height={100} alt="logo" className="" />
       <h1 className="text-left font-bold text-lg uppercase">Login</h1>
       <div className="flex w-full flex-col gap-3">
         <FormInputText

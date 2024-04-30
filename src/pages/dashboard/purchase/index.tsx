@@ -281,7 +281,7 @@ export default function Home() {
       <Head>
         <title>Purchase Dashboard</title>
         <meta name="description" content="Sales Dashboard" />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <DashboardLayout header sidebar>
         <Box sx={{ height: 600, width: "100%" }}>

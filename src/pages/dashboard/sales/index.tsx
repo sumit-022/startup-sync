@@ -189,7 +189,7 @@ export default function SalesDashboard() {
       <Head>
         <title>Sales Dashboard</title>
         <meta name="description" content="Sales Dashboard" />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <DashboardLayout header sidebar>
         <div className="flex gap-4">
