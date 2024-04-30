@@ -6,7 +6,6 @@ import Image from "next/image";
 import instance from "@/config/axios.config";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { NotificationContext } from "@/context/NotificationContext";
 import FormInputText from "@/components/atoms/input/text";
 import AuthContext from "@/context/AuthContext";
 
@@ -21,7 +20,7 @@ const LoginForm = () => {
       .then((res) => {
         setAuthData(res.data.user);
         localStorage.setItem("token", res.data.jwt);
-        router.push("/");
+        router.push("/dashboard/home");
       })
       .catch((err) => {
         console.log(err);

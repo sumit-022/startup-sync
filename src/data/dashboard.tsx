@@ -11,7 +11,7 @@ export const sidebar: SidebarMenu[] = [
     type: "menu",
     title: "Home",
     icon: <IoHome />,
-    slug: "/",
+    slug: "/analytics",
     children: [],
     api: "",
     notifications: false,
