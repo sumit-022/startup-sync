@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AuthContext from "@/context/AuthContext";
 import FormHeading from "@/components/atoms/heading/form-heading";
+import axios from "axios";
 const QuoteCompareTable = dynamic(
   () => import("@/components/common/purchaseorder/QuoteCompareTable"),
   { ssr: false }
@@ -256,6 +257,121 @@ export default function QuoteComparisionPage({ rfqs, job, rates }: PageProps) {
     };
     return acc;
   }, {});
+
+  const data = rfqs.reduce((acc, cur) => {
+    const rfqvendor = cur.vendor;
+    const { vendor, currencyCode, ...spares } =
+      companies.find((c) => c.vendor.id === rfqvendor.id) || {};
+
+    acc[vendor.name] = Object.keys(spares).reduce((acc, cur) => {
+      const spare = spares[cur];
+      return {
+        ...acc,
+        [cur]: {
+          ...spare,
+          total: Math.round(spare.total * 100) / 100,
+          unit: Math.round(spare.unit * 100) / 100,
+          selected: false,
+        },
+      };
+    }, {});
+    return acc;
+  }, {});
+
+  let VendorIds: any[] = [];
+  let productIDs: any[] = [];
+  let Price: any[] = [];
+  let DeliveryDays: any[] = [];
+
+  for (const vendor in data) {
+    const factor = Object.keys(data[vendor]).length;
+    for (let i = 0; i < factor; i++) {
+      VendorIds.push(vendor);
+    }
+
+    for (const spare in data[vendor]) {
+      productIDs.push(data[vendor][spare].id);
+      Price.push(data[vendor][spare].unit);
+      DeliveryDays.push(
+        parseInt(aggregate[vendor]["Connect Date"].split(" ")[0])
+      );
+    }
+  }
+
+  useEffect(() => {
+    const fetchPredictions = async () => {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:5000/predict-vendor",
+          {
+            VendorID: VendorIds,
+            ProductID: productIDs,
+            Price: Price,
+            DeliveryDays: DeliveryDays,
+            OnTimeDeliveryRate: Array(VendorIds.length).fill(
+              Math.floor(Math.random() * 11) + 90
+            ),
+            OrderAccuracyRate: Array(VendorIds.length).fill(
+              Math.floor(Math.random() * 11) + 90
+            ),
+            ResponseTime: Array(VendorIds.length).fill(
+              Math.floor(Math.random() * 15) + 14
+            ),
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPredictions();
+  }, []);
+
+  const weights = {
+    Price: -0.6,
+    DeliveryDays: 0.25,
+    OnTimeDeliveryRate: 0.05,
+    OrderAccuracyRate: 0.05,
+    ResponseTime: -0.05,
+  };
+  const calculateScore = (data: {
+    VendorID: string[];
+    ProductID: string[];
+    Price: number[];
+    DeliveryDays: number[];
+    OnTimeDeliveryRate: number[];
+    OrderAccuracyRate: number[];
+    ResponseTime: number[];
+  }) => {
+    let scores: number[] = [];
+    for (let i = 0; i < data.VendorID.length; i++) {
+      let score = 0;
+      for (const key in weights) {
+        //@ts-ignore
+        score += data[key][i] * weights[key];
+      }
+      scores.push(score);
+    }
+    return scores;
+  };
+
+  console.log(
+    calculateScore({
+      VendorID: VendorIds,
+      ProductID: productIDs,
+      Price: Price,
+      DeliveryDays: DeliveryDays,
+      OnTimeDeliveryRate: Array(VendorIds.length).fill(
+        Math.floor(Math.random() * 11) + 90
+      ),
+      OrderAccuracyRate: Array(VendorIds.length).fill(
+        Math.floor(Math.random() * 11) + 90
+      ),
+      ResponseTime: Array(VendorIds.length).fill(
+        Math.floor(Math.random() * 15) + 14
+      ),
+    })
+  );
 
   return (
     <DashboardLayout header sidebar>

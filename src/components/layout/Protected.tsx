@@ -9,6 +9,8 @@ export default function Protected({ children }: { children: React.ReactNode }) {
 
   if (isLoading) return <Loading />;
   else if (!user) {
+    console.log("User not found");
+
     router.replace("/auth/login");
     return <Loading />;
   }

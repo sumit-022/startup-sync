@@ -10,6 +10,7 @@ import { Truculenta } from "next/font/google";
 import useSupplierStats from "@/hooks/useSupplierStats";
 import Head from "next/head";
 import SupplierPieChart from "@/components/charts/pie/supplier";
+import BestEmployee from "@/components/dashboard/analytics/best-employee";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });
 
@@ -84,6 +85,7 @@ export default function HomePage() {
         >{`Good ${
           time < 12 ? "Morning" : time < 18 ? "Afternoon" : "Evening"
         }, ${user?.fullname.split(" ")[0]}`}</h1>
+        <BestEmployee />
         <div className="mt-8">
           {loading || companyLoading || supplierLoading ? (
             <p>Loading...</p>
@@ -122,7 +124,7 @@ export default function HomePage() {
                     },
                   ],
                 }}
-                title="Stats for Service Coordinators"
+                title="Stats for Employees"
                 onChange={(year, userId) => {
                   setBarFilters({
                     ...barFilters,

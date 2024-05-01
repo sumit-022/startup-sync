@@ -224,10 +224,6 @@ export default function RfqHash(props: PageProps) {
               <td className="py-4">{props.rfqs[0].RFQNumber}</td>
             </tr>
             <tr className="text-gray-500">
-              <td className="py-4 font-bold">Ship Name:</td>
-              <td className="py-4">{props.job.shipName}</td>
-            </tr>
-            <tr className="text-gray-500">
               <td className="py-4 font-bold">Description:</td>
               <td className="py-4">{props.job.description}</td>
             </tr>

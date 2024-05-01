@@ -124,7 +124,6 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ job }) => {
     }, {});
     const rfqsWithSpare = Object.keys(groupedRfqsBySpare).map((key) => {
       const rfqs = groupedRfqsBySpare[key];
-
       const lowestPriceRFQ = rfqs.reduce((acc: any, rfq: any) => {
         if (acc.unitPrice > rfq.unitPrice) {
           return rfq;
