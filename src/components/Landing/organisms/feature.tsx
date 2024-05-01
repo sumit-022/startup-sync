@@ -17,24 +17,30 @@ const Features = () => {
     {
       icon: <MdSpaceDashboard size={30} />,
       title: "Dashboard",
-      description: "Stay ahead with real-time insights: Startup Sync's dynamic dashboard keeps you informed at a glance.",
+      description:
+        "Stay ahead with real-time insights: Startup Sync's dynamic dashboard keeps you informed at a glance.",
       image: bannerimage,
     },
     {
       icon: <BiSolidPurchaseTag size={30} />,
       title: "Sales & Purchase",
-      description: "Drive sales and optimize procurement: Streamline processes effortlessly with Startup Sync.",
-      image : apple,
+      description:
+        "Drive sales and optimize procurement: Streamline processes effortlessly with Startup Sync.",
+      image: apple,
     },
     {
       icon: <RiTeamFill size={30} />,
       title: "Vendor Management",
-      description: "Centralize vendor management: Seamlessly collaborate and communicate with Startup Sync's integrated platform.",
+      description:
+        "Centralize vendor management: Seamlessly collaborate and communicate with Startup Sync's integrated platform.",
+      image: bannerimage,
     },
     {
       icon: <GoGraph size={30} />,
       title: "AI-ML Analytics",
-      description: "Unlock the power of AI-driven analytics: Make informed decisions with Startup Sync's predictive insights.",
+      description:
+        "Unlock the power of AI-driven analytics: Make informed decisions with Startup Sync's predictive insights.",
+      image: apple,
     },
   ];
   return (
@@ -71,7 +77,7 @@ const Features = () => {
         </div>
         <Banner
           className="mt-0 lg:h-[450px] md:h-[300px] sm:h-[350px] h-[300px]"
-          image={bannerimage}
+          image={features[active].image}
         />
       </div>
     </div>

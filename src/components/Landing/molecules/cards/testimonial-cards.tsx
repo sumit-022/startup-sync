@@ -26,7 +26,7 @@ const Small = ({
   return (
     <div
       className={clsx(
-        "bg-transparent border-white bg-blue-50 max-h-[400px] border p-4 max-w-[400px] h-full flex justify-between flex-col rounded-lg shadow-lg cursor-default hover:drop-shadow-glow transition-all duration-300 ease-in-out",
+        "bg-transparent border-white !bg-blue-50 max-h-[400px] border p-4 max-w-[400px] h-full flex justify-between flex-col rounded-lg shadow-lg cursor-default hover:drop-shadow-glow transition-all duration-300 ease-in-out",
         className
       )}
       style={style}
