@@ -25,7 +25,7 @@ const Card = ({
       className={clsx(
         "flex items-center gap-4 p-4 rounded-lg bg-transparent border border-gray-300/20 hover:border-gray-300/50 transition-all duration-300 ease-in-out cursor-pointer hover:shadow-lg",
         {
-          "!bg-[#818cf8]/10 border-[#818cf8] hover:border-[#818cf8] shadow-lg":
+          "!bg-blue-50 border-[#818cf8] hover:border-[#818cf8] shadow-lg":
             active,
         },
         className
@@ -44,10 +44,7 @@ const Card = ({
       </div>
       <div className="flex flex-col gap-3">
         <h3 className="text-lg font-bold text-pallete1-title">{title}</h3>
-        <p className="text-gray-400">{description}</p>
-        <Link href="/#" className="text-pallete1-link-blue w-max hover:text-blue-600">
-          Learn more <FaAngleRight className="inline" />
-        </Link>
+        <p className="text-gray-500">{description}</p>
       </div>
     </div>
   );

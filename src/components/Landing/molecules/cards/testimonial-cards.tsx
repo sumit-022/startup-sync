@@ -26,7 +26,7 @@ const Small = ({
   return (
     <div
       className={clsx(
-        "bg-transparent border-white max-h-[400px] border p-4 max-w-[400px] h-full flex justify-between flex-col rounded-lg shadow-lg cursor-default hover:drop-shadow-glow transition-all duration-300 ease-in-out",
+        "bg-transparent border-white bg-blue-50 max-h-[400px] border p-4 max-w-[400px] h-full flex justify-between flex-col rounded-lg shadow-lg cursor-default hover:drop-shadow-glow transition-all duration-300 ease-in-out",
         className
       )}
       style={style}
@@ -44,8 +44,8 @@ const Small = ({
         />
         <div>
           <p className="font-bold text-lg text-pallete1-title">{name}</p>
-          <p className="text-[#cccdce] text-sm">{username}</p>
-          <p className="text-[#cccdce] text-sm">
+          <p className="text-gray-500 text-sm">{username}</p>
+          <p className="text-gray-500 text-sm">
             {designation}, {company}
           </p>
         </div>

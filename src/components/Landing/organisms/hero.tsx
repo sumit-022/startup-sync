@@ -13,16 +13,13 @@ const Hero = () => {
       id="#home"
     >
       <div className="max-w-[600px]">
-        <div className="flex items-center space-x-4 my-5">
-          <Button variant="pill">What&apos;s New</Button>
-          <Redirect to="https://github.com/sumit-022/erp">Open Source</Redirect>
-        </div>
         <h1 className="text-5xl font-bold text-pallete1-headersmall">
-          Manage your business with ease!
+          Syncing Innovation Igniting Entrepreneurship!
         </h1>
-        <p className="text-gray-300 mt-4">
-          ERP is a modern, open-source, and easy-to-use management system for
-          your business.
+        <p className="text-gray-600 mt-6">
+          Revolutionize the way your startup navigates sales and procurement
+          with Startup Sync, your all-in-one solution tailored to streamline
+          operations and drive efficiency.
         </p>
         <div className="flex gap-4 mt-8">
           <Button

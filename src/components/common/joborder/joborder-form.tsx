@@ -470,7 +470,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         )}
         <FormInputDate
           name="receivedAt"
-          label="QUERY RECIEVED ON"
+          label="Query Received On"
           control={control}
           rules={{
             required: {
@@ -482,45 +482,47 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         {mode === "edit" && (
           <FormInputDate
             name="quotedAt"
-            label="QUOTATION DATE"
+            label="Quotation Date"
             control={control}
           />
         )}
       </InputGroup>
-      <FormInputText
-        name="amount"
-        label="QUOTATION AMOUNT"
-        control={control}
-        endAdornment="USD"
-        rules={{
-          required: {
-            value: true,
-            message: "Please enter a quotation amount",
-          },
-        }}
-      />
-      <FormInputText
-        name="clientReferenceNumber"
-        label="CLIENT REFERENCE NUMBER"
-        control={control}
-      />
-      <InputGroup inputs={2}>
+      {mode == "edit" && data.status === "QUOTEDTOCLIENT" && (
         <FormInputText
-          name="shipName"
-          label="SHIP NAME"
+          name="amount"
+          label="Quotation Amount"
           control={control}
+          endAdornment="USD"
           rules={{
             required: {
               value: true,
-              message: "Please enter a ship name",
+              message: "Please enter a quotation amount",
             },
           }}
         />
+      )}
+      <FormInputText
+        name="clientReferenceNumber"
+        label="Client Reference Number"
+        control={control}
+      />
+      <InputGroup inputs={2}>
+      <FormInputSelect
+        id="serviceCoordinator"
+        name="assignedTo"
+        label="Service Coordinator"
+        control={control}
+        options={engineers.map((engineer: any) => ({
+          id: engineer.id,
+          name: engineer.fullname,
+        }))}
+        disabled
+      />
         <div className="grid grid-cols-[1fr,auto]">
           <FormInputSelect
             id="company"
             name="company"
-            label="COMPANY NAME"
+            label="Company Name"
             control={control}
             options={companies.map((company: any) => ({
               id: company.id,
@@ -536,29 +538,18 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           <AddCompany callback={fetchCompanies} />
         </div>
       </InputGroup>
-      <FormInputSelect
-        id="serviceCoordinator"
-        name="assignedTo"
-        label="SERVICE COORDINATOR"
-        control={control}
-        options={engineers.map((engineer: any) => ({
-          id: engineer.id,
-          name: engineer.fullname,
-        }))}
-        disabled
-      />
       <Stack direction="row" spacing={4}>
         {mode === "edit" && (
           <FormInputText name="poNumber" label="PO NUMBER" control={control} />
         )}
         <FormInputText
           name="targetPort"
-          label="TARGET PORT"
+          label="Destination"
           control={control}
           rules={{
             required: {
               value: true,
-              message: "Please enter a target port",
+              message: "Please enter a Destination",
             },
           }}
         />
@@ -580,7 +571,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       />
       <FormInputDate
         name="vesselETA"
-        label="VESSEL ETA"
+        label="Delivery Date"
         control={control}
         rules={{
           required: {
@@ -591,7 +582,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       />
       <FormInputAutoComplete
         title="services"
-        label="SERVICES"
+        label="Services"
         options={services}
         control={control}
         rules={{
@@ -604,13 +595,13 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
       <InputGroup inputs={mode === "edit" ? 2 : 1}>
         <FormInputText
           name="description"
-          label="DESCRIPTION"
+          label="Description"
           control={control}
         />
         <FormInputSelect
           id="natureOfJob"
           name="type"
-          label="NATURE OF JOB"
+          label="Nature of Job"
           control={control}
           options={[
             { id: "SPARES SUPPLY", name: "Spare Supply" },
@@ -623,7 +614,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           <FormInputSelect
             id="agent"
             name="agentId"
-            label="AGENT"
+            label="Agent"
             control={control}
             options={[]}
           />

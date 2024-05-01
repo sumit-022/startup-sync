@@ -147,7 +147,6 @@ export default function useSalesTable({
       width: 300,
     },
     { field: "company", headerName: "Company", width: 200 },
-    { field: "shipName", headerName: "Vessel Name", width: 150 },
     { field: "quotedAt", headerName: "Quoted Date", width: 150 },
     { field: "receivedAt", headerName: "Received Date", width: 150 },
     { field: "type", headerName: "Type", width: 150 },
