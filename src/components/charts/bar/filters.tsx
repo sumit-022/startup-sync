@@ -24,10 +24,8 @@ const BarFilterFunction = ({ onChange }: BarFilterFunctionProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const users: User[] = [
     { id: 0, name: "All" },
-    { id: 5, name: "Pradeep Gupta" },
-    { id: 13, name: "Ian Dominic" },
-    { id: 7, name: "Vinoth" },
-    { id: 6, name: "Sachin Sharma" },
+    { id: 1, name: "Sumit" },
+    { id: 2, name: "Manan" },
   ];
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -63,7 +61,7 @@ const BarFilterFunction = ({ onChange }: BarFilterFunctionProps) => {
         </Typography>
         <MenuItem>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography>Select User</Typography>
+            <Typography>Select Employee</Typography>
             <Select
               size="small"
               value={userId}

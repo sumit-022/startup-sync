@@ -364,13 +364,11 @@ const RFQForm = ({
       >
         <div className="flex justify-between items-center border-b-2 pb-2">
           <Image src={logo} alt="logo" width={60} height={60} />
-          <Typography variant="h5" sx={{ color: "#1bb1d8" }}>
+          <Typography variant="h5" sx={{ color: "#1bb1d8", maxWidth: "270px" }}>
             Vendor Requisition Form
+            <small className="block text-sm">Startup Sync</small>
             <small className="block text-sm">
-              Shinpo Engineering PTE. LTD.
-            </small>
-            <small className="block text-sm">
-              1 Tuas South Avenue 6, #05-20, S-637021
+              Indian Institute of Information Technology, Lucknow
             </small>
           </Typography>
         </div>
@@ -385,13 +383,7 @@ const RFQForm = ({
             )
             .map((vendor) => ({ id: vendor.id, title: vendor.name }))}
         />
-        <FormInputText
-          control={control}
-          name="shipName"
-          label="Ship Name"
-          disabled
-        />
-        <FormInputText
+        {/* <FormInputText
           control={control}
           name="make"
           label="Maker"
@@ -402,14 +394,7 @@ const RFQForm = ({
           name="model"
           label="Model"
           disabled={again}
-        />
-        <div className="flex w-max items-center">
-          <Checkbox
-            checked={showVesselName}
-            onChange={(e) => setShowVesselName(e.target.checked)}
-          />
-          <Typography>Show Vessel Name</Typography>
-        </div>
+        /> */}
         <div>
           <FormHeading heading="Item Details" />
           {!again && (

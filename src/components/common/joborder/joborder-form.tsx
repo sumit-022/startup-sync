@@ -487,7 +487,7 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           />
         )}
       </InputGroup>
-      {mode == "edit" && data.status === "QUOTEDTOCLIENT" && (
+      {mode == "edit" && data.status === "QUERYRECEIVED" && (
         <FormInputText
           name="amount"
           label="Quotation Amount"
@@ -507,17 +507,17 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
         control={control}
       />
       <InputGroup inputs={2}>
-      <FormInputSelect
-        id="serviceCoordinator"
-        name="assignedTo"
-        label="Service Coordinator"
-        control={control}
-        options={engineers.map((engineer: any) => ({
-          id: engineer.id,
-          name: engineer.fullname,
-        }))}
-        disabled
-      />
+        <FormInputSelect
+          id="serviceCoordinator"
+          name="assignedTo"
+          label="Service Coordinator"
+          control={control}
+          options={engineers.map((engineer: any) => ({
+            id: engineer.id,
+            name: engineer.fullname,
+          }))}
+          disabled
+        />
         <div className="grid grid-cols-[1fr,auto]">
           <FormInputSelect
             id="company"
@@ -554,21 +554,23 @@ const JobOrderForm: React.FC<JobOrderFormProperties> = ({
           }}
         />
       </Stack>
-      <FormInputFile
-        id="clientPO"
-        label="Attach Client PO Here"
-        onChange={async (e) => {
-          if (!e.target.files) return;
-          setClientPO(e.target.files[0]);
-          const uploadedData = await handleClientPOUpload(e.target.files[0]);
+      {mode === "edit" && (
+        <FormInputFile
+          id="clientPO"
+          label="Attach Client PO Here"
+          onChange={async (e) => {
+            if (!e.target.files) return;
+            setClientPO(e.target.files[0]);
+            const uploadedData = await handleClientPOUpload(e.target.files[0]);
 
-          if (uploadedData) setClientPOData(uploadedData);
-        }}
-        fileData={clientPOData}
-        handleRemove={() => handleClientPODelete()}
-        loading={clientPOLoader}
-        file={clientPO}
-      />
+            if (uploadedData) setClientPOData(uploadedData);
+          }}
+          fileData={clientPOData}
+          handleRemove={() => handleClientPODelete()}
+          loading={clientPOLoader}
+          file={clientPO}
+        />
+      )}
       <FormInputDate
         name="vesselETA"
         label="Delivery Date"

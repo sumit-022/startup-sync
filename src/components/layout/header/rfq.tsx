@@ -8,12 +8,12 @@ const Header = () => {
   return (
     <div className="flex p-8 justify-between items-center border-b-2 pb-2">
       <div className="flex items-center gap-4">
-        <Image src={logo} alt="logo" width={120} height={120} />
+        <Image src={logo} alt="logo" width={50} height={50} />
         <Typography variant="h5" sx={{ color: "#1bb1d8" }}>
           Vendor Requisition Form
-          <small className="block text-sm">Shinpo Engineering PTE. LTD.</small>
+          <small className="block text-sm">Startup Sync</small>
           <small className="block text-sm">
-            1 Tuas South Avenue 6 , #05-20 ,S-637021
+            Indian Institute of Information Technology, Lucknow
           </small>
         </Typography>
       </div>

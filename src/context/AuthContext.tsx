@@ -1,6 +1,5 @@
 import * as React from "react";
 import instance from "@/config/axios.config";
-import { useRouter } from "next/router";
 
 const AuthContext = React.createContext<{
   user: AuthData | null;
@@ -35,6 +34,7 @@ function useAuth() {
               phone: res.data.phone,
             });
           }
+          console.log(authData);
         })
         .catch((err) => {
           console.warn(err);
