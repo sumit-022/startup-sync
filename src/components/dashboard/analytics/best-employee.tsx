@@ -50,7 +50,11 @@ const BestEmployee = () => {
     }
   }, [employeeData]);
 
-  console.log({ bestEmployee });
+  console.log({ employeeData });
+
+  if (!employeeData || !bestEmployee) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div style={{ marginTop: "20px" }}>
@@ -81,7 +85,13 @@ const BestEmployee = () => {
             <Typography variant="body1" sx={{ color: "#616161" }}>
               Employee of the Month
             </Typography>
-            <Typography variant="body1">Sumit</Typography>
+            <Typography variant="body1">
+              {
+                employeeData.find(
+                  (employee: any) => employee.username === bestEmployee[1]
+                )?.username
+              }
+            </Typography>
           </Box>
           <Box
             sx={{
@@ -93,7 +103,13 @@ const BestEmployee = () => {
             <Typography variant="body1" sx={{ color: "#616161" }}>
               Total Orders
             </Typography>
-            <Typography variant="body1">100</Typography>
+            <Typography variant="body1">
+              {
+                employeeData.find(
+                  (employee: any) => employee.username === bestEmployee[1]
+                ).total_count
+              }
+            </Typography>
           </Box>
           <Box
             sx={{
@@ -105,13 +121,26 @@ const BestEmployee = () => {
             <Typography variant="body1" sx={{ color: "#616161" }}>
               Total Orders Completed
             </Typography>
-            <Typography variant="body1">90</Typography>
+            <Typography variant="body1">
+              {
+                employeeData.find(
+                  (employee: any) => employee.username === bestEmployee[1]
+                )?.confirmed_count
+              }
+            </Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="body1" sx={{ color: "#616161" }}>
               Total Revenue
             </Typography>
-            <Typography variant="body1">$1000</Typography>
+            <Typography variant="body1">
+              $
+              {
+                employeeData.find(
+                  (employee: any) => employee.username === bestEmployee[1]
+                )?.total_revenue
+              }
+            </Typography>
           </Box>
         </CardContent>
       </Card>

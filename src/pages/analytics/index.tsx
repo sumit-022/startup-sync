@@ -11,6 +11,7 @@ import useSupplierStats from "@/hooks/useSupplierStats";
 import Head from "next/head";
 import SupplierPieChart from "@/components/charts/pie/supplier";
 import BestEmployee from "@/components/dashboard/analytics/best-employee";
+import LineChart from "@/components/charts/line";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });
 
@@ -91,6 +92,7 @@ export default function HomePage() {
             <p>Loading...</p>
           ) : (
             <div className="flex flex-col gap-8">
+              <LineChart />
               <BarChart
                 data={{
                   labels: months,

@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
 
 const termsandConditions = [
   "Kindly send the copy of invoice as per our policy to avoid any rejections and delay in process.",
-  "All the invoices shall only be addressed to accounts@shinpoengineering.com",
+  "All the invoices shall only be addressed to accounts@company.com",
   "Send only one invoice per email as a PDF file ",
   "Ensure that the purchase order no ,Job code no are clearly stated on the invoice",
   "Ensure that full banking details are clearly stated on the invoice",
   "Ensure that vessel name, job description and pricing are clearly mentioned on the invoice",
   "Ensure the copy of quotes is/are attached with the invoice",
-  "Ensure time sheets are attached and signed off by Shinpo representative",
-  "Ask your Shinpo Engineering representative for clarification if any doubt",
+  "Ensure time sheets are attached and signed off by [Company Name] representative",
+  "Ask your [Company Name] Engineering representative for clarification if any doubt",
 ];
 
 function POHeader({
@@ -204,7 +204,7 @@ function POHeader({
         />
         <Text style={styles.boldText}>Purchase Order</Text>
       </View>
-      <Text style={styles.companyName}>Shinpo Engineering PTE. LTD.</Text>
+      <Text style={styles.companyName}>[Company Name]</Text>
       <View style={styles.poDetails}>
         <View style={styles.poDetail}>
           <Text style={styles.heading}>Purchase Order</Text>
@@ -256,9 +256,7 @@ function PODetails({
             <Text>Lucknow</Text>
             <Text>Uttar Pradesh 226002</Text>
             <Text>Tel: +91 7848989443</Text>
-            <Link src="mailto:admin@shinpoengineering.com">
-              company@gmail.com
-            </Link>
+            <Link src="mailto:admin@company.com">company@gmail.com</Link>
           </View>
         </View>
       </View>

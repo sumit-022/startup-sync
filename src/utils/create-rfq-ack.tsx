@@ -133,7 +133,7 @@ function RFQHeader() {
         <Text>Lucknow</Text>
         <Text>Uttar Pradesh 226002</Text>
         <Text>Tel: +91 7848989443</Text>
-        <Link src="mailto:admin@shinpoengineering.com">company@gmail.com</Link>
+        <Link src="mailto:admin@company.com">company@gmail.com</Link>
         <Text>GST Registration No. : 202215215M</Text>
       </View>
       <Image

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout";
 import AuthContext from "@/context/AuthContext";
 import clsx from "clsx";
@@ -10,6 +10,8 @@ import { Truculenta } from "next/font/google";
 import useSupplierStats from "@/hooks/useSupplierStats";
 import Head from "next/head";
 import SupplierPieChart from "@/components/charts/pie/supplier";
+import BestEmployee from "@/components/dashboard/analytics/best-employee";
+import LineChart from "@/components/charts/line";
 
 const truculenta = Truculenta({ subsets: ["latin-ext"] });
 
@@ -76,7 +78,7 @@ export default function HomePage() {
       <Head>
         <title>Home Page</title>
         <meta name="description" content="Home Page" />
-        <link rel="icon" href="/logo.svg" />
+        <link rel="icon" href="/logo.png" />
       </Head>
       <DashboardLayout header sidebar>
         <h1
@@ -84,11 +86,13 @@ export default function HomePage() {
         >{`Good ${
           time < 12 ? "Morning" : time < 18 ? "Afternoon" : "Evening"
         }, ${user?.fullname.split(" ")[0]}`}</h1>
+        <BestEmployee />
         <div className="mt-8">
           {loading || companyLoading || supplierLoading ? (
             <p>Loading...</p>
           ) : (
             <div className="flex flex-col gap-8">
+              <LineChart />
               <BarChart
                 data={{
                   labels: months,
@@ -122,7 +126,7 @@ export default function HomePage() {
                     },
                   ],
                 }}
-                title="Stats for Service Coordinators"
+                title="Stats for Employees"
                 onChange={(year, userId) => {
                   setBarFilters({
                     ...barFilters,
