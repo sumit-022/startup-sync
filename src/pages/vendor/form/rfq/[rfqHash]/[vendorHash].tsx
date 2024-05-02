@@ -155,7 +155,7 @@ export default function RfqHash(props: PageProps) {
           },
         });
       }
-      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>Team Shinpo`;
+      const mailBody = `Dear Sir<br/><br/>Good Day!<br/><br/>We hereby acknowledge the receipt of the attached quotes. The provided information is currently under review, and we will revert to you with our confirmation with  a purchase order, if deemed suitable.<br/><br/>Regards<br/><br/>Team [Company Name]`;
       const subject = `Acknowledgement of Quotes - ${props.job.jobCode}`;
       const pdf = await createAckPDF({
         shipName: props.job.shipName,
@@ -458,7 +458,9 @@ export default function RfqHash(props: PageProps) {
               },
             })}
           />
-          <InputLabel className="text-gray-500">Quality of Spares/Services:</InputLabel>
+          <InputLabel className="text-gray-500">
+            Quality of Spares/Services:
+          </InputLabel>
           <div className="w-full flex flex-col">
             <FormInputSelect
               size="small"
@@ -504,7 +506,9 @@ export default function RfqHash(props: PageProps) {
               }}
             />
           </div>
-          <InputLabel className="text-gray-500">Connecting Location:</InputLabel>
+          <InputLabel className="text-gray-500">
+            Connecting Location:
+          </InputLabel>
           <TextField
             variant="outlined"
             sx={{

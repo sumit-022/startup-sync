@@ -94,15 +94,7 @@ export default function Home() {
       </table> <br/><br/>
         Please let us know if you require any further information or assistance to proceed with your quotation submission.<br/><br/>Thank you for your attention to this matter, and we look forward to receiving your quotes soon.<br/><br/><b>
         Please ignore this email if you have already submitted your quotation.</b><br/><br/>
-        Warm regards,<br/><br/><br/><div style="display:flex;gap:20px"><img src="https://jobs.shinpoengineering.com/email.png" alt="Shinpo Engineering Pte Ltd" style="margin-right:10px;width:150px;height:65px"/><div><p style="font-weight: 700;color:#008ac9;font-size:20;margin:0">${
-          user?.fullname
-        }</p>Shinpo Engineering Pte. Ltd.<br/><br/><p style="margin:0;padding:0">${
-          user?.designation
-        }</p><p style="margin:0;padding:0">${
-          user?.phone
-        }</p><p style="margin:0;padding:0;color:#008ac9;">Email: purchase@shinpoengineering.com</p><p style="color:#008ac9;padding:0;margin:0;">1 Tuas South Avenue 6 #05-20
-      The Westcom Singapore 637021</p>Tel: +65 65399007<br/>www.shinpoengineering.com
-      </div></div>`;
+        Warm regards,<br/><br/><br/>`;
         return {
           ...acc,
           [rfq.vendor.id]: {
