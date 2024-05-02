@@ -8,7 +8,8 @@ const Navbar = () => {
     { name: "Home", href: "#home" },
     { name: "Highlights", href: "#highlights" },
     { name: "Features", href: "#features" },
-    { name: "Contact", href: "#contact" },
+    { name: "Testimonials", href: "#testimonials" },
+    { name: "Contact Us", href: "#contact" },
   ];
 
   const navRef = useRef<HTMLDivElement>(null);
@@ -41,7 +42,7 @@ const Navbar = () => {
     >
       <div className="w-[90%] mx-auto flex justify-between items-center px-16 py-2">
         <Image src={logo} alt="logo" width={50} height={50} />
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 gap-4">
           {navigation.map((item) => (
             <Link
               key={item.name}

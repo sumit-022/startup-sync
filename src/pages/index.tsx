@@ -4,6 +4,7 @@ import Highlight from "@/components/Landing/organisms/highlight";
 import Features from "@/components/Landing/organisms/feature";
 import Testimonial from "@/components/Landing/organisms/testimonial";
 import Contact from "@/components/Landing/organisms/contact";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Features />
       <Testimonial />
       <Contact />
+      <Footer/>
     </div>
   );
 }
