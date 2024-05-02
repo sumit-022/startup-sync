@@ -1,7 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, Box, Typography } from "@mui/material";
+import instance from "@/config/axios.config";
+import axios from "axios";
 
 const BestEmployee = () => {
+  const [bestEmployee, setBestEmployee] = useState<any>(null);
+  const [employeeData, setEmployeeData] = useState<any>(null);
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const res = await instance.get("/job/stats/employee");
+        setEmployeeData(res.data.employees);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchEmployeeData();
+  }, []);
+
+  useEffect(() => {
+    if (employeeData) {
+      const Percentage = employeeData.map(
+        (employee: any) =>
+          (employee.confirmed_count / employee.total_count) * 100
+      );
+      const Duration = employeeData.map(
+        (employee: any) => employee.avg_quote_time
+      );
+      const Price = employeeData.map((employee: any) => employee.total_revenue);
+      const Employee = employeeData.map((employee: any) => employee.username);
+
+      const fetchBestEmployee = async () => {
+        try {
+          const res = await axios.post(
+            "http://127.0.0.1:5000/predict-employee",
+            {
+              Percentage,
+              Duration,
+              Price,
+              Employee,
+            }
+          );
+          setBestEmployee(res.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchBestEmployee();
+    }
+  }, [employeeData]);
+
+  console.log({ bestEmployee });
+
   return (
     <div style={{ marginTop: "20px" }}>
       <Card
