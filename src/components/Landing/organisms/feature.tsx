@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Card from "../atoms/card";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaDollarSign } from "react-icons/fa";
 import { BiSolidPurchaseTag } from "react-icons/bi";
-import { BsFillCalendar2EventFill } from "react-icons/bs";
 import Banner from "../molecules/banner";
-import bannerimage from "@/assets/image/avatars/user.jpeg";
-import apple from "@/assets/image/image.jpeg";
 import { RiTeamFill } from "react-icons/ri";
 import { GoGraph } from "react-icons/go";
+import purchase from "@/assets/image/purchase.jpg";
+import sales from "@/assets/image/sales.png";
+import models from "@/assets/image/models.jpg";
+import vendor from "@/assets/image/vendor.png";
 
 const Features = () => {
   const [active, setActive] = useState(0);
@@ -19,33 +19,33 @@ const Features = () => {
       title: "Dashboard",
       description:
         "Stay ahead with real-time insights: Startup Sync's dynamic dashboard keeps you informed at a glance.",
-      image: bannerimage,
+      image: sales,
     },
     {
       icon: <BiSolidPurchaseTag size={30} />,
       title: "Sales & Purchase",
       description:
         "Drive sales and optimize procurement: Streamline processes effortlessly with Startup Sync.",
-      image: apple,
+      image: purchase,
     },
     {
       icon: <RiTeamFill size={30} />,
       title: "Vendor Management",
       description:
         "Centralize vendor management: Seamlessly collaborate and communicate with Startup Sync's integrated platform.",
-      image: bannerimage,
+      image: vendor,
     },
     {
       icon: <GoGraph size={30} />,
       title: "AI-ML Analytics",
       description:
         "Unlock the power of AI-driven analytics: Make informed decisions with Startup Sync's predictive insights.",
-      image: apple,
+      image: models,
     },
   ];
   return (
     <div
-      className="min-h-screen px-28 bg-background-primary flex-col bg-blend-lighten flex justify-center items-center py-20"
+      className="min-h-screen px-24 bg-background-primary flex-col bg-blend-lighten flex justify-center items-center py-20"
       id="features"
     >
       <div className="flex flex-col items-center max-w-[800px]">

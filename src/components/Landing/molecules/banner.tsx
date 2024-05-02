@@ -13,7 +13,7 @@ const Banner = ({
   return (
     <div
       className={clsx(
-        "bg-black relative lg:h-[400px] w-full max-w-[700px] md:h-[350px] sm:h-[300px] h-[200px] rounded-2xl drop-shadow-glow sm:mt-18 mt-16",
+        "bg-black relative lg:h-[400px] w-full max-w-[750px] md:h-[350px] sm:h-[300px] h-[200px] rounded-2xl drop-shadow-glow sm:mt-18 mt-16",
         className
       )}
     >
@@ -22,7 +22,8 @@ const Banner = ({
         alt="banner"
         layout="fill"
         objectFit="cover"
-        className="rounded-2xl"
+        className="rounded-2xl object-cover"
+        loading="lazy"
       />
     </div>
   );

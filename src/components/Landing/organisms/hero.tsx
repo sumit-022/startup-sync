@@ -3,6 +3,7 @@ import Button from "@/components/Landing/atoms/button";
 import Redirect from "@/components/Landing/atoms/link";
 import Banner from "../molecules/banner";
 import { useRouter } from "next/navigation";
+import models from "@/assets/image/models.jpg"
 
 const Hero = () => {
   const router = useRouter();
@@ -33,7 +34,7 @@ const Hero = () => {
           <Button variant="pill">Learn More</Button>
         </div>
       </div>
-      <Banner />
+      <Banner image={models}/>
     </div>
   );
 };
