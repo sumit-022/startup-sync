@@ -95,43 +95,48 @@ const VendorPage = () => {
   };
 
   const getVendors = async (page: number = 1) => {
-    const apiqueries = qs.stringify({
-      filters: {
-        $and: [
-          {
-            $or: [
-              {
-                name: {
-                  $containsi: search,
-                },
-              },
-              {
-                services: {
-                  title: {
+    const apiqueries = qs.stringify(
+      {
+        filters: {
+          $and: [
+            {
+              $or: [
+                {
+                  name: {
                     $containsi: search,
                   },
                 },
-              },
-              {
-                country: {
-                  $containsi: search,
+                {
+                  services: {
+                    title: {
+                      $containsi: search,
+                    },
+                  },
+                },
+                {
+                  country: {
+                    $containsi: search,
+                  },
+                },
+              ],
+            },
+            filters.categories.length > 0 && {
+              services: {
+                id: {
+                  $in: filters.categories.map((category) => category.id),
                 },
               },
-            ],
-          },
-          filters.categories.length > 0 && {
-            services: {
-              id: {
-                $in: filters.categories.map((category) => category.id),
-              },
             },
-          },
-          vendorStatus === "APPROVED"
-            ? { registered: true }
-            : { registered: false },
-        ].filter(Boolean),
+            vendorStatus === "APPROVED"
+              ? { registered: true }
+              : { registered: false },
+          ].filter(Boolean),
+        },
       },
-    });
+      {
+        encodeValuesOnly: true,
+      }
+    );
 
     setTableLoading(true);
     const res = await instance.get(

@@ -251,13 +251,13 @@ function PODetails({
         <View style={styles.detail}>
           <Text style={styles.heading}>Billing Address</Text>
           <View>
-            <Text style={styles.value}>Shinpo Engineering PTE. LTD.</Text>
-            <Text style={styles.value}>1 Tuas South Avenue 6, #05-20</Text>
-            <Text style={styles.value}>S-637021 Singapore</Text>
-            <Text style={styles.value}>Tel: 65 6265 1234</Text>
-            <Text style={styles.value}>Fax: 65 6265 1234</Text>
+            <Text style={styles.boldText}>Sample Company Name</Text>
+            <Text>Indian Institute of Information Technology</Text>
+            <Text>Lucknow</Text>
+            <Text>Uttar Pradesh 226002</Text>
+            <Text>Tel: +91 7848989443</Text>
             <Link src="mailto:admin@shinpoengineering.com">
-              admin@shinpoengineering.com
+              company@gmail.com
             </Link>
           </View>
         </View>
@@ -284,7 +284,7 @@ function POTable({
       total: number;
     }[];
   };
-}) {
+}): React.JSX.Element {
   return (
     <View style={styles.table}>
       <View style={styles.tableHeader}>

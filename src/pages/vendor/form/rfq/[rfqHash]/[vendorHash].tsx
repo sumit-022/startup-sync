@@ -458,7 +458,7 @@ export default function RfqHash(props: PageProps) {
               },
             })}
           />
-          <InputLabel className="text-gray-500">Quality of Spares:</InputLabel>
+          <InputLabel className="text-gray-500">Quality of Spares/Services:</InputLabel>
           <div className="w-full flex flex-col">
             <FormInputSelect
               size="small"
@@ -504,7 +504,7 @@ export default function RfqHash(props: PageProps) {
               }}
             />
           </div>
-          <InputLabel className="text-gray-500">Connect Port:</InputLabel>
+          <InputLabel className="text-gray-500">Connecting Location:</InputLabel>
           <TextField
             variant="outlined"
             sx={{

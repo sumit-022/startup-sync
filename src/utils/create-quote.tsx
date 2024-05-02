@@ -188,14 +188,12 @@ function QuoteHeader() {
   return (
     <View style={styles.head}>
       <View style={styles.address}>
-        <Text style={styles.boldText}>SHINPO ENGINEERING PTE LTD</Text>
-        <Text>1 Tuas South Avenue 6 , #05-20</Text>
-        <Text>The Westcom</Text>
-        <Text>Singapore 637021</Text>
-        <Text>Tel: +65 81321465</Text>
-        <Link src="mailto:admin@shinpoengineering.com">
-          admin@shinpoengineering.com
-        </Link>
+        <Text style={styles.boldText}>Sample Company Name</Text>
+        <Text>Indian Institute of Information Technology</Text>
+        <Text>Lucknow</Text>
+        <Text>Uttar Pradesh 226002</Text>
+        <Text>Tel: +91 7848989443</Text>
+        <Link src="mailto:admin@shinpoengineering.com">company@gmail.com</Link>
         <Text>GST Registration No. : 202215215M</Text>
       </View>
       <Image

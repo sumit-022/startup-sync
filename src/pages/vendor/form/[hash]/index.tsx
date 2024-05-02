@@ -118,7 +118,7 @@ const VendorFormPage = ({ hash }: VendorFormPageProps) => {
           marginBottom: "2rem",
         }}
       >
-        Shinpo Vendor Registration
+        Vendor Registration
       </Typography>
       <Steps steps={labels} activeStep={activeStep} />
       {(() => {
